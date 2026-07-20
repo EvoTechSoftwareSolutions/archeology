@@ -1,6 +1,8 @@
 import React from 'react';
+import mapImg from '../assets/map.png';
 
 const MapSection = () => {
+
   return (
     <section id="explore" className="relative py-[80px] px-[40px] overflow-hidden" style={{ backgroundColor: '#F8F6F1' }}>
       {/* Background Pattern */}
@@ -21,26 +23,26 @@ const MapSection = () => {
         </div>
 
         {/* Main Map Area */}
-        <div className="relative w-full flex justify-start items-center mt-[-20px]">
+        <div className="relative w-full flex justify-center items-center mt-[-20px]">
           
           {/* Compass Image */}
           <div className="absolute left-[5%] top-[10%]">
             <img src="/images/COMPASS.png" alt="Compass" className="w-[100px] h-[100px] object-contain drop-shadow-xl" />
           </div>
 
-          {/* Sri Lanka Map */}
-
+          {/* Sri Lanka Map Interactive Area */}
+          <div className="relative z-20 w-[450px] max-w-full group cursor-pointer mt-10">
+            {/* Base Map */}
+            <img 
+              src={mapImg} 
+              alt="Sri Lanka Province Map" 
+              className="w-full h-auto object-contain drop-shadow-md transition-all duration-500 ease-out" 
+            />
+            
           
-          {/* Using image 36.png assuming it's the province map based on size, or fallback to an SVG placeholder if needed. */}
-          <div className="relative z-20 w-[450px] max-w-full">
-            <img src="/images/image 36.png" alt="Sri Lanka Province Map" className="w-full h-auto object-contain drop-shadow-md" />
           </div>
 
-          {/* Buddha Statue */}
-          <div className="absolute right-[2%] top-[5%] opacity-80 mix-blend-multiply">
-            {/* Using temple.png or image 35.png. Falling back to image 35 if temple is incorrect */}
-            <img src="/images/image 35.png" alt="Buddha Statue" className="w-[180px] h-auto object-contain" />
-          </div>
+
           
         </div>
       </div>
