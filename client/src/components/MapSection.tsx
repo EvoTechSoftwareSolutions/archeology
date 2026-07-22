@@ -4,7 +4,7 @@ import mapImg from '../assets/map.png';
 const MapSection = () => {
 
   return (
-    <section id="explore" className="relative py-[80px] px-[40px] overflow-hidden" style={{ backgroundColor: '#F8F6F1' }}>
+    <section id="explore" className="relative py-[60px] md:py-[80px] px-4 md:px-[40px] overflow-hidden" style={{ backgroundColor: '#F8F6F1' }}>
       {/* Background Pattern */}
       
       <div className="max-w-[1200px] mx-auto relative z-10 flex flex-col items-center">
@@ -12,7 +12,7 @@ const MapSection = () => {
         {/* Header Texts */}
         <div className="w-full text-left mb-2">
           <p className="text-gold text-[0.7rem] font-bold tracking-[2px] uppercase mb-2">EXPLORE BY MAP</p>
-          <h2 className="font-serif text-[2.2rem] text-text-dark font-bold mb-4">Find The Heritage By Province</h2>
+          <h2 className="font-serif text-[1.8rem] md:text-[2.2rem] text-text-dark font-bold mb-4">Find The Heritage By Province</h2>
         </div>
 
         {/* Hover Instruction */}
@@ -27,11 +27,11 @@ const MapSection = () => {
           
           {/* Compass Image */}
           <div className="absolute left-[5%] top-[10%]">
-            <img src="/images/COMPASS.png" alt="Compass" className="w-[100px] h-[100px] object-contain drop-shadow-xl" />
+            <img src="/images/COMPASS.png" alt="Compass" className="w-[60px] md:w-[100px] h-[60px] md:h-[100px] object-contain drop-shadow-xl" />
           </div>
 
           {/* Sri Lanka Map Interactive Area */}
-          <div className="relative z-20 w-[450px] max-w-full group cursor-pointer mt-10">
+          <div className="relative z-20 w-[300px] md:w-[450px] max-w-full group cursor-pointer mt-10">
             {/* Base Map */}
             <img 
               src={mapImg} 

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FiPhone } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const slides = [
   { id: 1, image: '/images/daladamaligawa.png', title: 'Dalada Maligawa', location: 'Central Province' },
@@ -65,17 +66,16 @@ const HeroSection = () => {
 
       {/* Left Content Pane with linear gradient overlay (pointer-events-none so we can swipe background) */}
       <div 
-        className="absolute inset-0 z-10 w-full flex flex-col justify-center px-[80px] py-[50px] pointer-events-none"
-        style={{ background: "linear-gradient(to right, rgba(245, 240, 232, 1) 0%, rgba(245, 240, 232, 0.85) 35%, rgba(245, 240, 232, 0) 75%)" }}
+        className="absolute inset-0 z-10 w-full flex flex-col justify-center px-6 md:px-[80px] py-10 md:py-[50px] pointer-events-none bg-gradient-to-r from-[#F5F0E8] via-[#F5F0E8]/90 to-transparent sm:via-[#F5F0E8]/85"
       >
         <div className="pointer-events-auto w-fit">
-          <h1 className="font-serif font-bold text-[75px] leading-[1.15] text-[#1F5E4E] mb-6">
+          <h1 className="font-serif font-bold text-[45px] md:text-[60px] lg:text-[75px] leading-[1.15] text-[#1F5E4E] mb-6">
             Discover the<br />
             Timeless <span className="text-gold">Heritage</span><br />
             Of Sri Lanka
           </h1>
           
-          <p className="font-sans text-[18px] leading-[1.6] text-text-dark max-w-[500px] mb-8 opacity-90">
+          <p className="font-sans text-[16px] md:text-[18px] leading-[1.6] text-text-dark max-w-[500px] mb-8 opacity-90">
             Explore ancient kingdoms, sacred temples, archaeological wonders and 
             forgotten civilizations through an immersive digital journey across Sri Lanka
           </p>
@@ -90,18 +90,24 @@ const HeroSection = () => {
       </div>
 
       {/* Floating Site Card - Bottom Right */}
-      <div className="absolute bottom-[40px] right-[60px] z-20 bg-white rounded-[12px] py-4 px-6 flex items-center justify-between gap-10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] min-w-[340px] pointer-events-auto transition-all duration-300">
+      <div className="absolute bottom-6 md:bottom-[40px] left-6 right-6 md:left-auto md:right-[60px] z-20 bg-white rounded-[12px] py-4 px-6 flex items-center justify-between gap-4 md:gap-10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] min-w-[280px] md:min-w-[340px] pointer-events-auto transition-all duration-300">
         <div>
           <div className="font-bold text-[1.1rem] text-[#1a3a2a]">{slides[currentSlide]?.title}</div>
           <div className="text-[0.85rem] text-[#7a7a6a] mt-0.5">{slides[currentSlide]?.location}</div>
         </div>
-        <a href="#explore" className="text-[#1a3a2a] font-semibold text-[0.85rem] no-underline hover:text-gold flex items-center gap-1 transition-colors duration-200">
-          View Details <span className="text-[1.1rem]">&rarr;</span>
-        </a>
+        {slides[currentSlide]?.id === 1 ? (
+          <Link to="/temple-of-the-tooth" className="text-[#1a3a2a] font-semibold text-[0.85rem] no-underline hover:text-gold flex items-center gap-1 transition-colors duration-200">
+            View Details <span className="text-[1.1rem]">&rarr;</span>
+          </Link>
+        ) : (
+          <a href="#explore" className="text-[#1a3a2a] font-semibold text-[0.85rem] no-underline hover:text-gold flex items-center gap-1 transition-colors duration-200">
+            View Details <span className="text-[1.1rem]">&rarr;</span>
+          </a>
+        )}
       </div>
 
       {/* Slide Dots - Centered under the Card */}
-      <div className="absolute bottom-[20px] right-[215px] z-20 flex items-center gap-1.5 pointer-events-auto">
+      <div className="absolute bottom-[100px] md:bottom-[20px] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-[215px] z-20 flex items-center gap-1.5 pointer-events-auto">
         {slides.map((_, index) => (
           <button 
             key={index}

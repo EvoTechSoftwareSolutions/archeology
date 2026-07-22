@@ -2,7 +2,7 @@
 
 const PartnersSection = () => {
   return (
-    <section className="bg-[#F8F6F1] py-[80px] px-[40px] relative overflow-hidden">
+    <section className="bg-[#F8F6F1] py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden">
       <img src="/images/image 35.png" alt="" className="absolute left-[10px] top-[20px] h-full max-h-[370px] object-contain object-left-bottom opacity-80 pointer-events-none z-0" />
       
       <div className="relative z-10 w-full text-center top-[60px] pb-[60px]">

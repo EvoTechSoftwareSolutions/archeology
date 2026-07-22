@@ -2,10 +2,10 @@ import { FiSend, FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 
 const ContactSection = () => {
   return (
-    <section className="py-[80px] px-[40px] relative overflow-hidden" id="contact-section" style={{ backgroundColor: '#F8F6F1' }}>
+    <section className="py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden" id="contact-section" style={{ backgroundColor: '#F8F6F1' }}>
       <img src="/images/half.png" className="absolute left-0 top-0 h-full opacity-60 z-0 pointer-events-none object-contain object-left" alt="" />
 
-      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
+      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 relative z-10">
 
         {/* Left Side */}
         <div>
@@ -19,7 +19,7 @@ const ContactSection = () => {
           </p>
 
           {/* Info Cards Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
             {/* Address */}
             <div className="bg-white rounded-xl p-4 flex items-start gap-3 shadow-sm">
               <div className="text-deep-green mt-0.5"><FiMapPin size={20} /></div>
@@ -66,7 +66,7 @@ const ContactSection = () => {
         </div>
 
         {/* Right Side - Form */}
-        <div className="bg-white rounded-[16px] p-10 shadow-[0_8px_40px_rgba(0,0,0,0.06)]">
+        <div className="bg-white rounded-[16px] p-6 md:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.06)]">
           <h3 className="font-serif text-[1.8rem] font-bold text-text-dark mb-1">
             Send Us A Message
           </h3>

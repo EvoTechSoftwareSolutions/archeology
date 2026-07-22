@@ -1,22 +1,18 @@
-import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import PartnersSection from './components/PartnersSection';
-import MapSection from './components/MapSection';
-import FeaturesSection from './components/FeaturesSection';
-import ContactSection from './components/ContactSection';
+import Home from './pages/Home';
+import TempleOfToothDetails from './pages/TempleOfToothDetails';
 
 function App() {
   return (
-    <div className="font-sans antialiased text-text-dark bg-cream selection:bg-gold selection:text-deep-green">
-      <Navbar />
-      <main>
-        <HeroSection />
-        <PartnersSection />
-        <MapSection />
-        <FeaturesSection />
-        <ContactSection />
-      </main>
+    <BrowserRouter>
+      <div className="font-sans antialiased text-text-dark bg-cream selection:bg-gold selection:text-deep-green">
+        <Navbar />
+        
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/temple-of-the-tooth" element={<TempleOfToothDetails />} />
+        </Routes>
 
       <footer className="relative overflow-hidden border-t-[3px] border-[#2a4a3a] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] rounded-t-[10px]" style={{ backgroundColor: '#F8F6F1' }}>
         {/* Decorative heritage pattern background */}
@@ -114,6 +110,7 @@ function App() {
         </div>
       </footer>
     </div>
+    </BrowserRouter>
   );
 }
 
