@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const PartnersSection = () => {
   return (
@@ -16,7 +16,7 @@ const PartnersSection = () => {
 
         <div className="flex justify-center gap-[28px] flex-wrap">
           <div className="bg-white rounded-2xl py-[28px] px-[30px] flex items-start gap-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.07)] max-w-[356px] text-left transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]">
-            <img src="/images/image 2.png" alt="Royal College Colombo" className="w-[64px] h-[64px] object-contain shrink-0 rounded-lg" />
+            <img src="/images/image 2.png" alt="Royal College Colombo" className="w-[100px] h-[100px] object-contain shrink-0 rounded-lg" />
             <div>
               <h4 className="font-serif text-[1rem] font-bold text-text-dark mb-2">Royal College – Colombo</h4>
               <p className="text-[0.78rem] text-text-muted leading-[1.55]">From its inception at the verandah of a modest church with a mere 30 pupils to becoming the largest and most prominent educational institution in Sri Lanka.</p>
@@ -24,7 +24,7 @@ const PartnersSection = () => {
           </div>
           
           <div className="bg-white rounded-2xl py-[28px] px-[30px] flex items-start gap-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.07)] max-w-[356px] text-left transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]">
-            <img src="/images/archelogicaldeptlogo.png" alt="Department of Archaeology" className="w-[64px] h-[64px] object-contain shrink-0 rounded-lg" />
+            <img src="/images/archelogicaldeptlogo.png" alt="Department of Archaeology" className="w-[80px] h-[80px] object-contain shrink-0 rounded-lg" />
             <div>
               <h4 className="font-serif text-[1rem] font-bold text-text-dark mb-2">Department of Archaeology</h4>
               <p className="text-[0.78rem] text-text-muted leading-[1.55]">From its inception at the verandah of a modest church with a mere 30 pupils to becoming the largest and most prominent educational institution in Sri Lanka.</p>
@@ -32,7 +32,7 @@ const PartnersSection = () => {
           </div>
           
           <div className="bg-white rounded-2xl py-[28px] px-[30px] flex items-start gap-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.07)] max-w-[356px] text-left transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)]">
-            <img src="/images/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png" alt="HejCeylon" className="w-[64px] h-[64px] object-contain shrink-0 rounded-lg" />
+            <img src="/images/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png" alt="HejCeylon" className="w-[80px] h-[80px] object-contain shrink-0 rounded-lg" />
             <div>
               <h4 className="font-serif text-[1rem] font-bold text-text-dark mb-2">HejCeylon</h4>
               <p className="text-[0.78rem] text-text-muted leading-[1.55]">The Department of Archaeology is a non-ministerial government department in Sri Lanka responsible for managing the archaeological heritage.</p>

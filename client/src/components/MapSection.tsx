@@ -1,4 +1,4 @@
-import React from 'react';
+
 import mapImg from '../assets/map.png';
 
 const MapSection = () => {
