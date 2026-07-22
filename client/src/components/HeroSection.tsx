@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { FiPhone } from 'react-icons/fi';
 
 const slides = [
   { id: 1, image: '/images/daladamaligawa.png', title: 'Dalada Maligawa', location: 'Central Province' },
@@ -83,7 +84,7 @@ const HeroSection = () => {
             href="#contact-section" 
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#1F5E4E] hover:bg-gold text-white hover:text-deep-green font-semibold text-[0.95rem] rounded-[6px] transition-all duration-200 w-fit no-underline shadow-md"
           >
-            <span>📞</span> Contact Us
+            <FiPhone size={18} /> Contact Us
           </a>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 
 const ContactSection = () => {
   return (
@@ -22,7 +22,7 @@ const ContactSection = () => {
           <div className="grid grid-cols-2 gap-3 mb-8">
             {/* Address */}
             <div className="bg-white rounded-xl p-4 flex items-start gap-3 shadow-sm">
-              <div className="text-lg mt-0.5">📍</div>
+              <div className="text-deep-green mt-0.5"><FiMapPin size={20} /></div>
               <div>
                 <h5 className="text-deep-green text-[0.82rem] mb-1 font-bold">Address</h5>
                 <p className="text-text-mid text-[0.75rem] leading-[1.4]">Department of Archaeology, Colombo, Sri Lanka</p>
@@ -30,7 +30,7 @@ const ContactSection = () => {
             </div>
             {/* Phone */}
             <div className="bg-white rounded-xl p-4 flex items-start gap-3 shadow-sm">
-              <div className="text-lg mt-0.5">📞</div>
+              <div className="text-deep-green mt-0.5"><FiPhone size={20} /></div>
               <div>
                 <h5 className="text-deep-green text-[0.82rem] mb-1 font-bold">Phone</h5>
                 <p className="text-text-mid text-[0.75rem] leading-[1.4]">+94 11 269 2816<br />+94 11 269 2817</p>
@@ -38,7 +38,7 @@ const ContactSection = () => {
             </div>
             {/* Email */}
             <div className="bg-white rounded-xl p-4 flex items-start gap-3 shadow-sm">
-              <div className="text-lg mt-0.5">✉️</div>
+              <div className="text-deep-green mt-0.5"><FiMail size={20} /></div>
               <div>
                 <h5 className="text-deep-green text-[0.82rem] mb-1 font-bold">Email</h5>
                 <p className="text-text-mid text-[0.75rem] leading-[1.4]">info@archaeology.gov.lk</p>
@@ -46,7 +46,7 @@ const ContactSection = () => {
             </div>
             {/* Office Hours */}
             <div className="bg-white rounded-xl p-4 flex items-start gap-3 shadow-sm">
-              <div className="text-lg mt-0.5">🕒</div>
+              <div className="text-deep-green mt-0.5"><FiClock size={20} /></div>
               <div>
                 <h5 className="text-deep-green text-[0.82rem] mb-1 font-bold">Office Hours</h5>
                 <p className="text-text-mid text-[0.75rem] leading-[1.4]">Monday – Friday<br />8:30 AM – 4:15 PM</p>
