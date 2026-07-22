@@ -1,5 +1,14 @@
 
-import { FiClock, FiMapPin, FiPhone, FiMail, FiCheck, FiInfo } from 'react-icons/fi';
+
+import { FiClock, FiMapPin, FiPhone, FiMail, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import buddhaImg from '../assets/image 35.png';
+import mandalaImg from '../assets/image 36.png';
+import galleFort from '../assets/galle fort.png';
+import templeTooth from '../assets/daladamaligawa.png';
+import polonnaruwa from '../assets/Polonnaruwa.png';
+import sigiriya from '../assets/sigiriya.png';
+import avatarImg from '../assets/image 18.png';
+import ruwanweliseya from '../assets/Ruwansweliseya.png';
 
 import dm1 from '../dm1.png';
 import dm2 from '../dm2.png';
@@ -9,43 +18,90 @@ import dm5 from '../dm5.png';
 import dm6 from '../dm6.png';
 import dm7 from '../dm7.png';
 
+const heroSlides = [
+  {
+    id: 1,
+    image: dm1,
+    subtitle: "PATHTHIRIPPUWA (THE OCTAGON)",
+    desc: "Built during the reign of King Sri Vikrama Rajasinha, this iconic octagonal tower is a hallmark of Kandyan architecture. It was originally used by kings to address the public and is now a repository for ancient ola-leaf manuscripts."
+  },
+  {
+    id: 2,
+    image: dm2,
+    subtitle: "Vadahitina Maligawa (Inner Chamber)",
+    desc: ""
+  },
+  {
+    id: 3,
+    image: dm3,
+    subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
+    desc: ""
+  },
+  {
+    id: 4,
+    image: dm4,
+    subtitle: "Natha Devalaya",
+    desc: ""
+  },
+  {
+    id: 5,
+    image: dm7,
+    subtitle: "Walakulu Bamma (Cloud Wall)",
+    desc: ""
+  },
+  {
+    id: 6,
+    image: dm6,
+    subtitle: "Sri Dalada Museum",
+    desc: ""
+  },
+  {
+    id: 7,
+    image: dm5,
+    subtitle: "Makara Thorana (Dragon Arch)",
+    desc: ""
+  }
+];
+
 const TempleOfToothDetails = () => {
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
-        <div 
+      <section className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
+        <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('${dm1}')` }}
+          style={{ backgroundImage: `url('${heroSlides[0].image}')` }}
         >
           {/* Gradient to darken the left side for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
         </div>
-        
-        <div className="relative z-10 max-w-[800px]">
+
+        <div className="relative z-10 max-w-[800px] pt-12">
           <h1 className="font-serif text-white text-[45px] md:text-[64px] font-bold leading-[1.2] mb-1 uppercase tracking-wide">
             Temple Of The Tooth
           </h1>
-          <h2 className="font-serif text-white text-[20px] md:text-[32px] font-bold tracking-wide uppercase mb-6 opacity-95">
-            PATHIHIRIPPUWA (THE OCTAGON)
+          <h2 className="font-serif text-white text-[18px] md:text-[22px] font-bold tracking-wide uppercase mb-6 opacity-95">
+            {heroSlides[0].subtitle}
           </h2>
-          
-          <div className="h-[2px] w-full max-w-[774px] bg-gradient-to-r from-[#C89B3C] via-[#C89B3C]/80 to-transparent mb-6"></div>
-          
-          <p className="text-white font-sans font-bold text-[16px] md:text-[24px] leading-[1.4] max-w-[774px]">
-            Built during the reign of King Sri Vikrama Rajasinha, this iconic octagonal tower is a hallmark of Kandyan architecture. It was originally used by kings to address the public and is now a repository for ancient ola-leaf manuscripts.
+
+          <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
+            {heroSlides[0].desc}
           </p>
         </div>
       </section>
 
-      {/* Image Gallery */}
-      <section className="max-w-[1200px] mx-auto px-6 md:px-10 py-[60px] -mt-[60px] relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[dm2, dm3, dm4, dm5, dm6, dm7].map((img, idx) => (
-            <div key={idx} className="relative group overflow-hidden rounded-[12px] shadow-lg aspect-[4/3]">
-              <img src={img} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <span className="text-white font-serif text-lg">Temple Of The Tooth</span>
+      {/* Image Gallery Grid */}
+      <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {heroSlides.slice(1).map((slide) => (
+            <div
+              key={slide.id}
+              className="relative group overflow-hidden aspect-[16/9] bg-black"
+            >
+              <img src={slide.image} alt={slide.subtitle} className="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+                <span className="text-white font-serif text-[1.2rem] md:text-[1.4rem] font-bold uppercase truncate mb-0.5">Temple Of The Tooth</span>
+                <span className="text-white/90 font-sans text-[0.85rem] md:text-[0.95rem] truncate">{slide.subtitle}</span>
               </div>
             </div>
           ))}
@@ -54,267 +110,374 @@ const TempleOfToothDetails = () => {
 
       {/* Main Content Split */}
       <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-10">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-12">
+
           {/* Left Column - Main Details */}
-          <div className="space-y-16">
-            
+          <div className="space-y-16 relative overflow-hidden md:overflow-visible">
+            <img
+              src={buddhaImg}
+              alt=""
+              className="absolute right-[-20px] md:right-[-40px] bottom-[-20px] w-[300px] md:w-[450px] opacity-[0.15] pointer-events-none mix-blend-multiply"
+            />
+
             {/* Historical Significance */}
-            <div>
-              <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">OUR STORY</p>
-              <h3 className="font-serif text-[2rem] font-bold text-text-dark mb-4">Historical Significance</h3>
-              <p className="text-text-muted leading-[1.8] mb-4">
-                Sri Dalada Maligawa (Sacred Temple of the Tooth Relic) is a Buddhist temple in the city of Kandy, Sri Lanka. It is located in the royal palace complex of the former Kingdom of Kandy, which houses the relic of the tooth of the Buddha. Since ancient times, the relic has played an important role in local politics because it is believed that whoever holds the relic holds the governance of the country.
+            <div className="relative z-10">
+              <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">THE STORY</p>
+              <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
+              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+                Sri Dalada Maligawa enshrines a tooth relic of the Buddha, historically the palladium of Sinhalese kingship. The temple complex sits within the former royal palace of Kandy beside a serene lake.
+              </p>
+              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+                Each August the relic is honoured with the Esala Perahera, one of Asia's grandest processions of dancers, drummers and caparisoned elephants.
               </p>
             </div>
 
             {/* Historical Timeline */}
-            <div>
-              <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">TIMELINE</p>
-              <h3 className="font-serif text-[2rem] font-bold text-text-dark mb-6">Historical Timeline</h3>
-              
-              <div className="relative pl-6 border-l-2 border-gold/30 space-y-8">
+            <div className="relative z-10">
+              <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">THROUGH TIME</p>
+              <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-8">Historical Timeline</h3>
+
+              <div className="relative pl-8 border-l-[3px] border-[#E2DED5] space-y-10">
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full bg-[#C89B3C] border-[4px] border-[#F8F6F1]"></div>
+                  <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">1595</span>
+                  <h4 className="font-serif font-bold text-[#1f2937] text-[1.2rem] mb-1 uppercase tracking-wide">RELIC ARRIVES IN KANDY</h4>
+                  <p className="text-[#6b7280] text-[0.95rem]">The tooth relic is brought to the hill capital.</p>
+                </div>
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full bg-[#1C5F46] border-[4px] border-[#F8F6F1]"></div>
+                  <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">1687</span>
+                  <h4 className="font-serif font-bold text-[#1f2937] text-[1.2rem] mb-1 uppercase tracking-wide">TEMPLE BUILD</h4>
+                  <p className="text-[#6b7280] text-[0.95rem]">Construction of the main shrine begins.</p>
+                </div>
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full bg-[#1C5F46] border-[4px] border-[#F8F6F1]"></div>
+                  <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">1988</span>
+                  <h4 className="font-serif font-bold text-[#1f2937] text-[1.2rem] mb-1 uppercase tracking-wide">UNESCO INSCRIPTION</h4>
+                  <p className="text-[#6b7280] text-[0.95rem]">Inscribed as part of the Sacred City of Kandy.</p>
+                </div>
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full bg-[#C66846] border-[4px] border-[#F8F6F1]"></div>
+                  <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">1998</span>
+                  <h4 className="font-serif font-bold text-[#1f2937] text-[1.2rem] mb-1 uppercase tracking-wide">RESTORATION</h4>
+                  <p className="text-[#6b7280] text-[0.95rem]">The temple is restored after damage.</p>
+                </div>
+                <div className="relative">
+                  <div className="absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full bg-[#8D8579] border-[4px] border-[#F8F6F1]"></div>
+                  <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">TODAY</span>
+                  <h4 className="font-serif font-bold text-[#1f2937] text-[1.2rem] mb-1 uppercase tracking-wide">DAILY POOJA</h4>
+                  <p className="text-[#6b7280] text-[0.95rem]">Ceremonies are held three times a day.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Smart Travel Assistant */}
+          <div className="relative z-20">
+            <div className="bg-white rounded-[32px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] h-fit sticky top-24 border border-gray-50">
+              <h3 className="font-serif text-[1.5rem] font-bold text-[#1f2937] mb-3 uppercase tracking-wide">SMART TRAVEL ASSISTANT</h3>
+              <p className="text-[#6b7280] text-[0.95rem] mb-6">
+                You are currently in <span className="text-[#1C5F46] font-bold">Colombo</span>, here is everything you need for the journey
+              </p>
+
+              <div className="flex items-center text-[#C66846] font-bold text-[0.85rem] mb-8 gap-2">
+                <FiUsers size={16} /> High Crowd
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-8 gap-x-2 mb-10 pb-8 border-b border-[#E2DED5]">
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiMapPin className="text-[#1C5F46]" /> Distance</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">115 KM</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiClock className="text-[#1C5F46]" /> Travel Time</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">3 HR 10MIN</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937] text-center">2:30 PM</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">MILD</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Temperature</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">26°C</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Best Photography</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">5:30 PM</div>
+                </div>
+              </div>
+
+              <h4 className="font-bold text-[#1f2937] text-[1.1rem] mb-6">Nearby essentials</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
                 {[
-                  { year: '1595', title: 'Relic Arrives In Kandy', desc: 'The tooth relic is brought to Kandy by King Vimaladharmasuriya I.' },
-                  { year: '1603', title: 'Wars & Fires', desc: 'The temple is destroyed during Portuguese invasions.' },
-                  { year: '1798', title: 'English Occupation', desc: 'The octagonal Paththirippuwa is built.' },
-                  { year: '1998', title: 'Restoration', desc: 'The temple is restored after the LTTE bombing.' },
-                  { year: 'TODAY', title: 'Part Of UNESCO', desc: 'A major pilgrimage site and World Heritage location.' }
+                  { icon: FiCoffee, title: "Restaurants", subtitle: "The Empire Café" },
+                  { icon: FiHome, title: "Hotels", subtitle: "Queen's Hotel" },
+                  { icon: FiDroplet, title: "Fuel Stations", subtitle: "Ceypetco Kandy" },
+                  { icon: FiPlus, title: "Hospitals", subtitle: "Kandy General Hospital" },
+                  { icon: FiWind, title: "Washrooms", subtitle: "Temple Facilities" },
+                  { icon: FiTruck, title: "Bus Stops", subtitle: "Kandy Clock Tower" },
+                  { icon: FiMapPin, title: "Parking", subtitle: "Temple Public Parking" },
+                  { icon: FiMap, title: "Railway", subtitle: "Kandy Railway Station" }
                 ].map((item, idx) => (
-                  <div key={idx} className="relative">
-                    <div className="absolute -left-[33px] top-1 w-4 h-4 rounded-full bg-gold border-4 border-[#F8F6F1]"></div>
-                    <span className="text-gold font-bold text-[0.9rem] mb-1 block">{item.year}</span>
-                    <h4 className="font-serif font-bold text-text-dark text-[1.1rem] mb-1">{item.title}</h4>
-                    <p className="text-text-muted text-[0.9rem]">{item.desc}</p>
+                  <div key={idx} className="flex flex-col border border-[#E2DED5] rounded-[16px] p-3 transition-colors hover:border-[#1C5F46]/30 cursor-pointer">
+                    <div className="flex items-center gap-2 font-bold text-[0.85rem] text-[#1f2937] mb-1">
+                      <item.icon className="text-[#1C5F46]" size={16} /> {item.title}
+                    </div>
+                    <div className="text-[#6b7280] text-[0.75rem] truncate">{item.subtitle}</div>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Opening Hours & Contact Details */}
-            <div>
-              <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">PLAN YOUR VISIT</p>
-              <h3 className="font-serif text-[2rem] font-bold text-text-dark mb-6">Opening Hours & Contact Details</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h4 className="font-serif font-bold text-[1.2rem] mb-4 flex items-center gap-2"><FiClock className="text-gold"/> Opening Hours</h4>
-                  <p className="text-[0.9rem] text-text-muted mb-4">Open daily for devotees and visitors.</p>
-                  <ul className="space-y-3">
-                    <li className="flex justify-between text-[0.9rem]"><span>Early Morning</span> <strong>5:30 AM - 7:00 AM</strong></li>
-                    <li className="flex justify-between text-[0.9rem]"><span>Mid Morning</span> <strong>9:30 AM - 11:00 AM</strong></li>
-                    <li className="flex justify-between text-[0.9rem]"><span>Evening</span> <strong>6:30 PM - 8:00 PM</strong></li>
-                  </ul>
-                  <p className="text-[0.8rem] text-text-muted mt-4 italic">On Wednesdays, a special Nanumura Mangallaya (sacred bathing ceremony) is held.</p>
+              <div className="bg-[#F8F6F1] rounded-[16px] p-4 flex flex-col xl:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-[#1f2937] font-bold text-[0.9rem] whitespace-nowrap">
+                  <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
                 </div>
-
-                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                  <h4 className="font-serif font-bold text-[1.2rem] mb-4">Contact Details</h4>
-                  <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                      <FiMapPin className="text-gold mt-1 shrink-0" />
-                      <div>
-                        <strong className="block text-[0.9rem] text-text-dark">Address</strong>
-                        <span className="text-[0.85rem] text-text-muted">Sri Dalada Veediya, Kandy 20000, Sri Lanka</span>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <FiPhone className="text-gold mt-1 shrink-0" />
-                      <div>
-                        <strong className="block text-[0.9rem] text-text-dark">Information & Inquiries</strong>
-                        <span className="text-[0.85rem] text-text-muted">+94 812 234 226</span>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <FiInfo className="text-gold mt-1 shrink-0" />
-                      <div>
-                        <strong className="block text-[0.9rem] text-text-dark">Official Website</strong>
-                        <span className="text-[0.85rem] text-text-muted">sridaladamaligawa.lk</span>
-                      </div>
-                    </li>
-                  </ul>
+                <div className="flex flex-wrap gap-2 justify-end w-full">
+                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
+                    Police Emergency <span className="ml-1 text-[#1f2937]">119</span>
+                  </span>
+                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
+                    Ambulance / Suwaseriya <span className="ml-1 text-[#1f2937]">1990</span>
+                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Plan Your Route */}
-            <div>
-              <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">GETTING THERE</p>
-              <h3 className="font-serif text-[2rem] font-bold text-text-dark mb-6">Plan Your Route</h3>
-              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div className="h-[250px] bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
-                   <div className="absolute inset-0 bg-[url('https://maps.wikimedia.org/osm-intl/12/2967/1944.png')] bg-cover bg-center opacity-80"></div>
-                   <div className="bg-white/90 p-3 rounded-lg shadow-md relative z-10 flex items-center gap-2 font-bold text-deep-green">
-                     <FiMapPin /> Temple of the Tooth Relic
-                   </div>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-4 px-2">
-                  <div className="flex gap-2">
-                    <button className="px-4 py-1.5 bg-gray-100 rounded-full text-[0.85rem] font-medium text-text-dark hover:bg-gray-200">By Train</button>
-                    <button className="px-4 py-1.5 bg-gray-100 rounded-full text-[0.85rem] font-medium text-text-dark hover:bg-gray-200">By Bus</button>
-                  </div>
-                  <div className="flex gap-6 text-[0.9rem]">
-                    <div>
-                      <span className="block text-text-muted text-[0.75rem]">Distance (Colombo)</span>
-                      <strong>115 km</strong>
-                    </div>
-                    <div>
-                      <span className="block text-text-muted text-[0.75rem]">Estimated Time</span>
-                      <strong>3 hr 15 mins</strong>
-                    </div>
-                  </div>
-                  <button className="px-5 py-2 bg-deep-green text-white rounded-[6px] text-[0.9rem] font-medium hover:bg-gold transition-colors">
-                    Get Directions
-                  </button>
-                </div>
-              </div>
             </div>
-
-            {/* Travel Tips & Etiquette */}
-            <div>
-              <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">BEFORE YOU GO</p>
-              <h3 className="font-serif text-[2rem] font-bold text-text-dark mb-6">Travel Tips & Etiquette</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
-                    <FiCheck />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-text-dark mb-1">Dress Code</h4>
-                    <p className="text-[0.85rem] text-text-muted">Wear clothing that covers shoulders and knees. White is preferred.</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
-                    <FiCheck />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-text-dark mb-1">Photography</h4>
-                    <p className="text-[0.85rem] text-text-muted">Allowed in most areas, but strictly prohibited inside the inner shrine.</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
-                    <FiCheck />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-text-dark mb-1">Footwear</h4>
-                    <p className="text-[0.85rem] text-text-muted">Remove shoes before entering. A shoe counter is available outside.</p>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-xl p-5 shadow-sm border border-red-100 flex gap-4 items-start">
-                  <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
-                    <FiInfo />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-text-dark mb-1">Important</h4>
-                    <p className="text-[0.85rem] text-text-muted">Do not pose with your back towards Buddha statues.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right Column - Sidebar */}
+        </div>
+      </section>
+
+      {/* Opening Hours & Contact Details */}
+      <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] relative mt-16">
+        <div className="absolute inset-0 flex justify-center items-center pointer-events-none z-0 overflow-hidden">
+          <img src={mandalaImg} alt="" className="w-[500px] opacity-[0.06] mix-blend-multiply" />
+        </div>
+
+        <div className="relative z-10 mb-12">
+          <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">SRI DALADA MALIGAWA</p>
+          <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937]">Opening Hours & Contact Details</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
+          {/* Left Column */}
           <div>
-            <div className="bg-white rounded-xl p-6 shadow-xl sticky top-24 border border-gray-100">
-              <h3 className="font-serif font-bold text-[1.4rem] text-text-dark mb-4">Smart Travel Assistant</h3>
-              <p className="text-[0.85rem] text-text-muted mb-6">Plan your journey with real-time insights and AI-powered recommendations.</p>
-              
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-[#F8F6F1] rounded-lg p-3 text-center">
-                  <span className="block text-[0.7rem] text-text-muted uppercase tracking-wider mb-1">Weather</span>
-                  <strong className="text-text-dark">28°C</strong>
-                  <span className="block text-[0.75rem] text-text-muted">Sunny</span>
-                </div>
-                <div className="bg-[#F8F6F1] rounded-lg p-3 text-center">
-                  <span className="block text-[0.7rem] text-text-muted uppercase tracking-wider mb-1">Crowd Level</span>
-                  <strong className="text-orange-500">Moderate</strong>
-                  <span className="block text-[0.75rem] text-text-muted">Expect 20m wait</span>
-                </div>
-              </div>
+            <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full md:w-max pr-6 md:pr-16">
+              <h4 className="font-bold text-[1.2rem] text-[#1f2937] mb-1">Opening Hours</h4>
+              <p className="text-[#6b7280] text-[0.95rem]">Open Daily from 5.30AM to 8.30PM</p>
+            </div>
 
-              <h4 className="font-bold text-[0.9rem] text-text-dark mb-3">Popular User Q&A</h4>
-              <div className="space-y-2 mb-6">
-                {['Best time to visit?', 'Ticket prices for foreigners?', 'Is parking available?'].map((q, idx) => (
-                  <button key={idx} className="w-full text-left px-3 py-2 text-[0.85rem] text-text-dark bg-gray-50 hover:bg-gray-100 rounded-md transition-colors border border-gray-100">
-                    {q}
-                  </button>
-                ))}
-              </div>
+            <p className="text-[#4b5563] text-[0.95rem] mb-8 font-sans leading-relaxed">
+              The <span className="font-bold text-[#1f2937]">daily Thevava</span> (ritual services and drumming)<br />take place during the following windows
+            </p>
 
-              <div className="bg-[#F4F9F7] rounded-lg p-4 border border-[#DCEBE5]">
-                <h4 className="font-bold text-[#1F5E4E] text-[0.95rem] mb-2">Need a Guide?</h4>
-                <p className="text-[0.8rem] text-text-muted mb-3">Book an officially certified tour guide for a richer experience.</p>
-                <button className="w-full py-2 bg-[#1F5E4E] text-white rounded-md text-[0.9rem] font-medium hover:bg-gold transition-colors">
-                  Book Guide
-                </button>
+            <div className="relative pl-8 border-l-[3px] border-[#E2DED5] space-y-8 mb-10 ml-8">
+              <div className="relative">
+                <div className="absolute -left-[41px] top-1.5 w-[18px] h-[18px] rounded-full bg-[#C89B3C] border-[4px] border-[#F8F6F1]"></div>
+                <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-0.5">Early Morning</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">5:30 AM – 7:00 AM</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[41px] top-1.5 w-[18px] h-[18px] rounded-full bg-[#1C5F46] border-[4px] border-[#F8F6F1]"></div>
+                <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-0.5">Mid-Morning</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">9:30 AM – 11:00 AM</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[41px] top-1.5 w-[18px] h-[18px] rounded-full bg-[#C66846] border-[4px] border-[#F8F6F1]"></div>
+                <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-0.5">Evening</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">6:30 PM – 8:00 PM</p>
+              </div>
+            </div>
+
+            <p className="text-[#4b5563] text-[0.95rem] font-sans leading-relaxed pr-10">
+              On <span className="font-bold text-[#1f2937]">Wednesdays</span>, a special ritual called <span className="font-bold text-[#1f2937]">Nanumura Mangallaya</span> takes place, featuring a symbolic bathing of the sacred relic with a fragrant herbal preparation.
+            </p>
+          </div>
+
+          {/* Right Column */}
+          <div>
+            <div className="bg-white rounded-[24px] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 h-full">
+              <h4 className="font-bold text-[1.3rem] text-[#1f2937] mb-6">Contact Details</h4>
+
+              <div className="h-[1px] w-full bg-gradient-to-r from-gray-100 to-transparent mb-8"></div>
+
+              <div className="space-y-6">
+                <div>
+                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Address</h5>
+                  <p className="text-[#6b7280] text-[0.95rem]">Sri Dalada Maligawa, Kandy Lake Road, Kandy, Sri Lanka</p>
+                </div>
+                <div>
+                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Administration Division</h5>
+                  <p className="text-[#6b7280] text-[0.95rem]">+94 81 220 4867 (for prior appointments)</p>
+                </div>
+                <div>
+                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Emergency & WhatsApp Contact</h5>
+                  <p className="text-[#6b7280] text-[0.95rem]">+94 70 156 4347</p>
+                </div>
+                <div>
+                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Official Website</h5>
+                  <a href="#" className="text-[#4b5563] text-[0.95rem] underline underline-offset-4 decoration-gray-400 hover:text-gold transition-colors">Sri Dalada Maligawa Official Website</a>
+                </div>
+                <div>
+                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Donations Email</h5>
+                  <a href="mailto:donation@sridaladamaligawa.lk" className="text-[#6b7280] text-[0.95rem] hover:text-gold transition-colors">donation@sridaladamaligawa.lk</a>
+                </div>
               </div>
             </div>
           </div>
-          
+        </div>
+      </section>
+
+      {/* Plan Your Route */}
+      <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] pt-10 text-center">
+        <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">GETTING THERE</p>
+        <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Plan Your Route</h3>
+
+        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-start min-h-[400px] relative overflow-hidden text-left">
+          {/* Map Placeholder */}
+          <div className="absolute inset-0 bg-[#F4F9F7] z-0"></div>
+
+          <div className="relative z-10 bg-white shadow-md rounded-full px-4 py-2 flex items-center gap-2 font-bold text-[0.85rem] text-[#1f2937] mt-4 ml-4">
+            <FiMapPin className="text-[#1C5F46]" /> Temple of the Sacred Tooth Relic
+          </div>
+
+          <div className="relative z-10 mt-auto w-full flex flex-col md:flex-row items-center justify-between bg-white rounded-[16px] p-4 shadow-sm border border-gray-100">
+            <div className="flex gap-2 mb-4 md:mb-0">
+              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20">
+                <FiTruck /> Driving
+              </button>
+              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-white text-[#6b7280] border border-gray-200">
+                <FiMapPin /> Walking
+              </button>
+            </div>
+
+            <div className="flex gap-6 md:gap-10">
+              <div>
+                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Distance from Colombo</span>
+                <span className="font-bold text-[#1f2937]">115 km</span>
+              </div>
+              <div>
+                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Estimated driving time</span>
+                <span className="font-bold text-[#1f2937]">3 hr 10 min</span>
+              </div>
+            </div>
+
+            <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[0.9rem] font-bold bg-[#1C5F46] text-white shadow-md hover:bg-[#154633] transition-colors mt-4 md:mt-0">
+              <FiNavigation /> Navigate
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Travel Tips & Etiquette */}
+      <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] text-center">
+        <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">BEFORE YOU GO</p>
+        <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Travel Tips & Etiquette</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+
+          {/* Left Column Tips */}
+          <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-100 flex gap-4 items-start">
+              <FiInfo className="text-[#1C5F46] mt-1 shrink-0" size={24} />
+              <div>
+                <h5 className="font-bold text-[#1f2937] mb-1">Dress Code</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">Visitors are requested clothing should round from cover of shoulders, arms and knees.</p>
+              </div>
+            </div>
+            <div className="p-6 border-b border-gray-100 flex gap-4 items-start">
+              <FiCamera className="text-[#1C5F46] mt-1 shrink-0" size={24} />
+              <div>
+                <h5 className="font-bold text-[#1f2937] mb-1">Photography rules</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">Photography allowed except during certain rituals.</p>
+              </div>
+            </div>
+            <div className="p-6 flex gap-4 items-start">
+              <FiCheckCircle className="text-[#1C5F46] mt-1 shrink-0" size={24} />
+              <div>
+                <h5 className="font-bold text-[#1f2937] mb-1">Accessibility</h5>
+                <p className="text-[#6b7280] text-[0.9rem]">Ground-floor shrine areas are wheelchair accessible.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column Dos and Donts */}
+          <div className="space-y-4 flex flex-col">
+            <div className="bg-[#F4F9F7] border border-[#1C5F46] rounded-[24px] p-6 flex-1">
+              <h5 className="font-bold text-[#1C5F46] mb-4 flex items-center gap-2"><FiCheckCircle /> Do's</h5>
+              <ul className="space-y-3">
+                <li className="flex gap-2 text-[#4b5563] text-[0.9rem] items-start"><FiCheck className="text-[#1C5F46] shrink-0 mt-0.5" /> Attend on morning pooja</li>
+                <li className="flex gap-2 text-[#4b5563] text-[0.9rem] items-start"><FiCheck className="text-[#1C5F46] shrink-0 mt-0.5" /> Visit the world Buddhism museum</li>
+                <li className="flex gap-2 text-[#4b5563] text-[0.9rem] items-start"><FiCheck className="text-[#1C5F46] shrink-0 mt-0.5" /> Shoes must be removed and stored at the designated shoe counters before entering</li>
+              </ul>
+            </div>
+
+            <div className="bg-[#FFF6F5] border border-[#C66846] rounded-[24px] p-6 flex-1">
+              <h5 className="font-bold text-[#C66846] mb-4 flex items-center gap-2"><FiXCircle /> Don'ts</h5>
+              <ul className="space-y-3">
+                <li className="flex gap-2 text-[#4b5563] text-[0.9rem] items-start"><FiXCircle className="text-[#C66846] shrink-0 mt-0.5" size={14} /> Do not wear shorts or sleeveless tops</li>
+                <li className="flex gap-2 text-[#4b5563] text-[0.9rem] items-start"><FiXCircle className="text-[#C66846] shrink-0 mt-0.5" size={14} /> Do not point feet at shrines</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Visitors Reviews */}
-      <section className="bg-white py-[80px]">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-10">
-          <div className="text-center mb-10">
-            <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
-            <h3 className="font-serif text-[2rem] font-bold text-text-dark">Visitors Reviews</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-[#F8F6F1] rounded-xl p-6 border border-gray-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-                  <div>
-                    <h5 className="font-bold text-[0.95rem] text-text-dark">Sarah Jenkins</h5>
-                    <div className="flex gap-1 text-gold text-[0.8rem]">★★★★★</div>
-                  </div>
+      <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] text-center relative">
+        <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
+        <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-[24px] p-8 shadow-sm border border-gray-100">
+              <div className="flex items-center gap-4 mb-4">
+                <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
+                <div>
+                  <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
+                  <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
                 </div>
-                <p className="text-[0.85rem] text-text-muted italic leading-[1.6]">
-                  "A profoundly spiritual and beautiful place. The architecture is stunning and the evening ceremony was breathtaking. Highly recommend going early to avoid the crowds."
-                </p>
               </div>
-            ))}
-          </div>
+              <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
+              <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
+                "Impeccably documented. A vital reference for my fieldwork."
+              </p>
+            </div>
+          ))}
         </div>
       </section>
-      
+
       {/* Nearby Places */}
-      <section className="bg-[#F8F6F1] py-[80px]">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-10">
-          <div className="text-center mb-10">
-            <p className="text-gold text-[0.75rem] font-bold tracking-[2px] uppercase mb-2">OTHER HISTORICAL PLACES</p>
-            <h3 className="font-serif text-[2rem] font-bold text-text-dark">Nearby Places</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { img: dm3, title: 'Kandy Lake', dist: '0.2 km away' },
-              { img: dm4, title: 'Royal Palace', dist: '0.1 km away' },
-              { img: dm5, title: 'Udawatta Kele', dist: '1.5 km away' },
-              { img: dm6, title: 'Bahirawakanda', dist: '2.0 km away' }
-            ].map((place, idx) => (
-              <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm group cursor-pointer border border-gray-100">
-                <div className="h-[140px] overflow-hidden">
-                  <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                <div className="p-4">
-                  <h4 className="font-bold text-text-dark mb-1">{place.title}</h4>
-                  <p className="text-[0.8rem] text-text-muted mb-3">{place.dist}</p>
-                  <span className="text-deep-green font-medium text-[0.85rem] group-hover:text-gold transition-colors">Explore &rarr;</span>
+      <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] text-center">
+        <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">OTHER HERITAGE PLACES</p>
+        <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Nearby Places</h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 text-left">
+          {[
+            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province' },
+            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province' },
+            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' }
+          ].map((place, idx) => (
+            <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col">
+              <div className="h-[120px] overflow-hidden relative">
+                <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full cursor-pointer hover:bg-white text-gray-500 hover:text-red-500 transition-colors">
+                  <FiHeart size={14} />
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="p-3 flex flex-col flex-1">
+                <h4 className="font-bold text-[#1f2937] text-[0.85rem] mb-0.5 truncate">{place.title}</h4>
+                <p className="text-[0.7rem] text-[#6b7280] mb-3 truncate">{place.loc}</p>
+                <span className="text-[#1C5F46] font-bold text-[0.75rem] mt-auto cursor-pointer hover:text-[#C89B3C] transition-colors">View Details &rarr;</span>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
