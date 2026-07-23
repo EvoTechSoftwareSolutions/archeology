@@ -26,8 +26,8 @@ function App() {
         ></div>
 
         {/* Footer Main Content */}
-        <div className="relative z-10 max-w-[1200px] mx-auto px-10 pt-12 pb-8">
-          <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-10 pb-10">
+        <div className="relative z-10 max-w-[1200px] mx-auto px-4 pt-10 pb-8 sm:px-10 sm:pt-12">
+          <div className="grid grid-cols-1 gap-10 pb-10 md:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
 
             {/* Brand Column */}
             <div>
@@ -52,30 +52,32 @@ function App() {
               </div>
             </div>
 
-            {/* Explore Column */}
-            <div>
-              <div className="mb-5">
-                <h4 className="text-text-dark text-[1.05rem] font-bold">Explore</h4>
-                <div className="w-[40px] h-[2px] bg-gold mt-1.5 rounded-full"></div>
+            <div className="grid grid-cols-2 gap-6 md:contents">
+              {/* Explore Column */}
+              <div>
+                <div className="mb-5">
+                  <h4 className="text-text-dark text-[1.05rem] font-bold">Explore</h4>
+                  <div className="w-[40px] h-[2px] bg-gold mt-1.5 rounded-full"></div>
+                </div>
+                <ul className="list-none p-0 m-0 space-y-3">
+                  {['Collaboration', 'All Places', 'Our Mission', 'Contact Us'].map((item) => (
+                    <li key={item}><a href="#" className="text-text-muted hover:text-deep-green no-underline transition-colors text-[0.85rem] font-medium">{item}</a></li>
+                  ))}
+                </ul>
               </div>
-              <ul className="list-none p-0 m-0 space-y-3">
-                {['Collaboration', 'All Places', 'Our Mission', 'Contact Us'].map((item) => (
-                  <li key={item}><a href="#" className="text-text-muted hover:text-deep-green no-underline transition-colors text-[0.85rem] font-medium">{item}</a></li>
-                ))}
-              </ul>
-            </div>
 
-            {/* Resources Column */}
-            <div>
-              <div className="mb-5">
-                <h4 className="text-text-dark text-[1.05rem] font-bold">Resourses</h4>
-                <div className="w-[40px] h-[2px] bg-gold mt-1.5 rounded-full"></div>
+              {/* Resources Column */}
+              <div>
+                <div className="mb-5">
+                  <h4 className="text-text-dark text-[1.05rem] font-bold">Resources</h4>
+                  <div className="w-[40px] h-[2px] bg-gold mt-1.5 rounded-full"></div>
+                </div>
+                <ul className="list-none p-0 m-0 space-y-3">
+                  {['Privacy & Policy', 'Terms & Conditions', 'FAQs'].map((item) => (
+                    <li key={item}><a href="#" className="text-text-muted hover:text-deep-green no-underline transition-colors text-[0.85rem] font-medium">{item}</a></li>
+                  ))}
+                </ul>
               </div>
-              <ul className="list-none p-0 m-0 space-y-3">
-                {['Privacy & Policy', 'Terms & Conditions', 'FAQs'].map((item) => (
-                  <li key={item}><a href="#" className="text-text-muted hover:text-deep-green no-underline transition-colors text-[0.85rem] font-medium">{item}</a></li>
-                ))}
-              </ul>
             </div>
 
             {/* Stay Updated Column */}
@@ -101,11 +103,13 @@ function App() {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="relative z-10 bg-white py-4 px-10 border-t border-[#e8e8e8]">
-          <div className="max-w-[1200px] mx-auto grid grid-cols-3 items-center gap-4 text-text-dark text-[0.7rem] font-medium">
-            <span className="text-left">2026@HeritageSriLanka</span>
-            <a href="#" className="text-text-dark hover:text-deep-green no-underline transition-colors text-center">Login as a Admin</a>
-            <span className="text-right">Design by Evon Technology Software Solution (PVT) Ltd</span>
+        <div className="relative z-10 bg-white py-4 px-4 sm:px-10 border-t border-[#e8e8e8]">
+          <div className="max-w-[1200px] mx-auto flex flex-col items-center gap-2 text-center text-text-dark text-[0.72rem] font-medium leading-relaxed sm:grid sm:grid-cols-3 sm:items-center sm:gap-4 sm:text-left">
+            <div className="flex w-full items-center justify-between gap-2 sm:contents">
+              <span className="sm:text-left">2026@HeritageSriLanka</span>
+              <a href="#" className="text-text-dark hover:text-deep-green no-underline transition-colors">Login as a Admin</a>
+            </div>
+            <span className="sm:text-right">Design by Evon Technology Software Solution (PVT) Ltd</span>
           </div>
         </div>
       </footer>

@@ -42,9 +42,11 @@ const ContactSection = () => {
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
                 <FiPhone size={17} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Phone</h5>
-                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">+94 11 269 2816<br />+94 11 269 2817</p>
+                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5 break-words whitespace-normal sm:whitespace-nowrap">
+                  +94 11 269 2816<br />+94 11 269 2817
+                </p>
               </div>
             </div>
 
@@ -55,7 +57,9 @@ const ContactSection = () => {
               </div>
               <div className="min-w-0">
                 <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Email</h5>
-                <p className="text-gray-500 text-[0.72rem] leading-[1.3] truncate mt-0.5">info@archaeology.gov.lk</p>
+                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5 break-words whitespace-normal sm:whitespace-nowrap">
+                  info@archaeology.gov.lk
+                </p>
               </div>
             </div>
 
