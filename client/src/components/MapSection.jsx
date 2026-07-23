@@ -1,5 +1,7 @@
 import React from 'react';
-
+import ProvinceHeritageExplorer from "./ProvinceMap/ProvinceHeritageExplorer";
+   // ...
+   <ProvinceHeritageExplorer />
 const MapSection = () => {
   return (
     <section id="explore" className="relative py-[80px] px-[40px] overflow-hidden" style={{ backgroundColor: '#F8F6F1' }}>
@@ -29,7 +31,7 @@ const MapSection = () => {
           </div>
 
           {/* Sri Lanka Map */}
-
+     <ProvinceHeritageExplorer />
           
           {/* Using image 36.png assuming it's the province map based on size, or fallback to an SVG placeholder if needed. */}
           <div className="relative z-20 w-[450px] max-w-full">
