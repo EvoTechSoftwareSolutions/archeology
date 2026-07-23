@@ -15,12 +15,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "A cliffside Hindu shrine in Trincomalee overlooking one of the world's finest natural harbours.",
+        anchorXPct: 0.55,
+        anchorYPct: 0.15,
       },
       {
         name: "Batticaloa Dutch Fort",
         image: "/images/heritage/icons/fort.svg",
         description:
           "A lagoon-side fort, near the bridge where the region's famed 'singing fish' are said to be heard.",
+        anchorXPct: 0.45,
+        anchorYPct: 0.6,
       },
     ],
   },
@@ -38,12 +42,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "Jaffna's grandest Hindu temple, its golden gopuram anchoring centuries of Tamil tradition.",
+        anchorXPct: 0.35,
+        anchorYPct: 0.12,
       },
       {
         name: "Jaffna Fort",
         image: "/images/heritage/icons/fort.svg",
         description:
           "A star-shaped fort begun by the Portuguese in 1618, later expanded by the Dutch.",
+        anchorXPct: 0.25,
+        anchorYPct: 0.18,
       },
     ],
   },
@@ -61,12 +69,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "The 'Silver Temple', built where a 2nd-century BCE silver ore find helped fund Anuradhapura's great stupa.",
+        anchorXPct: 0.65,
+        anchorYPct: 0.7,
       },
       {
         name: "Wilpattu National Park",
         image: "/images/heritage/icons/wildlife.svg",
         description:
           "Sri Lanka's oldest and largest national park, named for its many natural lakes, or 'villus'.",
+        anchorXPct: 0.25,
+        anchorYPct: 0.25,
       },
     ],
   },
@@ -84,12 +96,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/museum.svg",
         description:
           "Sri Lanka's largest museum, built in 1877, holding royal regalia and centuries of art and archaeology.",
+        anchorXPct: 0.35,
+        anchorYPct: 0.55,
       },
       {
         name: "Kelaniya Raja Maha Vihara",
         image: "/images/heritage/icons/temple.svg",
         description:
           "A riverside temple ranked among the sixteen most sacred Buddhist sites on the island.",
+        anchorXPct: 0.45,
+        anchorYPct: 0.25,
       },
     ],
   },
@@ -107,12 +123,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/fort.svg",
         description:
           "A fortified colonial town raised by the Portuguese and rebuilt by the Dutch in the 17th century.",
+        anchorXPct: 0.15,
+        anchorYPct: 0.55,
       },
       {
         name: "Weherahena Temple",
         image: "/images/heritage/icons/temple.svg",
         description:
           "A Matara cave temple known for its tunnel of painted panels beneath a giant seated Buddha.",
+        anchorXPct: 0.55,
+        anchorYPct: 0.6,
       },
     ],
   },
@@ -130,12 +150,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "Ratnapura's shrine to the guardian deity of Sabaragamuwa, set amid the island's gem-mining country.",
+        anchorXPct: 0.3,
+        anchorYPct: 0.6,
       },
       {
         name: "Pinnawala Elephant Orphanage",
         image: "/images/heritage/icons/wildlife.svg",
         description:
           "A riverside sanctuary in Kegalle raising and caring for orphaned and injured elephants.",
+        anchorXPct: 0.4,
+        anchorYPct: 0.2,
       },
     ],
   },
@@ -153,12 +177,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "A Badulla stupa said to predate the arrival of Buddhism's most famous relics on the island.",
+        anchorXPct: 0.5,
+        anchorYPct: 0.45,
       },
       {
         name: "Dunhinda Falls",
         image: "/images/heritage/icons/nature.svg",
         description:
           "A misting cascade near Badulla, one of the most photographed waterfalls in the hill country.",
+        anchorXPct: 0.55,
+        anchorYPct: 0.35,
       },
     ],
   },
@@ -176,12 +204,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "The UNESCO-listed shrine in Kandy that enshrines a tooth relic of the Buddha.",
+        anchorXPct: 0.55,
+        anchorYPct: 0.45,
       },
       {
         name: "Sigiriya Rock Fortress",
         image: "/images/heritage/icons/fort.svg",
         description:
           "A 5th-century rock citadel rising 200 metres above the plain, ringed by frescoes and water gardens.",
+        anchorXPct: 0.75,
+        anchorYPct: 0.15,
       },
     ],
   },
@@ -199,12 +231,16 @@ export const provinces: Province[] = [
         image: "/images/heritage/icons/temple.svg",
         description:
           "A gleaming white stupa at the heart of Sri Lanka's first ancient capital, a UNESCO World Heritage city.",
+        anchorXPct: 0.25,
+        anchorYPct: 0.45,
       },
       {
         name: "Gal Vihara, Polonnaruwa",
         image: "/images/heritage/icons/statue.svg",
         description:
           "Four monumental Buddha figures cut directly from one long granite outcrop in the 12th century.",
+        anchorXPct: 0.65,
+        anchorYPct: 0.55,
       },
     ],
   },

@@ -3,6 +3,13 @@ export interface HistoricalPlace {
   /** Path to a small thumbnail image, e.g. "/images/heritage/icons/temple.svg" */
   image: string;
   description: string;
+  /**
+   * Marker position as a 0–1 fraction of the province's bounding box,
+   * e.g. { x: 0.5, y: 0.5 } is the dead centre of the province.
+   * These are approximate — nudge them to taste.
+   */
+  anchorXPct: number;
+  anchorYPct: number;
 }
 
 export interface Bbox {

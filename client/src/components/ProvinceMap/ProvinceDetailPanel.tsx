@@ -1,6 +1,5 @@
 import type { Province } from "../../types/province";
-import ProvinceOutline from "./ProvinceOutline";
-import HistoricalPlaceCard from "./HistoricalPlaceCard";
+import Province3DView from "./Province3DView";
 
 interface Props {
   province: Province | null;
@@ -10,7 +9,7 @@ interface Props {
 const ProvinceDetailPanel = ({ province, onClose }: Props) => {
   return (
     <div
-      className={`flex w-1/2 flex-shrink-0 flex-col items-center gap-4 px-4 transition-all duration-500 ease-out ${
+      className={`flex w-1/2 flex-shrink-0 flex-col items-center gap-3 px-4 transition-all duration-500 ease-out ${
         province
           ? "translate-x-0 opacity-100"
           : "pointer-events-none translate-x-10 opacity-0"
@@ -30,16 +29,11 @@ const ProvinceDetailPanel = ({ province, onClose }: Props) => {
             </button>
           </div>
 
-          <ProvinceOutline province={province} />
+          <p className="font-mono text-xs uppercase tracking-widest text-[#8A7550]">
+            Tap a marker to see the heritage site
+          </p>
 
-          <div className="flex w-full flex-col gap-3">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-[#8A7550]">
-              Historical Places
-            </h3>
-            {province.historicalPlaces.map((place) => (
-              <HistoricalPlaceCard key={place.name} place={place} />
-            ))}
-          </div>
+          <Province3DView province={province} />
         </>
       )}
     </div>
