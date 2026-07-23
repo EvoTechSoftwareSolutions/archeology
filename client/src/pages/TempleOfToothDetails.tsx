@@ -1,13 +1,13 @@
 
 
-import { FiClock, FiMapPin, FiPhone, FiMail, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../assets/image 35.png';
 import mandalaImg from '../assets/image 36.png';
-import galleFort from '../assets/galle fort.png';
-import templeTooth from '../assets/daladamaligawa.png';
-import polonnaruwa from '../assets/Polonnaruwa.png';
-import sigiriya from '../assets/sigiriya.png';
-import avatarImg from '../assets/image 18.png';
+import galleFort from '../assets/places-gallefort.png';
+import templeTooth from '../assets/places-daladamaligawa.png';
+import polonnaruwa from '../assets/polonnaruwa.png';
+import sigiriya from '../assets/places-sigiriya.png';
+import avatarImg from '../assets/avatar.png';
 import ruwanweliseya from '../assets/Ruwansweliseya.png';
 
 import dm1 from '../dm1.png';
@@ -92,11 +92,11 @@ const TempleOfToothDetails = () => {
 
       {/* Image Gallery Grid */}
       <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x">
           {heroSlides.slice(1).map((slide) => (
             <div
               key={slide.id}
-              className="relative group overflow-hidden aspect-[16/9] bg-black"
+              className="relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start"
             >
               <img src={slide.image} alt={slide.subtitle} className="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
@@ -432,9 +432,9 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 text-left pb-4 md:pb-0 snap-x">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-[24px] p-8 shadow-sm border border-gray-100">
+            <div key={i} className="bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-auto snap-start">
               <div className="flex items-center gap-4 mb-4">
                 <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
                 <div>
@@ -456,7 +456,7 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">OTHER HERITAGE PLACES</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Nearby Places</h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 text-left">
+        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-5 gap-4 text-left pb-4 md:pb-0 snap-x">
           {[
             { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province' },
             { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
@@ -464,8 +464,8 @@ const TempleOfToothDetails = () => {
             { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province' },
             { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' }
           ].map((place, idx) => (
-            <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col">
-              <div className="h-[120px] overflow-hidden relative">
+            <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
+              <div className="h-[150px] md:h-[120px] overflow-hidden relative">
                 <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full cursor-pointer hover:bg-white text-gray-500 hover:text-red-500 transition-colors">
                   <FiHeart size={14} />
