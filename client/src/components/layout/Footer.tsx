@@ -20,9 +20,9 @@ const Footer: React.FC = () => {
 
       {/* Main Content */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-10 pt-12 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-10 pb-10">
+        <div className="grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-6 md:gap-10 pb-10">
           {/* Brand */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <img
               src="/images/LOGO.png"
               alt="Sri Lanka Heritage"
@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Explore */}
-          <div>
+          <div className="col-span-1">
             <h4 className="text-lg font-bold mb-4">Explore</h4>
 
             <ul className="space-y-3">
@@ -91,7 +91,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Resources */}
-          <div>
+          <div className="col-span-1">
             <h4 className="text-lg font-bold mb-4">Resources</h4>
 
             <ul className="space-y-3">
@@ -102,7 +102,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Newsletter */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="text-lg font-bold mb-4">Stay Updated</h4>
 
             <p className="text-sm mb-4">
@@ -133,15 +133,15 @@ const Footer: React.FC = () => {
 
       {/* Bottom */}
       <div className="relative z-10 bg-white border-t py-4 px-10">
-        <div className="max-w-[1200px] mx-auto grid md:grid-cols-3 gap-4 text-xs">
-          <span>© 2026 HeritageSriLanka</span>
+        <div className="max-w-[1200px] mx-auto grid grid-cols-2 gap-2 text-[10px] md:grid-cols-3 md:text-xs">
+          <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
 
-          <div className="text-center">
+          <div className="text-center whitespace-nowrap">
             <Link to="/admin">Login as Admin</Link>
           </div>
 
-          <span className="text-right">
-            Design by Evon Technology Software Solutions (PVT) Ltd
+          <span className="col-span-2 text-center whitespace-nowrap md:col-span-1 md:text-right">
+            Design by Design by Evon Technology Software Solution (PVT) Ltd
           </span>
         </div>
       </div>
