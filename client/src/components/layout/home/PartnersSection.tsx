@@ -5,7 +5,7 @@ const PartnersSection = () => {
     <section className="bg-[#F8F6F1] py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden">
       {/* Background Image / Buddha Outline */}
       <img 
-        src="/images/image 35.png" 
+        src={partnerImg} 
         alt="" 
         className="absolute left-[10px] top-[20px] h-full max-h-[370px] object-contain object-left-bottom opacity-80 pointer-events-none z-0" 
       />
@@ -32,7 +32,7 @@ const PartnersSection = () => {
           {/* Card 1: Royal College - Colombo */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
             <img 
-              src="/images/image 2.png" 
+              src={royalCollegeLogo} 
               alt="Royal College Colombo" 
               className="w-[85px] h-[85px] object-contain shrink-0" 
             />
@@ -49,7 +49,7 @@ const PartnersSection = () => {
           {/* Card 2: Department of Archaeology */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
             <img 
-              src="/images/archelogicaldeptlogo.png" 
+              src={archDeptLogo} 
               alt="Department of Archaeology" 
               className="w-[85px] h-[85px] object-contain shrink-0" 
             />
@@ -66,7 +66,7 @@ const PartnersSection = () => {
           {/* Card 3: HejCeylon */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
             <img 
-              src="/images/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png" 
+              src={hejCeylonLogo} 
               alt="HejCeylon" 
               className="w-[85px] h-[85px] object-contain shrink-0" 
             />

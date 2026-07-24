@@ -1,8 +1,8 @@
-import HeroSection from '../components/HeroSection';
-import PartnersSection from '../components/PartnersSection';
-import MapSection from '../components/MapSection';
-import FeaturesSection from '../components/FeaturesSection';
-import ContactSection from '../components/ContactSection';
+import HeroSection from '../components/layout/home/HeroSection';
+import PartnersSection from '../components/layout/home/PartnersSection';
+import MapSection from '../components/layout/home/MapSection';
+import FeaturesSection from '../components/layout/home/FeaturesSection';
+import ContactSection from '../components/layout/home/ContactSection';
 
 const Home = () => {
   return (

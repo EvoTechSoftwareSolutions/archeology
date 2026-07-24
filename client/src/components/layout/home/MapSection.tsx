@@ -27,7 +27,7 @@ const MapSection = () => {
           
           {/* Compass Image */}
           <div className="absolute left-[5%] top-[10%]">
-            <img src="/images/COMPASS.png" alt="Compass" className="w-[60px] md:w-[100px] h-[60px] md:h-[100px] object-contain drop-shadow-xl" />
+            <img src={compassImg} alt="Compass" className="w-[60px] md:w-[100px] h-[60px] md:h-[100px] object-contain drop-shadow-xl" />
           </div>
 
           {/* Sri Lanka Map Interactive Area */}

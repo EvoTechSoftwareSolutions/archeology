@@ -1,10 +1,14 @@
 import { FiSend, FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
+import halfImg from '../../../assets/half.png';
+import archDeptLogo from '../../../assets/archelogicaldeptlogo.png';
+import royalCollegeLogo from '../../../assets/image 2.png';
+import hejCeylonLogo from '../../../assets/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png';
 
 const ContactSection = () => {
   return (
     <section className="py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden" id="contact-section" style={{ backgroundColor: '#F8F6F1' }}>
       {/* Background Decorative Graphic */}
-      <img src="/images/half.png" className="absolute left-0 top-0 h-full opacity-60 z-0 pointer-events-none object-contain object-left" alt="" />
+      <img src={halfImg} className="absolute left-0 top-0 h-full opacity-60 z-0 pointer-events-none object-contain object-left" alt="" />
 
       <div className="max-w-[1140px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 relative z-10 items-start">
 
@@ -84,9 +88,9 @@ const ContactSection = () => {
             </div>
             
             <div className="flex items-center gap-8 flex-wrap">
-              <img src="/images/archelogicaldeptlogo.png" className="h-[80px] md:h-[90px] w-auto object-contain transition-transform hover:scale-105" alt="Department of Archaeology" />
-              <img src="/images/image 2.png" className="h-[80px] md:h-[90px] w-auto object-contain transition-transform hover:scale-105" alt="Royal College Colombo" />
-              <img src="/images/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png" className="h-[75px] md:h-[85px] w-auto object-contain transition-transform hover:scale-105" alt="HejCeylon" />
+              <img src={archDeptLogo} className="h-[80px] md:h-[90px] w-auto object-contain transition-transform hover:scale-105" alt="Department of Archaeology" />
+              <img src={royalCollegeLogo} className="h-[80px] md:h-[90px] w-auto object-contain transition-transform hover:scale-105" alt="Royal College Colombo" />
+              <img src={hejCeylonLogo} className="h-[75px] md:h-[85px] w-auto object-contain transition-transform hover:scale-105" alt="HejCeylon" />
             </div>
           </div>
 
