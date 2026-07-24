@@ -29,15 +29,15 @@ const AdminLogin = () => {
       </div>
 
       {/* Right side: Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 relative">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 relative bg-[#F8F6F1]">
         
         {/* Top Logo */}
-        <div className="absolute top-16">
+        <div className="absolute top-5">
           <img src={logo} alt="Sri Lanka Heritage Logo" className="h-[4.5rem] object-contain" />
         </div>
 
         {/* Login Card */}
-        <div className="w-full max-w-[28rem] bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-12 mt-20">
+        <div className="w-full max-w-[28rem] bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-4 mt-20">
           
           {/* Admin Login Header */}
           <div className="flex items-center justify-center mb-8">
@@ -126,17 +126,20 @@ const AdminLogin = () => {
 
           {/* Copyright */}
           <div className="mt-8 pt-4 text-center">
-            <p className="text-[11px] text-gray-400 font-['Inter']">
+            <p className="text-[7px] text-gray-400 font-['Inter']">
               @2026 Heritage Sri Lanka - All Right Reserved
             </p>
           </div>
+
+          {/* Back to Website Link */}
+          
+        <div className="mt-2 ml-25 text-[13px] text-gray-800 font-['Inter'] font-semibold">
+          Login To Main Website - <Link to="/" className="text-[#275949] hover:underline font-bold">Click Here</Link>
+        </div>
           
         </div>
 
-        {/* Back to Website Link */}
-        <div className="mt-8 text-[13px] text-gray-800 font-['Inter'] font-semibold">
-          Login To Main Website - <Link to="/" className="text-[#275949] hover:underline font-bold">Click Here</Link>
-        </div>
+        
 
       </div>
     </div>
