@@ -1,22 +1,22 @@
 
 
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
-import buddhaImg from '../assets/image 35.png';
-import mandalaImg from '../assets/image 36.png';
-import galleFort from '../assets/places-gallefort.png';
-import templeTooth from '../assets/places-daladamaligawa.png';
-import polonnaruwa from '../assets/polonnaruwa.png';
-import sigiriya from '../assets/places-sigiriya.png';
-import avatarImg from '../assets/avatar.png';
-import ruwanweliseya from '../assets/Ruwansweliseya.png';
+import buddhaImg from '../../assets/image 35.png';
+import mandalaImg from '../../assets/image 36.png';
+import galleFort from '../../assets/places-gallefort.png';
+import templeTooth from '../../assets/places-daladamaligawa.png';
+import polonnaruwa from '../../assets/polonnaruwa.png';
+import sigiriya from '../../assets/places-sigiriya.png';
+import avatarImg from '../../assets/avatar.png';
+import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 
-import dm1 from '../dm1.png';
-import dm2 from '../dm2.png';
-import dm3 from '../dm3.png';
-import dm4 from '../dm4.png';
-import dm5 from '../dm5.png';
-import dm6 from '../dm6.png';
-import dm7 from '../dm7.png';
+import dm1 from '../../assets/dm1.png';
+import dm2 from '../../assets/dm2.png';
+import dm3 from '../../assets/dm3.png';
+import dm4 from '../../assets/dm4.png';
+import dm5 from '../../assets/dm5.png';
+import dm6 from '../../assets/dm6.png';
+import dm7 from '../../assets/dm7.png';
 
 const heroSlides = [
   {
