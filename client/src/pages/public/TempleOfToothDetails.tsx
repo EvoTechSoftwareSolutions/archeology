@@ -1,11 +1,12 @@
 
 
+import { useState } from 'react';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
-import polonnaruwa from '../../assets/polonnaruwa.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import sigiriya from '../../assets/places-sigiriya.png';
 import avatarImg from '../../assets/avatar.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
@@ -64,6 +65,13 @@ const heroSlides = [
 ];
 
 const TempleOfToothDetails = () => {
+  const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=Temple+of+the+Sacred+Tooth+Relic,+Kandy,+Sri+Lanka&travelmode=${routeMode}`;
+  const routeInfo = routeMode === 'driving'
+    ? { distance: '115 km', time: '3 hr 10 min' }
+    : { distance: '115 km', time: '22 hr 45 min' };
+
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
       {/* Hero Section */}
@@ -338,19 +346,32 @@ const TempleOfToothDetails = () => {
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Plan Your Route</h3>
 
         <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-start min-h-[400px] relative overflow-hidden text-left">
-          {/* Map Placeholder */}
-          <div className="absolute inset-0 bg-[#F4F9F7] z-0"></div>
-
-          <div className="relative z-10 bg-white shadow-md rounded-full px-4 py-2 flex items-center gap-2 font-bold text-[0.85rem] text-[#1f2937] mt-4 ml-4">
-            <FiMapPin className="text-[#1C5F46]" /> Temple of the Sacred Tooth Relic
+          <div className="absolute inset-0 z-0 bg-[#F4F9F7]">
+            <iframe
+              title="Temple of the Sacred Tooth Relic Map"
+              src="https://maps.google.com/maps?q=Temple%20of%20the%20Sacred%20Tooth%20Relic%2C%20Kandy%2C%20Sri%20Lanka&output=embed"
+              className="w-full h-full border-0"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
 
+          
           <div className="relative z-10 mt-auto w-full flex flex-col md:flex-row items-center justify-between bg-white rounded-[16px] p-4 shadow-sm border border-gray-100">
             <div className="flex gap-2 mb-4 md:mb-0">
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20">
+              <button
+                type="button"
+                onClick={() => setRouteMode('driving')}
+                className={`flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold transition-colors ${routeMode === 'driving' ? 'bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20' : 'bg-white text-[#6b7280] border border-gray-200'}`}
+              >
                 <FiTruck /> Driving
               </button>
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-white text-[#6b7280] border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setRouteMode('walking')}
+                className={`flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold transition-colors ${routeMode === 'walking' ? 'bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20' : 'bg-white text-[#6b7280] border border-gray-200'}`}
+              >
                 <FiMapPin /> Walking
               </button>
             </div>
@@ -358,15 +379,19 @@ const TempleOfToothDetails = () => {
             <div className="flex gap-6 md:gap-10">
               <div>
                 <span className="block text-[#6b7280] text-[0.75rem] uppercase">Distance from Colombo</span>
-                <span className="font-bold text-[#1f2937]">115 km</span>
+                <span className="font-bold text-[#1f2937]">{routeInfo.distance}</span>
               </div>
               <div>
-                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Estimated driving time</span>
-                <span className="font-bold text-[#1f2937]">3 hr 10 min</span>
+                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Estimated {routeMode === 'driving' ? 'driving' : 'walking'} time</span>
+                <span className="font-bold text-[#1f2937]">{routeInfo.time}</span>
               </div>
             </div>
 
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[0.9rem] font-bold bg-[#1C5F46] text-white shadow-md hover:bg-[#154633] transition-colors mt-4 md:mt-0">
+            <button
+              type="button"
+              onClick={() => window.open(directionsUrl, '_blank')}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[0.9rem] font-bold bg-[#1C5F46] text-white shadow-md hover:bg-[#154633] transition-colors mt-4 md:mt-0"
+            >
               <FiNavigation /> Navigate
             </button>
           </div>
