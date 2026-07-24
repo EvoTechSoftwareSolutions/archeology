@@ -16,6 +16,7 @@ import Home from "../pages/public/Home";
 import Dashboard from "../pages/admin/Dashboard";
 import TempleOfToothDetails from "../pages/public/TempleOfToothDetails";
 import AdminLogin from "../pages/admin/AdminLogin";
+import HistoricalPlaces from "../pages/admin/HistoricalPlaces";
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+      },
+      {
+        path: "heritage",
+        element: <HistoricalPlaces />,
       },
     ],
   },
