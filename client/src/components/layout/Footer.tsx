@@ -1,4 +1,5 @@
 import React from "react";
+import { FaFacebookF, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
@@ -41,9 +42,7 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512">
-                  <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8z" />
-                </svg>
+                <FaInstagram className="w-4 h-4" />
               </a>
 
               {/* Facebook */}
@@ -51,9 +50,7 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 320 512">
-                  <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
-                </svg>
+                <FaFacebookF className="w-4 h-4" />
               </a>
 
               {/* YouTube */}
@@ -61,9 +58,7 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 576 512">
-                  <path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" />
-                </svg>
+                <FaYoutube className="w-4 h-4" />
               </a>
 
               {/* TikTok */}
@@ -71,9 +66,7 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512">
-                  <path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0h88a121.18 121.18 0 0 0 1.86 22.17A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z" />
-                </svg>
+                <FaTiktok className="w-4 h-4" />
               </a>
             </div>
           </div>
