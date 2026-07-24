@@ -16,6 +16,9 @@
   --font-poppins: "Poppins", sans-serif;
 }
 
+.font-mono {
+  font-family: "JetBrains Mono", monospace;
+}
 @utility custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -44,4 +47,14 @@ body {
   background-color: var(--color-cream);
   color: var(--color-text-dark);
   overflow-x: hidden;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
