@@ -9,12 +9,12 @@ const Footer: React.FC = () => {
     >
       {/* Decorative Background */}
       <div
-        className="absolute inset-0 z-0 opacity-80 pointer-events-none"
+        className="absolute left-1/2 bottom-[70px] z-0 h-[110px] w-[92%] max-w-[420px] -translate-x-1/2 opacity-100 pointer-events-none md:bottom-0 md:h-[160px]"
         style={{
           backgroundImage: "url('/images/Group_47.png')",
-          backgroundRepeat: "repeat-x",
-          backgroundPosition: "center 75%",
-          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center bottom",
+          backgroundSize: "100% auto",
         }}
       />
 
