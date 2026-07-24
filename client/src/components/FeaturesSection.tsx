@@ -1,14 +1,14 @@
-import React from 'react';
+
 
 const FeaturesSection = () => {
   return (
-    <section className="bg-cream py-[90px] px-10 text-center relative overflow-hidden" id="features-section">
+    <section className="bg-cream py-[60px] md:py-[90px] px-4 md:px-10 text-center relative overflow-hidden" id="features-section">
       <img src="/images/temple.png" className="absolute left-[-10px] bottom-[60px] h-[250px] opacity-80 z-0 pointer-events-none" alt="" />
       <img src="/images/image 37.png" className="absolute right-0 top-2.5 h-[250px] opacity-80 z-0 pointer-events-none" alt="" />
       
       <div className="relative z-10 max-w-[1200px] mx-auto">
         <p className="text-gold text-[0.72rem] font-bold tracking-[3px] uppercase mb-3">WHY HERITAGE MATTERS</p>
-        <h2 className="text-text-dark text-[2.2rem] mb-[50px] font-serif font-bold">Preserve Today, Inspire Tomorrow</h2>
+        <h2 className="text-text-dark text-[1.8rem] md:text-[2.2rem] mb-[50px] font-serif font-bold">Preserve Today, Inspire Tomorrow</h2>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-0 bg-transparent">
           <div className="bg-transparent py-5 px-[15px] text-center border-b sm:border-b-0 sm:border-r border-black/8">
