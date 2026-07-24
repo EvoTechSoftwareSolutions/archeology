@@ -15,6 +15,7 @@ import Home from "../pages/public/Home";
 // Admin Pages
 import Dashboard from "../pages/admin/Dashboard";
 import TempleOfToothDetails from "../pages/public/TempleOfToothDetails";
+import AdminLogin from "../pages/admin/AdminLogin";
 
 
 const router = createBrowserRouter([
@@ -32,7 +33,10 @@ const router = createBrowserRouter([
       },
     ],
   },
-
+  {
+    path: "/admin/login",
+    element: <AdminLogin />,
+  },
   {
     path: "/admin",
     element: <AdminLayout />,
