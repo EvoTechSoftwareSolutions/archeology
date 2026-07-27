@@ -8,14 +8,14 @@ const Footer: React.FC = () => {
       className="relative overflow-hidden border-t-[3px] border-[#2a4a3a] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] rounded-t-[10px]"
       style={{ backgroundColor: "#F8F6F1" }}
     >
-      {/* Decorative Background */}
+     {/* Decorative Background */}
       <div
-        className="absolute left-1/2 bottom-[70px] z-0 h-[110px] w-[92%] max-w-[420px] -translate-x-1/2 opacity-100 pointer-events-none md:bottom-0 md:h-[160px]"
+        className="absolute inset-0 z-0 opacity-80 pointer-events-none"
         style={{
           backgroundImage: "url('/images/Group_47.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center bottom",
-          backgroundSize: "100% auto",
+          backgroundRepeat: "repeat-x",
+          backgroundPosition: "center 75%",
+          backgroundSize: "contain",
         }}
       />
 
