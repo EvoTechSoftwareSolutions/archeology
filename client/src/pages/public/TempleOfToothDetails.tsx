@@ -1,7 +1,7 @@
 
 
 import { useState, useRef } from 'react';
-import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
@@ -70,7 +70,7 @@ const TempleOfToothDetails = () => {
 
   // Selected slide drives the hero section
   const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
-  const gallerySlides = heroSlides.slice(1);
+  
   const heroRef = useRef<HTMLElement>(null);
 
   const handleSelectSlide = (slide: typeof heroSlides[0]) => {
@@ -483,22 +483,31 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 text-left pb-4 md:pb-0 snap-x">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-auto snap-start">
-              <div className="flex items-center gap-4 mb-4">
-                <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
-                <div>
-                  <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
-                  <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
+        <div className="overflow-hidden rounded-[24px]">
+          <div className="review-carousel-track flex gap-6 text-left pb-4">
+            {[1, 2, 3, 1, 2, 3].map((i, index) => {
+              const isDuplicate = index >= 3;
+              return (
+                <div
+                  key={`${i}-${index}`}
+                  aria-hidden={isDuplicate}
+                  className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
+                    <div>
+                      <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
+                      <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
+                  <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
+                    "Impeccably documented. A vital reference for my fieldwork."
+                  </p>
                 </div>
-              </div>
-              <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
-              <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
-                "Impeccably documented. A vital reference for my fieldwork."
-              </p>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </section>
 

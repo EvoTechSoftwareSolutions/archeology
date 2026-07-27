@@ -10,12 +10,10 @@ const Footer: React.FC = () => {
     >
      {/* Decorative Background */}
       <div
-        className="absolute inset-0 z-0 opacity-80 pointer-events-none"
+        className="absolute inset-0 z-0 opacity-80 pointer-events-none footer-decorative-bg"
         style={{
           backgroundImage: "url('/images/Group_47.png')",
           backgroundRepeat: "repeat-x",
-          backgroundPosition: "center 75%",
-          backgroundSize: "contain",
         }}
       />
 
@@ -75,11 +73,11 @@ const Footer: React.FC = () => {
           <div className="col-span-1">
             <h4 className="text-lg font-bold mb-4">Explore</h4>
 
-            <ul className="space-y-3">
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/">All Places</Link></li>
-              <li><Link to="/">Our Mission</Link></li>
-              <li><Link to="/">Contact Us</Link></li>
+            <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
+              <li><Link to="/" className="block py-0.5 md:py-0">Home</Link></li>
+              <li><Link to="/all-places" className="block py-0.5 md:py-0">All Places</Link></li>
+              <li><Link to="/our-mission" className="block py-0.5 md:py-0">Our Mission</Link></li>
+              <li><Link to="/contact-us" className="block py-0.5 md:py-0">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -87,10 +85,10 @@ const Footer: React.FC = () => {
           <div className="col-span-1">
             <h4 className="text-lg font-bold mb-4">Resources</h4>
 
-            <ul className="space-y-3">
-              <li><Link to="/">Privacy Policy</Link></li>
-              <li><Link to="/">Terms & Conditions</Link></li>
-              <li><Link to="/">FAQs</Link></li>
+            <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
+              <li><Link to="/privacy-policy" className="block py-0.5 md:py-0">Privacy Policy</Link></li>
+              <li><Link to="/terms-and-conditions" className="block py-0.5 md:py-0">Terms &amp; Conditions</Link></li>
+              <li><Link to="/faqs" className="block py-0.5 md:py-0">FAQs</Link></li>
             </ul>
           </div>
 
@@ -125,17 +123,25 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Bottom */}
-      <div className="relative z-10 bg-white border-t py-4 px-10">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-2 gap-2 text-[10px] md:grid-cols-3 md:text-xs">
-          <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
-
-          <div className="text-center whitespace-nowrap">
-            <Link to="/admin">Login as Admin</Link>
+      <div className="relative z-10 bg-white border-t py-4 px-6 md:px-10">
+        <div className="max-w-[1200px] mx-auto text-[10px] md:text-xs">
+          {/* Row 1 — copyright left, Login right (both screens) */}
+          <div className="flex items-center justify-between mb-1 md:mb-0 md:hidden">
+            <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
+            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
           </div>
 
-          <span className="col-span-2 text-center whitespace-nowrap md:col-span-1 md:text-right">
-            Design by Design by Evon Technology Software Solution (PVT) Ltd
-          </span>
+          {/* Row 2 — Design by centred on mobile only */}
+          <div className="text-center md:hidden">
+            <span className="whitespace-nowrap">Design by Evon Technology Software Solution (PVT) Ltd</span>
+          </div>
+
+          {/* Desktop — all three in one row */}
+          <div className="hidden md:flex items-center justify-between">
+            <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
+            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
+            <span className="whitespace-nowrap text-right">Design by Evon Technology Software Solution (PVT) Ltd</span>
+          </div>
         </div>
       </div>
     </footer>
