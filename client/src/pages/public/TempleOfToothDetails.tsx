@@ -1,6 +1,6 @@
 
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
@@ -30,42 +30,55 @@ const heroSlides = [
     id: 2,
     image: dm2,
     subtitle: "Vadahitina Maligawa (Inner Chamber)",
-    desc: ""
+    desc: "The innermost sanctum of the temple, the Vadahitina Maligawa houses the golden casket containing the Sacred Tooth Relic of the Buddha. Devotees offer flowers, incense, and prayers at the gilded doors during the three daily Thevava ceremonies."
   },
   {
     id: 3,
     image: dm3,
     subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
-    desc: ""
+    desc: "This ornate pavilion resonates with the sound of traditional Kandyan drums and woodwind instruments during each Thevava ritual. The rhythmic drumming, known as Hewisi, has echoed through this courtyard for centuries as an offering to the Sacred Relic."
   },
   {
     id: 4,
     image: dm4,
     subtitle: "Natha Devalaya",
-    desc: ""
+    desc: "One of the oldest shrines in Kandy, the Natha Devalaya is dedicated to Bodhisattva Natha — believed by many to be Maitreya, the future Buddha. Dating back to the 14th century, its stone architecture and moonstone steps stand as some of the finest examples of medieval Sri Lankan craftsmanship."
   },
   {
     id: 5,
     image: dm7,
     subtitle: "Walakulu Bamma (Cloud Wall)",
-    desc: ""
+    desc: "The distinctive Cloud Wall, named for its undulating wave-like form, encircles the sacred precincts of the temple complex. Adorned with intricate carvings of elephants and floral motifs, it serves as both a protective boundary and a canvas of traditional Kandyan artistry."
   },
   {
     id: 6,
     image: dm6,
     subtitle: "Sri Dalada Museum",
-    desc: ""
+    desc: "Located within the temple complex, the Sri Dalada Museum preserves centuries of royal offerings, ancient regalia, and ceremonial artifacts presented to the Sacred Tooth Relic by kings and devotees. Exhibits include jewelled caskets, royal palanquins, ivory carvings, and rare manuscripts."
   },
   {
     id: 7,
     image: dm5,
     subtitle: "Makara Thorana (Dragon Arch)",
-    desc: ""
+    desc: "The Makara Thorana is a magnificent gateway arch flanked by mythical sea-dragon figures called Makaras. Serving as the ceremonial entrance to the inner shrine, it symbolises the threshold between the earthly realm and the sacred space beyond, intricately carved with celestial motifs and guardians."
   }
 ];
 
+
 const TempleOfToothDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+
+  // Selected slide drives the hero section
+  const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
+  const gallerySlides = heroSlides.slice(1);
+  const heroRef = useRef<HTMLElement>(null);
+
+  const handleSelectSlide = (slide: typeof heroSlides[0]) => {
+    setSelectedSlide(slide);
+    setTimeout(() => {
+      heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=Temple+of+the+Sacred+Tooth+Relic,+Kandy,+Sri+Lanka&travelmode=${routeMode}`;
   const routeInfo = routeMode === 'driving'
@@ -74,13 +87,12 @@ const TempleOfToothDetails = () => {
 
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
+      {/* Hero Section — updates when a gallery thumbnail is clicked */}
+      <section ref={heroRef} className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('${heroSlides[0].image}')` }}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
+          style={{ backgroundImage: `url('${selectedSlide.image}')` }}
         >
-          {/* Gradient to darken the left side for text readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
         </div>
 
@@ -89,27 +101,41 @@ const TempleOfToothDetails = () => {
             Temple Of The Tooth
           </h1>
           <h2 className="font-serif text-white text-[18px] md:text-[22px] font-bold tracking-wide uppercase mb-6 opacity-95">
-            {heroSlides[0].subtitle}
+            {selectedSlide.subtitle}
           </h2>
 
-          <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
-            {heroSlides[0].desc}
-          </p>
+          {selectedSlide.desc && (
+            <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
+              {selectedSlide.desc}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Image Gallery Grid */}
       <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
         <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x">
-          {heroSlides.slice(1).map((slide) => (
+          {/* First slide (hero default) as first thumbnail */}
+          {heroSlides.map((slide) => (
             <div
               key={slide.id}
-              className="relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start"
+              onClick={() => handleSelectSlide(slide)}
+              className={`relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start cursor-pointer transition-all duration-200 ${
+                selectedSlide.id === slide.id
+                  ? 'ring-[3px] ring-[#1C5F46] ring-offset-2'
+                  : 'opacity-90 hover:opacity-100'
+              }`}
             >
               <img src={slide.image} alt={slide.subtitle} className="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
                 <span className="text-white font-serif text-[1.2rem] md:text-[1.4rem] font-bold uppercase truncate mb-0.5">Temple Of The Tooth</span>
                 <span className="text-white/90 font-sans text-[0.85rem] md:text-[0.95rem] truncate">{slide.subtitle}</span>
+              </div>
+              {/* Hover icon */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
+                  <FiCamera className="text-white w-5 h-5" />
+                </div>
               </div>
             </div>
           ))}
@@ -492,9 +518,7 @@ const TempleOfToothDetails = () => {
             <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
               <div className="h-[150px] md:h-[120px] overflow-hidden relative">
                 <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full cursor-pointer hover:bg-white text-gray-500 hover:text-red-500 transition-colors">
-                  <FiHeart size={14} />
-                </div>
+                
               </div>
               <div className="p-3 flex flex-col flex-1">
                 <h4 className="font-bold text-[#1f2937] text-[0.85rem] mb-0.5 truncate">{place.title}</h4>
