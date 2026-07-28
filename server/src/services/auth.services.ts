@@ -17,6 +17,8 @@ class AuthService {
     password: string;
 
     department: string;
+
+    isActive?: boolean;
   }) 
   {
     const existingUser = await this.userRepository.findByEmail(data.email);
@@ -47,6 +49,8 @@ class AuthService {
       department: user.department,
 
       role: user.role,
+
+      isActive: user.isActive,
     };
   }
 
@@ -55,11 +59,17 @@ class AuthService {
     email: string,
 
     password: string,
+
+    
   ) {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       throw new ApiError(401, "Invalid email or password");
+    }
+
+    if (!user.isActive) {
+      throw new ApiError(401, "User is not active");
     }
 
     const passwordMatch = await comparePassword(
@@ -78,6 +88,7 @@ class AuthService {
       email: user.email,
 
       role: user.role,
+      
     });
 
     return {

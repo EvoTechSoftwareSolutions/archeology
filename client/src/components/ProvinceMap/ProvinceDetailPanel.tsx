@@ -9,7 +9,7 @@ interface Props {
 const ProvinceDetailPanel = ({ province, onClose }: Props) => {
   return (
     <div
-      className={`flex w-1/2 flex-shrink-0 flex-col items-center gap-3 px-4 transition-all duration-500 ease-out ${
+      className={`flex w-1/3 flex-shrink-0 flex-col items-center gap-3 px-4 transition-all duration-500 ease-out ${
         province
           ? "translate-x-0 opacity-100"
           : "pointer-events-none translate-x-10 opacity-0"
@@ -28,10 +28,6 @@ const ProvinceDetailPanel = ({ province, onClose }: Props) => {
               ✕ Close
             </button>
           </div>
-
-          <p className="font-mono text-xs uppercase tracking-widest text-[#8A7550]">
-            Tap a marker to see the heritage site
-          </p>
 
           <Province3DView province={province} />
         </>
