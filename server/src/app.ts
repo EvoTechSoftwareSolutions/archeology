@@ -7,6 +7,7 @@ import hpp from "hpp";
 import authRoutes from "./routes/userAuth.routes.js";
 import provinceRoutes from "./routes/province.routes.js";
 import districtRoutes from "./routes/district.routes.js"
+import  historicalPlace  from "./routes/historicalPlace.routes.js";
 
 import { errorHandler } from "./middleware/error.middleware.js";
 import { notFound } from "./middleware/notFound.middleware.js";
@@ -37,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/provinces", provinceRoutes);
 app.use("/api/v1/districts", districtRoutes);
+app.use("/api/v1/historicalPlace", historicalPlace);
 
 app.use(notFound);
 app.use(errorHandler);

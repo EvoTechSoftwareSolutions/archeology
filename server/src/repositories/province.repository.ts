@@ -12,6 +12,14 @@ export const provinceRepository = {
       where: {
         id,
       },
+
+      include: {
+        districts: {
+          include: {
+            historicalPlaces: true,
+          },
+        },
+      },
     });
   },
 
@@ -19,6 +27,14 @@ export const provinceRepository = {
     return prisma.province.findUnique({
       where: {
         name,
+      },
+
+      include: {
+        districts: {
+          include: {
+            historicalPlaces: true,
+          },
+        },
       },
     });
   },
