@@ -58,3 +58,44 @@ body {
     transform: translateY(0);
   }
 }
+
+.footer-decorative-bg {
+  background-position: center 89%;
+  background-size: contain;
+}
+
+@media (max-width: 768px) {
+  .footer-decorative-bg {
+    background-size: auto 30%;
+    background-position: center 95%;
+  }
+}
+
+@keyframes review-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.review-carousel-track {
+  width: max-content;
+  animation: review-scroll 18s linear infinite;
+  will-change: transform;
+}
+
+.review-carousel-track:hover {
+  animation-play-state: paused;
+}
+
+.review-card {
+  flex: 0 0 280px;
+}
+
+@media (min-width: 640px) {
+  .review-card {
+    flex-basis: 320px;
+  }
+}

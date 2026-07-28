@@ -14,11 +14,11 @@ const ProvinceHeritageExplorer = () => {
   } = useProvinceMap();
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl items-start overflow-hidden px-1 py-0">
+    <div className="mx-auto flex w-full max-w-7xl items-center overflow-hidden px-4 py-10">
       {/* Full map: w-full and centered at rest, shrinks to the left half once a province is picked */}
       <div
         className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
-          selectedProvince ? "w-1/2" : "w-full"
+          selectedProvince ? "w-2/3" : "w-full"
         }`}
       >
         <SriLankaProvinceMap

@@ -3,10 +3,10 @@ import { FiPhone } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 const slides = [
-  { id: 1, image: '/images/daladamaligawa.png', title: 'Dalada Maligawa', location: 'Central Province' },
-  { id: 2, image: '/images/sigiriya.png', title: 'Sigiriya Rock Fortress', location: 'Central Province' },
-  { id: 3, image: '/images/galvihara.png', title: 'Gal Viharaya', location: 'North Central Province' },
-  { id: 4, image: '../src/assets/galle fort.png', title: 'Galle Fort', location: 'Southern Province' },
+  { id: 1, image: '/images/daladamaligawa.png', title: 'Dalada Maligawa', location: 'Central Province', route: '/temple-of-the-tooth' },
+  { id: 2, image: '/images/sigiriya.png', title: 'Sigiriya Rock Fortress', location: 'Central Province', route: '/sigiriya-rock-fortress' },
+  { id: 3, image: '/images/galvihara.png', title: 'Gal Viharaya', location: 'North Central Province', route: '/gal-viharaya' },
+  { id: 4, image: '/images/galle fort.png', title: 'Galle Fort', location: 'Southern Province', route: '/galle-fort' },
 ];
 
 const HeroSection = () => {
@@ -15,17 +15,17 @@ const HeroSection = () => {
 
   const handleScroll = () => {
     if (scrollRef.current) {
-      const scrollLeft = scrollRef.current.scrollLeft;
-      const width = scrollRef.current.offsetWidth;
+      const scrollLeft = (scrollRef.current as HTMLDivElement).scrollLeft;
+      const width = (scrollRef.current as HTMLDivElement).offsetWidth;
       const index = Math.round(scrollLeft / width);
       setCurrentSlide(index);
     }
   };
 
-  const scrollToSlide = (index) => {
+  const scrollToSlide = (index: number) => {
     if (scrollRef.current) {
-      const width = scrollRef.current.offsetWidth;
-      scrollRef.current.scrollTo({
+      const width = (scrollRef.current as HTMLDivElement).offsetWidth;
+      (scrollRef.current as HTMLDivElement).scrollTo({
         left: width * index,
         behavior: 'smooth'
       });
@@ -105,16 +105,16 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {slides[currentSlide]?.id === 1 ? (
+          {slides[currentSlide]?.route.startsWith('/') ? (
             <Link 
-              to="/temple-of-the-tooth" 
+              to={slides[currentSlide].route}
               className="text-[#1a3a2a] font-semibold text-[0.65rem] sm:text-[0.78rem] md:text-[0.85rem] no-underline hover:text-[#C5A253] flex items-center gap-1 transition-colors duration-200 whitespace-nowrap"
             >
               View Details <span className="text-[0.8rem] sm:text-[1.1rem]">&rarr;</span>
             </Link>
           ) : (
             <a 
-              href="#explore" 
+              href={slides[currentSlide]?.route}
               className="text-[#1a3a2a] font-semibold text-[0.65rem] sm:text-[0.78rem] md:text-[0.85rem] no-underline hover:text-[#C5A253] flex items-center gap-1 transition-colors duration-200 whitespace-nowrap"
             >
               View Details <span className="text-[0.8rem] sm:text-[1.1rem]">&rarr;</span>

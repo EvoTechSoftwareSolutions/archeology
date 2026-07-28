@@ -1,11 +1,13 @@
 
 
-import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiHeart, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
-import polonnaruwa from '../../assets/polonnaruwa.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import sigiriya from '../../assets/places-sigiriya.png';
 import avatarImg from '../../assets/avatar.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
@@ -29,50 +31,69 @@ const heroSlides = [
     id: 2,
     image: dm2,
     subtitle: "Vadahitina Maligawa (Inner Chamber)",
-    desc: ""
+    desc: "The innermost sanctum of the temple, the Vadahitina Maligawa houses the golden casket containing the Sacred Tooth Relic of the Buddha. Devotees offer flowers, incense, and prayers at the gilded doors during the three daily Thevava ceremonies."
   },
   {
     id: 3,
     image: dm3,
     subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
-    desc: ""
+    desc: "This ornate pavilion resonates with the sound of traditional Kandyan drums and woodwind instruments during each Thevava ritual. The rhythmic drumming, known as Hewisi, has echoed through this courtyard for centuries as an offering to the Sacred Relic."
   },
   {
     id: 4,
     image: dm4,
     subtitle: "Natha Devalaya",
-    desc: ""
+    desc: "One of the oldest shrines in Kandy, the Natha Devalaya is dedicated to Bodhisattva Natha — believed by many to be Maitreya, the future Buddha. Dating back to the 14th century, its stone architecture and moonstone steps stand as some of the finest examples of medieval Sri Lankan craftsmanship."
   },
   {
     id: 5,
     image: dm7,
     subtitle: "Walakulu Bamma (Cloud Wall)",
-    desc: ""
+    desc: "The distinctive Cloud Wall, named for its undulating wave-like form, encircles the sacred precincts of the temple complex. Adorned with intricate carvings of elephants and floral motifs, it serves as both a protective boundary and a canvas of traditional Kandyan artistry."
   },
   {
     id: 6,
     image: dm6,
     subtitle: "Sri Dalada Museum",
-    desc: ""
+    desc: "Located within the temple complex, the Sri Dalada Museum preserves centuries of royal offerings, ancient regalia, and ceremonial artifacts presented to the Sacred Tooth Relic by kings and devotees. Exhibits include jewelled caskets, royal palanquins, ivory carvings, and rare manuscripts."
   },
   {
     id: 7,
     image: dm5,
     subtitle: "Makara Thorana (Dragon Arch)",
-    desc: ""
+    desc: "The Makara Thorana is a magnificent gateway arch flanked by mythical sea-dragon figures called Makaras. Serving as the ceremonial entrance to the inner shrine, it symbolises the threshold between the earthly realm and the sacred space beyond, intricately carved with celestial motifs and guardians."
   }
 ];
 
+
 const TempleOfToothDetails = () => {
+  const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+
+  // Selected slide drives the hero section
+  const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
+  
+  const heroRef = useRef<HTMLElement>(null);
+
+  const handleSelectSlide = (slide: typeof heroSlides[0]) => {
+    setSelectedSlide(slide);
+    setTimeout(() => {
+      heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=Temple+of+the+Sacred+Tooth+Relic,+Kandy,+Sri+Lanka&travelmode=${routeMode}`;
+  const routeInfo = routeMode === 'driving'
+    ? { distance: '115 km', time: '3 hr 10 min' }
+    : { distance: '115 km', time: '22 hr 45 min' };
+
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
+      {/* Hero Section — updates when a gallery thumbnail is clicked */}
+      <section ref={heroRef} className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('${heroSlides[0].image}')` }}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
+          style={{ backgroundImage: `url('${selectedSlide.image}')` }}
         >
-          {/* Gradient to darken the left side for text readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
         </div>
 
@@ -81,27 +102,41 @@ const TempleOfToothDetails = () => {
             Temple Of The Tooth
           </h1>
           <h2 className="font-serif text-white text-[18px] md:text-[22px] font-bold tracking-wide uppercase mb-6 opacity-95">
-            {heroSlides[0].subtitle}
+            {selectedSlide.subtitle}
           </h2>
 
-          <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
-            {heroSlides[0].desc}
-          </p>
+          {selectedSlide.desc && (
+            <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
+              {selectedSlide.desc}
+            </p>
+          )}
         </div>
       </section>
 
       {/* Image Gallery Grid */}
       <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
         <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x">
-          {heroSlides.slice(1).map((slide) => (
+          {/* First slide (hero default) as first thumbnail */}
+          {heroSlides.map((slide) => (
             <div
               key={slide.id}
-              className="relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start"
+              onClick={() => handleSelectSlide(slide)}
+              className={`relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start cursor-pointer transition-all duration-200 ${
+                selectedSlide.id === slide.id
+                  ? 'ring-[3px] ring-[#1C5F46] ring-offset-2'
+                  : 'opacity-90 hover:opacity-100'
+              }`}
             >
               <img src={slide.image} alt={slide.subtitle} className="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
                 <span className="text-white font-serif text-[1.2rem] md:text-[1.4rem] font-bold uppercase truncate mb-0.5">Temple Of The Tooth</span>
                 <span className="text-white/90 font-sans text-[0.85rem] md:text-[0.95rem] truncate">{slide.subtitle}</span>
+              </div>
+              {/* Hover icon */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
+                  <FiCamera className="text-white w-5 h-5" />
+                </div>
               </div>
             </div>
           ))}
@@ -236,7 +271,7 @@ const TempleOfToothDetails = () => {
                 <div className="flex items-center gap-2 text-[#1f2937] font-bold text-[0.9rem] whitespace-nowrap">
                   <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
                 </div>
-                <div className="flex flex-wrap gap-2 justify-end w-full">
+                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
                   <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
                     Police Emergency <span className="ml-1 text-[#1f2937]">119</span>
                   </span>
@@ -338,19 +373,32 @@ const TempleOfToothDetails = () => {
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Plan Your Route</h3>
 
         <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-start min-h-[400px] relative overflow-hidden text-left">
-          {/* Map Placeholder */}
-          <div className="absolute inset-0 bg-[#F4F9F7] z-0"></div>
-
-          <div className="relative z-10 bg-white shadow-md rounded-full px-4 py-2 flex items-center gap-2 font-bold text-[0.85rem] text-[#1f2937] mt-4 ml-4">
-            <FiMapPin className="text-[#1C5F46]" /> Temple of the Sacred Tooth Relic
+          <div className="absolute inset-0 z-0 bg-[#F4F9F7]">
+            <iframe
+              title="Temple of the Sacred Tooth Relic Map"
+              src="https://maps.google.com/maps?q=Temple%20of%20the%20Sacred%20Tooth%20Relic%2C%20Kandy%2C%20Sri%20Lanka&output=embed"
+              className="w-full h-full border-0"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
 
+          
           <div className="relative z-10 mt-auto w-full flex flex-col md:flex-row items-center justify-between bg-white rounded-[16px] p-4 shadow-sm border border-gray-100">
             <div className="flex gap-2 mb-4 md:mb-0">
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20">
+              <button
+                type="button"
+                onClick={() => setRouteMode('driving')}
+                className={`flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold transition-colors ${routeMode === 'driving' ? 'bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20' : 'bg-white text-[#6b7280] border border-gray-200'}`}
+              >
                 <FiTruck /> Driving
               </button>
-              <button className="flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold bg-white text-[#6b7280] border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setRouteMode('walking')}
+                className={`flex items-center gap-2 px-5 py-2 rounded-full text-[0.85rem] font-bold transition-colors ${routeMode === 'walking' ? 'bg-[#E8F3EE] text-[#1C5F46] border border-[#1C5F46]/20' : 'bg-white text-[#6b7280] border border-gray-200'}`}
+              >
                 <FiMapPin /> Walking
               </button>
             </div>
@@ -358,15 +406,19 @@ const TempleOfToothDetails = () => {
             <div className="flex gap-6 md:gap-10">
               <div>
                 <span className="block text-[#6b7280] text-[0.75rem] uppercase">Distance from Colombo</span>
-                <span className="font-bold text-[#1f2937]">115 km</span>
+                <span className="font-bold text-[#1f2937]">{routeInfo.distance}</span>
               </div>
               <div>
-                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Estimated driving time</span>
-                <span className="font-bold text-[#1f2937]">3 hr 10 min</span>
+                <span className="block text-[#6b7280] text-[0.75rem] uppercase">Estimated {routeMode === 'driving' ? 'driving' : 'walking'} time</span>
+                <span className="font-bold text-[#1f2937]">{routeInfo.time}</span>
               </div>
             </div>
 
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[0.9rem] font-bold bg-[#1C5F46] text-white shadow-md hover:bg-[#154633] transition-colors mt-4 md:mt-0">
+            <button
+              type="button"
+              onClick={() => window.open(directionsUrl, '_blank')}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full text-[0.9rem] font-bold bg-[#1C5F46] text-white shadow-md hover:bg-[#154633] transition-colors mt-4 md:mt-0"
+            >
               <FiNavigation /> Navigate
             </button>
           </div>
@@ -432,22 +484,31 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 text-left pb-4 md:pb-0 snap-x">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-auto snap-start">
-              <div className="flex items-center gap-4 mb-4">
-                <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
-                <div>
-                  <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
-                  <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
+        <div className="overflow-hidden rounded-[24px]">
+          <div className="review-carousel-track flex gap-6 text-left pb-4">
+            {[1, 2, 3, 1, 2, 3].map((i, index) => {
+              const isDuplicate = index >= 3;
+              return (
+                <div
+                  key={`${i}-${index}`}
+                  aria-hidden={isDuplicate}
+                  className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
+                    <div>
+                      <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
+                      <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
+                  <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
+                    "Impeccably documented. A vital reference for my fieldwork."
+                  </p>
                 </div>
-              </div>
-              <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
-              <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
-                "Impeccably documented. A vital reference for my fieldwork."
-              </p>
-            </div>
-          ))}
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -458,25 +519,23 @@ const TempleOfToothDetails = () => {
 
         <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-5 gap-4 text-left pb-4 md:pb-0 snap-x">
           {[
-            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province' },
-            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
-            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province' },
-            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province' },
-            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' }
+            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
+            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
+            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' }
           ].map((place, idx) => (
-            <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
+            <Link key={idx} to={place.route} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
               <div className="h-[150px] md:h-[120px] overflow-hidden relative">
                 <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full cursor-pointer hover:bg-white text-gray-500 hover:text-red-500 transition-colors">
-                  <FiHeart size={14} />
-                </div>
+                
               </div>
               <div className="p-3 flex flex-col flex-1">
                 <h4 className="font-bold text-[#1f2937] text-[0.85rem] mb-0.5 truncate">{place.title}</h4>
                 <p className="text-[0.7rem] text-[#6b7280] mb-3 truncate">{place.loc}</p>
                 <span className="text-[#1C5F46] font-bold text-[0.75rem] mt-auto cursor-pointer hover:text-[#C89B3C] transition-colors">View Details &rarr;</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

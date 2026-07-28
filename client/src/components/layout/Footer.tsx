@@ -1,4 +1,5 @@
 import React from "react";
+import { FaFacebookF, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
@@ -7,27 +8,27 @@ const Footer: React.FC = () => {
       className="relative overflow-hidden border-t-[3px] border-[#2a4a3a] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] rounded-t-[10px]"
       style={{ backgroundColor: "#F8F6F1" }}
     >
-      {/* Decorative Background */}
+     {/* Decorative Background */}
       <div
-        className="absolute inset-0 z-0 opacity-80 pointer-events-none"
+        className="absolute inset-0 z-0 opacity-80 pointer-events-none footer-decorative-bg"
         style={{
           backgroundImage: "url('/images/Group_47.png')",
           backgroundRepeat: "repeat-x",
-          backgroundPosition: "center 75%",
-          backgroundSize: "contain",
         }}
       />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-10 pt-12 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-10 pb-10">
+        <div className="grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-6 md:gap-10 pb-10">
           {/* Brand */}
-          <div>
-            <img
-              src="/images/LOGO.png"
-              alt="Sri Lanka Heritage"
-              className="h-[55px] w-auto mb-4 object-contain"
-            />
+          <div className="col-span-2 md:col-span-1">
+            <Link to="/" className="inline-flex">
+              <img
+                src="/images/LOGO.png"
+                alt="Sri Lanka Heritage"
+                className="h-[55px] w-auto mb-4 object-contain"
+              />
+            </Link>
 
             <p className="text-text-muted text-[0.8rem] leading-[1.65] max-w-[240px] mb-5">
               Explore ancient kingdoms, sacred temples, archaeological
@@ -41,29 +42,27 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512">
-                  <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8z" />
-                </svg>
+                <FaInstagram className="w-4 h-4" />
               </a>
 
               {/* Facebook */}
               <a
-                href="#"
+                href="https://www.facebook.com/Arch.SriLanka"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 320 512">
-                  <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
-                </svg>
+                <FaFacebookF className="w-4 h-4" />
               </a>
 
               {/* YouTube */}
               <a
-                href="#"
+                href="https://www.youtube.com/channel/UCej4Z-DEipbbHUctEDJJ4Fg"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 576 512">
-                  <path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z" />
-                </svg>
+                <FaYoutube className="w-4 h-4" />
               </a>
 
               {/* TikTok */}
@@ -71,38 +70,36 @@ const Footer: React.FC = () => {
                 href="#"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 448 512">
-                  <path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0h88a121.18 121.18 0 0 0 1.86 22.17A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z" />
-                </svg>
+                <FaTiktok className="w-4 h-4" />
               </a>
             </div>
           </div>
 
           {/* Explore */}
-          <div>
-            <h4 className="text-lg font-bold mb-4">Explore</h4>
+          <div className="col-span-1">
+            <h4 className="text-base lg:text-lg font-bold mb-4">Explore</h4>
 
-            <ul className="space-y-3">
-              <li><Link to="/">Home</Link></li>
-              <li><Link to="/">All Places</Link></li>
-              <li><Link to="/">Our Mission</Link></li>
-              <li><Link to="/">Contact Us</Link></li>
+            <ul className="space-y-2 md:space-y-2 lg:space-y-3 text-xs sm:text-sm lg:text-base">
+              <li><Link to="/" className="block py-0.5 md:py-0">Home</Link></li>
+              <li><Link to="/all-places" className="block py-0.5 md:py-0">All Places</Link></li>
+              <li><Link to="/our-mission" className="block py-0.5 md:py-0">Our Mission</Link></li>
+              <li><Link to="/contact-us" className="block py-0.5 md:py-0">Contact Us</Link></li>
             </ul>
           </div>
 
           {/* Resources */}
-          <div>
-            <h4 className="text-lg font-bold mb-4">Resources</h4>
+          <div className="col-span-1">
+            <h4 className="text-base lg:text-lg font-bold mb-4">Resources</h4>
 
-            <ul className="space-y-3">
-              <li><Link to="/">Privacy Policy</Link></li>
-              <li><Link to="/">Terms & Conditions</Link></li>
-              <li><Link to="/">FAQs</Link></li>
+            <ul className="space-y-2 md:space-y-2 lg:space-y-3 text-xs sm:text-sm lg:text-base">
+              <li><Link to="/privacy-policy" className="block py-0.5 md:py-0">Privacy Policy</Link></li>
+              <li><Link to="/terms-and-conditions" className="block py-0.5 md:py-0">Terms &amp; Conditions</Link></li>
+              <li><Link to="/faqs" className="block py-0.5 md:py-0">FAQs</Link></li>
             </ul>
           </div>
 
           {/* Newsletter */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <h4 className="text-lg font-bold mb-4">Stay Updated</h4>
 
             <p className="text-sm mb-4">
@@ -132,17 +129,25 @@ const Footer: React.FC = () => {
       </div>
 
       {/* Bottom */}
-      <div className="relative z-10 bg-white border-t py-4 px-10">
-        <div className="max-w-[1200px] mx-auto grid md:grid-cols-3 gap-4 text-xs">
-          <span>© 2026 HeritageSriLanka</span>
-
-          <div className="text-center">
-            <Link to="/admin">Login as Admin</Link>
+      <div className="relative z-10 bg-white border-t py-4 px-6 md:px-10">
+        <div className="max-w-[1200px] mx-auto text-[10px] md:text-xs">
+          {/* Row 1 — copyright left, Login right (both screens) */}
+          <div className="flex items-center justify-between mb-1 md:mb-0 md:hidden">
+            <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
+            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
           </div>
 
-          <span className="text-right">
-            Design by Evon Technology Software Solutions (PVT) Ltd
-          </span>
+          {/* Row 2 — Design by centred on mobile only */}
+          <div className="text-center md:hidden">
+            <span className="whitespace-nowrap">Design by Evon Technology Software Solution (PVT) Ltd</span>
+          </div>
+
+          {/* Desktop — all three in one row */}
+          <div className="hidden md:flex items-center justify-between">
+            <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
+            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
+            <span className="whitespace-nowrap text-right">Design by Evon Technology Software Solution (PVT) Ltd</span>
+          </div>
         </div>
       </div>
     </footer>
