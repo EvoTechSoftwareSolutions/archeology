@@ -1,14 +1,15 @@
-import { useState } from "react";
 import type { Province } from "../../types/province";
+import PlaceMarker from "./PlaceMarker";
 
 interface Props {
   province: Province;
 }
 
 const PADDING = 16;
-const EXTRUDE_LAYERS = 16;
+const EXTRUDE_LAYERS = 12;
 const EXTRUDE_STEP = 1.5;
 const EXTRUDE_DEPTH = EXTRUDE_LAYERS * EXTRUDE_STEP;
+const TILT_DEG = 30;
 
 /** Linear-interpolate between two hex colors, t in [0, 1] */
 function lerpColor(a: string, b: string, t: number) {
@@ -27,25 +28,19 @@ function lerpColor(a: string, b: string, t: number) {
 }
 
 const Province3DView = ({ province }: Props) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { x, y, width, height } = province.bbox;
-
-  const viewBox = `${x - PADDING} ${y - PADDING} ${width + PADDING * 2} ${
-    height + PADDING * 2 + EXTRUDE_DEPTH
-  }`;
+  const viewBoxW = width + PADDING * 2;
+  const viewBoxH = height + PADDING * 2 + EXTRUDE_DEPTH;
+  const viewBox = `${x - PADDING} ${y - PADDING} ${viewBoxW} ${viewBoxH}`;
+  const tilt = `rotateX(${TILT_DEG}deg)`;
 
   return (
-    <div
-      className="w-full max-w-md border-2"
-      style={{ perspective: "1400px" }}
-    >
+    // Slightly smaller than before (max-w-xs instead of max-w-sm)
+    <div className="relative w-full max-w-xs animate-[fadeIn_0.4s_ease-out]" style={{ perspective: "1400px" }}>
       <svg
         viewBox={viewBox}
         className="h-auto w-full drop-shadow-[0_28px_30px_rgba(59,47,30,0.35)]"
-        style={{
-          transform: "rotateX(20deg)",
-          transformStyle: "preserve-3d",
-        }}
+        style={{ transform: tilt, transformStyle: "preserve-3d" }}
         role="img"
         aria-label={`3D relief of ${province.name} Province`}
       >
@@ -61,85 +56,24 @@ const Province3DView = ({ province }: Props) => {
         ))}
 
         {/* Top face */}
-        <path
-          d={province.path}
-          fill="#E0C98A"
-          stroke="#FFFFFF"
-          strokeWidth={2}
-          strokeLinejoin="round"
-        />
-
-        {/* Heritage place markers, sitting on the top face */}
-        {province.historicalPlaces.map((place, i) => {
-          const mx = x + place.anchorXPct * width;
-          const my = y + place.anchorYPct * height;
-          const isActive = activeIndex === i;
-
-          return (
-            <g key={place.name}>
-              <g
-                onClick={() => setActiveIndex(isActive ? null : i)}
-                className="cursor-pointer"
-                role="button"
-                tabIndex={0}
-                aria-label={place.name}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setActiveIndex(isActive ? null : i);
-                  }
-                }}
-              >
-                {isActive && (
-                  <circle
-                    cx={mx}
-                    cy={my}
-                    r={9}
-                    fill="none"
-                    stroke="#C1483F"
-                    strokeWidth={1.5}
-                    className="animate-ping"
-                  />
-                )}
-                <circle
-                  cx={mx}
-                  cy={my}
-                  r={6}
-                  fill={isActive ? "#C1483F" : "#3B2F1E"}
-                  stroke="#FFFFFF"
-                  strokeWidth={1.5}
-                />
-              </g>
-
-              {isActive && (
-                <foreignObject
-                  x={Math.min(Math.max(mx - 95, x - PADDING), x + width + PADDING - 190)}
-                  y={my + 10}
-                  width={190}
-                  height={116}
-                  style={{ overflow: "visible" }}
-                >
-                  <div className="flex items-start gap-2 rounded-lg border border-[#E0C98A] bg-white/95 p-2 shadow-lg">
-                    <img
-                      src={place.image}
-                      alt={place.name}
-                      className="h-10 w-10 flex-shrink-0 rounded border border-[#E0C98A] object-cover"
-                    />
-                    <div>
-                      <p className="font-mono text-[12px] font-semibold leading-tight text-[#000]">
-                        {place.name}
-                      </p>
-                      <p className="mt-0.5 text-[8px] leading-snug text-[#5C4A2A]">
-                        {place.description}
-                      </p>
-                    </div>
-                  </div>
-                </foreignObject>
-              )}
-            </g>
-          );
-        })}
+        <path d={province.path} fill="#E0C98A" stroke="#FFFFFF" strokeWidth={2} strokeLinejoin="round" />
       </svg>
+
+      {/* Plain HTML overlay for the markers — sharing the SVG's tilt so it stays
+          aligned, and never clipped the way SVG foreignObject content was. */}
+      <div
+        className="absolute inset-0"
+        style={{ transform: tilt, transformStyle: "preserve-3d" }}
+      >
+        {province.historicalPlaces.map((place) => (
+          <PlaceMarker
+            key={place.name}
+            place={place}
+            leftPct={((place.anchorXPct * width + x - (x - PADDING)) / viewBoxW) * 100}
+            topPct={((place.anchorYPct * height + y - (y - PADDING)) / viewBoxH) * 100}
+          />
+        ))}
+      </div>
     </div>
   );
 };

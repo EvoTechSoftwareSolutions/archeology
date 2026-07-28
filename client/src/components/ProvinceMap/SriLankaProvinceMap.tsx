@@ -21,7 +21,7 @@ const SriLankaProvinceMap = ({
   return (
     <svg
       viewBox="0 0 800 600"
-      className="h-[800px] w-auto max-w-full drop-shadow-[0_16px_36px_rgba(0,0,0,0.28)]"
+      className="h-[700px] w-auto max-w-full drop-shadow-[0_16px_36px_rgba(0,0,0,0.28)]"
       role="group"
       aria-label="Provinces of Sri Lanka"
     >
