@@ -1,6 +1,7 @@
 
 
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
@@ -270,7 +271,7 @@ const TempleOfToothDetails = () => {
                 <div className="flex items-center gap-2 text-[#1f2937] font-bold text-[0.9rem] whitespace-nowrap">
                   <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
                 </div>
-                <div className="flex flex-wrap gap-2 justify-end w-full">
+                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
                   <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
                     Police Emergency <span className="ml-1 text-[#1f2937]">119</span>
                   </span>
@@ -518,13 +519,13 @@ const TempleOfToothDetails = () => {
 
         <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-5 gap-4 text-left pb-4 md:pb-0 snap-x">
           {[
-            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province' },
-            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
-            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province' },
-            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province' },
-            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' }
+            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
+            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
+            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' }
           ].map((place, idx) => (
-            <div key={idx} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
+            <Link key={idx} to={place.route} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
               <div className="h-[150px] md:h-[120px] overflow-hidden relative">
                 <img src={place.img} alt={place.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 
@@ -534,7 +535,7 @@ const TempleOfToothDetails = () => {
                 <p className="text-[0.7rem] text-[#6b7280] mb-3 truncate">{place.loc}</p>
                 <span className="text-[#1C5F46] font-bold text-[0.75rem] mt-auto cursor-pointer hover:text-[#C89B3C] transition-colors">View Details &rarr;</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

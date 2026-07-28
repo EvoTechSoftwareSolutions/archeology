@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FiCamera,
   FiCheck,
@@ -27,6 +28,8 @@ import sigiriya from '../../assets/places-sigiriya.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import mandalaImg from '../../assets/image 36.png';
 import avatarImg from '../../assets/avatar.png';
+import g3 from '../../assets/g3.jpg';
+import g4 from '../../assets/g4.jpg';
 
 const heroSlides = [
   {
@@ -37,13 +40,13 @@ const heroSlides = [
   },
   {
     id: 2,
-    image: polonnaruwa,
+    image: g3,
     subtitle: 'ANCIENT POLONNARUWA',
     desc: 'Gal Viharaya belongs to the sacred landscape of Polonnaruwa, the medieval capital shaped by royal patronage and Buddhist scholarship.',
   },
   {
     id: 3,
-    image: ruwanweliseya,
+    image: g4,
     subtitle: 'SACRED STUPA TRADITION',
     desc: 'The site reflects Sri Lanka’s long tradition of devotional architecture, meditation spaces, and sculptural mastery.',
   },
@@ -53,6 +56,23 @@ const GalViharayaDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
   const heroRef = useRef<HTMLElement>(null);
+  const reviewCards = [
+    {
+      name: 'Dr. Himali Perera',
+      role: 'Researcher',
+      review: 'A quiet, powerful place to understand Polonnaruwa craftsmanship.',
+    },
+    {
+      name: 'Nuwan Silva',
+      role: 'Photographer',
+      review: 'The morning light on the granite carvings made the whole visit unforgettable.',
+    },
+    {
+      name: 'Sajani Fernando',
+      role: 'Travel Blogger',
+      review: 'Peaceful, beautifully preserved, and one of the most moving stops in Polonnaruwa.',
+    },
+  ];
 
   const handleSelectSlide = (slide: typeof heroSlides[0]) => {
     setSelectedSlide(slide);
@@ -215,7 +235,7 @@ const GalViharayaDetails = () => {
                 <div className="flex items-center gap-2 whitespace-nowrap text-[0.9rem] font-bold text-[#1f2937]">
                   <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
                 </div>
-                <div className="flex w-full flex-wrap justify-end gap-2">
+                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
                   <span className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-[0.75rem] font-bold text-[#1f2937] shadow-sm">Police 119</span>
                   <span className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-[0.75rem] font-bold text-[#1f2937] shadow-sm">Ambulance 1990</span>
                 </div>
@@ -273,6 +293,22 @@ const GalViharayaDetails = () => {
               <div>
                 <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Managed By</h5>
                 <p className="text-[0.95rem] text-[#6b7280]">Department of Archaeology, Sri Lanka</p>
+              </div>
+              <div>
+                <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Department Address</h5>
+                <p className="text-[0.95rem] text-[#6b7280]">Department of Archaeology, Sir Marcus Fernando Mawatha, Colombo - 07, Sri Lanka.</p>
+              </div>
+              <div>
+                <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Phone</h5>
+                <p className="text-[0.95rem] text-[#6b7280]">+94 11 2692840, +94 11 2692841</p>
+              </div>
+              <div>
+                <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Fax</h5>
+                <p className="text-[0.95rem] text-[#6b7280]">+94 11 2696250</p>
+              </div>
+              <div>
+                <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Email</h5>
+                <p className="text-[0.95rem] text-[#6b7280]">info@archaeology.gov.lk</p>
               </div>
               <div>
                 <h5 className="mb-1 text-[1.05rem] font-bold text-[#1f2937]">Nearest City</h5>
@@ -386,19 +422,19 @@ const GalViharayaDetails = () => {
         <h3 className="mb-10 font-serif text-[2.5rem] font-bold text-[#1f2937]">Visitors Reviews</h3>
 
         <div className="overflow-hidden rounded-[24px]">
-          <div className="flex gap-6 overflow-x-auto pb-4 text-left">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="w-[280px] shrink-0 rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm sm:w-[320px]">
+          <div className="review-carousel-track flex gap-6 pb-4 text-left">
+            {[...reviewCards, ...reviewCards].map((item, index) => (
+              <div key={`${item.name}-${index}`} className="review-card rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm">
                 <div className="mb-4 flex items-center gap-4">
                   <img src={avatarImg} alt="Reviewer" className="h-12 w-12 rounded-full bg-gray-200 object-cover" />
                   <div>
-                    <h5 className="text-[1rem] font-bold text-[#1f2937]">Dr. Himali Perera</h5>
-                    <p className="text-[0.75rem] text-[#6b7280]">Researcher</p>
+                    <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
+                    <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>
                   </div>
                 </div>
                 <div className="mb-4 text-[0.8rem] text-[#C89B3C]">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                 <p className="text-[0.95rem] leading-relaxed text-[#4b5563]">
-                  "A quiet, powerful place to understand Polonnaruwa craftsmanship."
+                  "{item.review}"
                 </p>
               </div>
             ))}
@@ -412,12 +448,12 @@ const GalViharayaDetails = () => {
 
         <div className="flex snap-x gap-4 overflow-x-auto pb-4 text-left md:grid md:grid-cols-4 md:pb-0">
           {[
-            { img: polonnaruwa, title: 'Polonnaruwa Ancient City', loc: 'Polonnaruwa - North Central Province' },
-            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' },
-            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province' },
-            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
+            { img: polonnaruwa, title: 'Polonnaruwa Ancient City', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
+            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
           ].map((place) => (
-            <div key={place.title} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
+            <Link key={place.title} to={place.route} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
               <div className="relative h-[150px] overflow-hidden md:h-[120px]">
                 <img src={place.img} alt={place.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
               </div>
@@ -426,7 +462,7 @@ const GalViharayaDetails = () => {
                 <p className="mb-3 truncate text-[0.7rem] text-[#6b7280]">{place.loc}</p>
                 <span className="mt-auto cursor-pointer text-[0.75rem] font-bold text-[#1C5F46] transition-colors hover:text-[#C89B3C]">View Details &rarr;</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

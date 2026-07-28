@@ -1,5 +1,9 @@
 import HeritagePlaceDetails from './HeritagePlaceDetails';
 import sigiriya from '../../assets/places-sigiriya.png';
+
+import s1 from '../../assets/lionfoot.jpg';
+import s2 from '../../assets/painting.jpg';
+import s3 from '../../assets/planning.webp';
 import galleFort from '../../assets/places-gallefort.png';
 import galViharaya from '../../assets/galvihara.png';
 import polonnaruwa from '../../assets/Polonnaruwa.png';
@@ -16,19 +20,19 @@ const SigiriyaDetails = () => {
       slides={[
         {
           id: 1,
-          image: sigiriya,
+          image: s1,
           subtitle: 'THE LION ROCK',
           desc: 'A dramatic ancient rock fortress rising above landscaped gardens, reservoirs, frescoes, and royal palace ruins.',
         },
         {
           id: 2,
-          image: templeTooth,
+          image: s2,
           subtitle: 'ROYAL HERITAGE',
           desc: 'Sigiriya reflects the ambition, artistry, and engineering skill of Sri Lanka during the reign of King Kashyapa.',
         },
         {
           id: 3,
-          image: polonnaruwa,
+          image: s3,
           subtitle: 'ANCIENT CITY PLANNING',
           desc: 'Its symmetrical water gardens and elevated palace remains show one of South Asia\'s most remarkable planned landscapes.',
         },
@@ -55,6 +59,10 @@ const SigiriyaDetails = () => {
       contactDetails={[
         { label: 'Address', value: 'Sigiriya Rock Fortress, Sigiriya, Sri Lanka' },
         { label: 'Managed By', value: 'Central Cultural Fund and Department of Archaeology' },
+        { label: 'Department Address', value: 'Department of Archaeology, Sir Marcus Fernando Mawatha, Colombo - 07, Sri Lanka.' },
+        { label: 'Phone', value: '+94 11 2692840, +94 11 2692841' },
+        { label: 'Fax', value: '+94 11 2696250' },
+        { label: 'Email', value: 'info@archaeology.gov.lk' },
         { label: 'Nearest City', value: 'Dambulla' },
       ]}
       essentials={[
@@ -83,10 +91,10 @@ const SigiriyaDetails = () => {
       ]}
       review="The climb is worth every step, especially when the gardens open beneath you from the summit."
       nearbyPlaces={[
-        { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province' },
-        { img: polonnaruwa, title: 'Polonnaruwa Ancient City', loc: 'Polonnaruwa - North Central Province' },
-        { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
-        { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province' },
+        { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+        { img: polonnaruwa, title: 'Polonnaruwa Ancient City', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
+        { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
+        { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
       ]}
     />
   );

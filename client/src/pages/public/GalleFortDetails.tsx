@@ -85,10 +85,10 @@ const GalleFortDetails = () => {
       ]}
       review="The fort feels alive, with sea wind, old stone streets, and history around every corner."
       nearbyPlaces={[
-        { img: sigiriya, title: 'Sigiriya Rock Fortress', loc: 'Matale - Central Province' },
-        { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province' },
-        { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province' },
-        { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province' },
+        { img: sigiriya, title: 'Sigiriya Rock Fortress', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+        { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
+        { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+        { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
       ]}
     />
   );

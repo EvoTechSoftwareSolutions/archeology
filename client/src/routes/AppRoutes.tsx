@@ -12,6 +12,7 @@ import TempleOfToothDetails from "../pages/public/TempleOfToothDetails";
 import GalViharayaDetails from "../pages/public/GalViharayaDetails";
 import SigiriyaDetails from "../pages/public/SigiriyaDetails";
 import GalleFortDetails from "../pages/public/GalleFortDetails";
+import RuwanwelisayaDetails from "../pages/public/RuwanwelisayaDetails";
 import AllPlaces from "../pages/public/AllPlaces";
 import OurMission from "../pages/public/OurMission";
 import ContactUs from "../pages/public/ContactUs";
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       { path: "gal-viharaya", element: <GalViharayaDetails /> },
       { path: "sigiriya-rock-fortress", element: <SigiriyaDetails /> },
       { path: "galle-fort", element: <GalleFortDetails /> },
+      { path: "ruwanwelisaya", element: <RuwanwelisayaDetails /> },
       { path: "all-places",          element: <AllPlaces /> },
       { path: "our-mission",         element: <OurMission /> },
       { path: "contact-us",          element: <ContactUs /> },

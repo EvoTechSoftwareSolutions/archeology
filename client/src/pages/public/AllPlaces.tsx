@@ -61,7 +61,7 @@ const places = [
     location: 'Anuradhapura, North Central Province',
     category: 'Stupa',
     desc: 'One of the tallest ancient monuments in the world, built by King Dutugamunu in the 2nd century BC.',
-    route: '#',
+    route: '/ruwanwelisaya',
   },
 ];
 
