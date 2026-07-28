@@ -1,4 +1,3 @@
-import React from "react";
 import ProvinceHeritageExplorer from "./ProvinceMap/ProvinceHeritageExplorer";
 
 const MapSection = () => {
@@ -9,7 +8,6 @@ const MapSection = () => {
       style={{ backgroundColor: "#F8F6F1" }}
     >
       <div className="max-w-7xl mx-auto">
-
         {/* Header */}
         <div className="mb-10">
           <p className="text-gold text-xs font-bold tracking-[3px] uppercase mb-2">
@@ -30,30 +28,20 @@ const MapSection = () => {
 
         {/* Map Layout */}
         <div className="relative flex items-center justify-center">
-
           {/* Compass */}
           <div className="hidden xl:block absolute left-0">
-            <img
-              src="/images/COMPASS.png"
-              alt="Compass"
-              className="w-28"
-            />
+            <img src="/images/COMPASS.png" alt="Compass" className="w-28" />
           </div>
 
-          {/* Interactive Map */}
-          <div className="relative z-20 flex justify-center w-full max-w-3xl">
+          {/* Interactive Map — no max-w cap here, so it can use the full 700px map size */}
+          <div className="relative z-20 flex w-full justify-center">
             <ProvinceHeritageExplorer />
           </div>
 
           {/* Buddha */}
           <div className="hidden xl:block absolute right-0">
-            <img
-              src="/images/image 35.png"
-              alt="Buddha Statue"
-              className="w-52"
-            />
+            <img src="/images/image 35.png" alt="Buddha Statue" className="w-52" />
           </div>
-
         </div>
       </div>
     </section>

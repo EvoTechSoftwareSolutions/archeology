@@ -7,22 +7,20 @@ import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
+router.post("/register", validate(registerSchema), authController.register);
+
 router.post(
-  "/register",
-  validate(registerSchema),
-  authController.register,
+  "/login",
+  loginRateLimiter,
+  validate(loginSchema),
+  authController.login,
 );
 
-router.post("/login",loginRateLimiter, validate(loginSchema),
-authController.login,
-);
-
-router.get("/profile",authenticate,(req, res) => {
-    res.json({
-      message: "Protected route",
-      user: (req as any).user,
-    });
-  },
-);
+router.get("/profile", authenticate, (req, res) => {
+  res.json({
+    message: "Protected route",
+    user: (req as any).user,
+  });
+});
 
 export default router;
