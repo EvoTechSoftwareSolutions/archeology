@@ -51,26 +51,35 @@ model District {
 }
 
 model HistoricalPlace {
-  id          Int      @id @default(autoincrement())
+
+  id          Int @id @default(autoincrement())
 
   name        String
   category    String
-  statusFlag  String
+  description String?
+  image       String?
+
   century     String
+  statusFlag  String
 
   latitude    Float
   longitude   Float
 
+  anchorXPct  Float
+  anchorYPct  Float
+
   districtId  Int
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  district        District @relation(fields: [districtId], references: [id], onDelete: Cascade)
 
-  monographs      SiteMonograph[]
-  auditLogs       AuditLog[]
+  district District @relation(fields:[districtId], references:[id], onDelete:Cascade)
+    
+   
+   siteMonograph SiteMonograph[]
+  auditLog AuditLog []
+
 }
 
 model SiteMonograph {
