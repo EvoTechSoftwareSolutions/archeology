@@ -22,11 +22,13 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1.4fr] gap-6 md:gap-10 pb-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <img
-              src="/images/LOGO.png"
-              alt="Sri Lanka Heritage"
-              className="h-[55px] w-auto mb-4 object-contain"
-            />
+            <Link to="/" className="inline-flex">
+              <img
+                src="/images/LOGO.png"
+                alt="Sri Lanka Heritage"
+                className="h-[55px] w-auto mb-4 object-contain"
+              />
+            </Link>
 
             <p className="text-text-muted text-[0.8rem] leading-[1.65] max-w-[240px] mb-5">
               Explore ancient kingdoms, sacred temples, archaeological
@@ -45,7 +47,9 @@ const Footer: React.FC = () => {
 
               {/* Facebook */}
               <a
-                href="#"
+                href="https://www.facebook.com/Arch.SriLanka"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
                 <FaFacebookF className="w-4 h-4" />
@@ -53,7 +57,9 @@ const Footer: React.FC = () => {
 
               {/* YouTube */}
               <a
-                href="#"
+                href="https://www.youtube.com/channel/UCej4Z-DEipbbHUctEDJJ4Fg"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded flex items-center justify-center bg-[#2a4a3a] text-white hover:opacity-80"
               >
                 <FaYoutube className="w-4 h-4" />
@@ -71,9 +77,9 @@ const Footer: React.FC = () => {
 
           {/* Explore */}
           <div className="col-span-1">
-            <h4 className="text-lg font-bold mb-4">Explore</h4>
+            <h4 className="text-base lg:text-lg font-bold mb-4">Explore</h4>
 
-            <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
+            <ul className="space-y-2 md:space-y-2 lg:space-y-3 text-xs sm:text-sm lg:text-base">
               <li><Link to="/" className="block py-0.5 md:py-0">Home</Link></li>
               <li><Link to="/all-places" className="block py-0.5 md:py-0">All Places</Link></li>
               <li><Link to="/our-mission" className="block py-0.5 md:py-0">Our Mission</Link></li>
@@ -83,9 +89,9 @@ const Footer: React.FC = () => {
 
           {/* Resources */}
           <div className="col-span-1">
-            <h4 className="text-lg font-bold mb-4">Resources</h4>
+            <h4 className="text-base lg:text-lg font-bold mb-4">Resources</h4>
 
-            <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
+            <ul className="space-y-2 md:space-y-2 lg:space-y-3 text-xs sm:text-sm lg:text-base">
               <li><Link to="/privacy-policy" className="block py-0.5 md:py-0">Privacy Policy</Link></li>
               <li><Link to="/terms-and-conditions" className="block py-0.5 md:py-0">Terms &amp; Conditions</Link></li>
               <li><Link to="/faqs" className="block py-0.5 md:py-0">FAQs</Link></li>

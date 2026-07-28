@@ -1,4 +1,4 @@
-import { FiSend, FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
+import { FiSend, FiMapPin, FiPhone, FiMail, FiPrinter } from 'react-icons/fi';
 
 const ContactSection = () => {
   return (
@@ -33,7 +33,7 @@ const ContactSection = () => {
               </div>
               <div>
                 <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Address</h5>
-                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">Department of Archaeology,<br />Colombo, Sri Lanka</p>
+                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">Department of Archaeology,<br />Sir Marcus Fernando Mawatha,<br />Colombo - 07, Sri Lanka.</p>
               </div>
             </div>
 
@@ -44,7 +44,7 @@ const ContactSection = () => {
               </div>
               <div>
                 <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Phone</h5>
-                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">+94 11 269 2816<br />+94 11 269 2817</p>
+                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">+94 11 2692840<br />+94 11 2692841</p>
               </div>
             </div>
 
@@ -59,14 +59,14 @@ const ContactSection = () => {
               </div>
             </div>
 
-            {/* Office Hours */}
+            {/* Fax */}
             <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
-                <FiClock size={17} />
+                <FiPrinter size={17} />
               </div>
               <div>
-                <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Office Hours</h5>
-                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">Monday – Friday<br />8:30 AM – 4:15 PM</p>
+                <h5 className="text-[#1F5E4E] text-[0.85rem] font-bold">Fax</h5>
+                <p className="text-gray-500 text-[0.72rem] leading-[1.3] mt-0.5">+94 11 2696250</p>
               </div>
             </div>
 

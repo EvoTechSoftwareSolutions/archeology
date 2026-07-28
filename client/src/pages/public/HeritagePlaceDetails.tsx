@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FiCamera,
   FiCheck,
@@ -39,6 +40,7 @@ type NearbyPlace = {
   img: string;
   title: string;
   loc: string;
+  route?: string;
 };
 
 type HeritagePlaceDetailsProps = {
@@ -104,6 +106,24 @@ const HeritagePlaceDetails = ({
   const routeInfo = routeMode === 'driving'
     ? { distance, time: drivingTime }
     : { distance, time: walkingTime };
+
+  const reviewCards = [
+    {
+      name: 'Dr. Himali Perera',
+      role: 'Researcher',
+      review,
+    },
+    {
+      name: 'Nuwan Silva',
+      role: 'Photographer',
+      review: 'The climb, gardens, and panoramic views made this one of the most memorable heritage sites I have visited.',
+    },
+    {
+      name: 'Sajani Fernando',
+      role: 'Travel Blogger',
+      review: 'The atmosphere feels timeless, and the site is beautifully preserved for visitors to experience history in person.',
+    },
+  ];
 
   const handleSelectSlide = (slide: Slide) => {
     setSelectedSlide(slide);
@@ -237,7 +257,7 @@ const HeritagePlaceDetails = ({
                 <div className="flex items-center gap-2 whitespace-nowrap text-[0.9rem] font-bold text-[#1f2937]">
                   <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
                 </div>
-                <div className="flex w-full flex-wrap justify-end gap-2">
+                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
                   <span className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-[0.75rem] font-bold text-[#1f2937] shadow-sm">Police 119</span>
                   <span className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-[0.75rem] font-bold text-[#1f2937] shadow-sm">Ambulance 1990</span>
                 </div>
@@ -366,40 +386,58 @@ const HeritagePlaceDetails = ({
         <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[2px] text-[#C89B3C]">COMMUNITY</p>
         <h3 className="mb-10 font-serif text-[2.5rem] font-bold text-[#1f2937]">Visitors Reviews</h3>
         <div className="overflow-hidden rounded-[24px]">
-          <div className="flex gap-6 overflow-x-auto pb-4 text-left">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="w-[280px] shrink-0 rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm sm:w-[320px]">
+          <div className="flex w-max gap-6 pb-4 text-left" style={{ animation: 'scrollReviews 24s linear infinite' }}>
+            {[...reviewCards, ...reviewCards].map((item, index) => (
+              <div key={`${item.name}-${index}`} className="w-[280px] shrink-0 rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm sm:w-[320px]">
                 <div className="mb-4 flex items-center gap-4">
                   <img src={avatarImg} alt="Reviewer" className="h-12 w-12 rounded-full bg-gray-200 object-cover" />
                   <div>
-                    <h5 className="text-[1rem] font-bold text-[#1f2937]">Dr. Himali Perera</h5>
-                    <p className="text-[0.75rem] text-[#6b7280]">Researcher</p>
+                    <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
+                    <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>
                   </div>
                 </div>
                 <div className="mb-4 text-[0.8rem] text-[#C89B3C]">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p className="text-[0.95rem] leading-relaxed text-[#4b5563]">"{review}"</p>
+                <p className="text-[0.95rem] leading-relaxed text-[#4b5563]">"{item.review}"</p>
               </div>
             ))}
           </div>
         </div>
+        <style>{`
+          @keyframes scrollReviews {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+        `}</style>
       </section>
 
       <section className="mx-auto max-w-[1200px] px-6 pb-[80px] text-center md:px-10">
         <p className="mb-2 text-[0.8rem] font-bold uppercase tracking-[2px] text-[#C89B3C]">OTHER HERITAGE PLACES</p>
         <h3 className="mb-10 font-serif text-[2.5rem] font-bold text-[#1f2937]">Nearby Places</h3>
         <div className="flex snap-x gap-4 overflow-x-auto pb-4 text-left md:grid md:grid-cols-4 md:pb-0">
-          {nearbyPlaces.map((place) => (
-            <div key={place.title} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
-              <div className="relative h-[150px] overflow-hidden md:h-[120px]">
-                <img src={place.img} alt={place.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          {nearbyPlaces.map((place) => {
+            const cardContent = (
+              <>
+                <div className="relative h-[150px] overflow-hidden md:h-[120px]">
+                  <img src={place.img} alt={place.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                </div>
+                <div className="flex flex-1 flex-col p-3">
+                  <h4 className="mb-0.5 truncate text-[0.85rem] font-bold text-[#1f2937]">{place.title}</h4>
+                  <p className="mb-3 truncate text-[0.7rem] text-[#6b7280]">{place.loc}</p>
+                  <span className="mt-auto cursor-pointer text-[0.75rem] font-bold text-[#1C5F46] transition-colors hover:text-[#C89B3C]">View Details &rarr;</span>
+                </div>
+              </>
+            );
+
+            return place.route ? (
+              <Link key={place.title} to={place.route} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
+                {cardContent}
+              </Link>
+            ) : (
+              <div key={place.title} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
+                {cardContent}
               </div>
-              <div className="flex flex-1 flex-col p-3">
-                <h4 className="mb-0.5 truncate text-[0.85rem] font-bold text-[#1f2937]">{place.title}</h4>
-                <p className="mb-3 truncate text-[0.7rem] text-[#6b7280]">{place.loc}</p>
-                <span className="mt-auto cursor-pointer text-[0.75rem] font-bold text-[#1C5F46] transition-colors hover:text-[#C89B3C]">View Details &rarr;</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

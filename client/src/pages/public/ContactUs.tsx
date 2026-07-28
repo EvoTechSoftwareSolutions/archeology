@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiMail, FiPhone, FiMapPin, FiSend, FiCheck } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin, FiSend, FiCheck, FiPrinter } from 'react-icons/fi';
 
 const ContactUs = () => {
   const [sent, setSent] = useState(false);
@@ -104,19 +104,25 @@ const ContactUs = () => {
               {
                 icon: FiMail,
                 label: 'Email',
-                value: 'info@heritagesrilanka.lk',
-                href: 'mailto:info@heritagesrilanka.lk',
+                value: 'info@archaeology.gov.lk',
+                href: 'mailto:info@archaeology.gov.lk',
               },
               {
                 icon: FiPhone,
                 label: 'Phone',
-                value: '+94 11 234 5678',
-                href: 'tel:+94112345678',
+                value: '+94 11 2692840, +94 11 2692841',
+                href: 'tel:+94112692840',
+              },
+              {
+                icon: FiPrinter,
+                label: 'Fax',
+                value: '+94 11 2696250',
+                href: '#',
               },
               {
                 icon: FiMapPin,
                 label: 'Address',
-                value: 'No. 45, Galle Road, Colombo 03, Sri Lanka',
+                value: 'Department of Archaeology, Sir Marcus Fernando Mawatha, Colombo - 07, Sri Lanka.',
                 href: '#',
               },
             ].map((item, i) => (
@@ -138,8 +144,8 @@ const ContactUs = () => {
             {/* Map */}
             <div className="rounded-[18px] overflow-hidden border border-gray-100 shadow-sm h-[200px]">
               <iframe
-                title="HeritageSriLanka Office Map"
-                src="https://maps.google.com/maps?q=Colombo+03,+Sri+Lanka&output=embed"
+                title="Department of Archaeology Map"
+                src="https://maps.google.com/maps?q=Department%20of%20Archaeology%2C%20Sir%20Marcus%20Fernando%20Mawatha%2C%20Colombo%2007%2C%20Sri%20Lanka&output=embed"
                 className="w-full h-full border-0"
                 loading="lazy"
               />
