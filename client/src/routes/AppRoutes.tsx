@@ -23,6 +23,15 @@ import FAQs from "../pages/public/FAQs";
 // Admin Pages
 import Dashboard from "../pages/admin/Dashboard";
 import AdminLogin from "../pages/admin/AdminLogin";
+import HistoricalPlaces from "../pages/admin/HistoricalPlaces";
+import MediaLibrary from "../pages/admin/MediaLibrary";
+import Categories from "../pages/admin/Categories";
+import Analytics from "../pages/admin/Analytics";
+import Users from "../pages/admin/Users";
+import AdminProfile from "../pages/admin/AdminProfile";
+import AdminSettings from "../pages/admin/AdminSettings";
+
+
 
 
 const router = createBrowserRouter([
@@ -53,6 +62,13 @@ const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Dashboard /> },
+      { path: "heritage", element: <HistoricalPlaces /> },
+      { path: "media", element: <MediaLibrary /> },
+      { path: "categories", element: <Categories /> },
+      { path: "analytics", element: <Analytics /> },
+      { path: "users", element: <Users /> },
+      { path: "profile", element: <AdminProfile /> },
+      { path: "settings", element: <AdminSettings /> },
     ],
   },
 ]);

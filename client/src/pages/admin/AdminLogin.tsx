@@ -1,10 +1,50 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiEye, FiArrowRight } from 'react-icons/fi';
 import loginImage from '../../assets/Admin/LoginImage.png';
 import logo from '../../assets/Admin/logo2.png';
 
 const AdminLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // Temporarily bypassing backend auth since DB is down
+      /*
+      const response = await fetch('http://localhost:5000/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('adminUser', JSON.stringify(data.user));
+      */
+      
+      // Force redirect to dashboard for now
+      navigate('/admin');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-[#FAFAFA]">
       {/* Left side: Image and Text overlay */}
@@ -55,9 +95,15 @@ const AdminLogin = () => {
               Sign In To The Heritage Administration Console.
             </p>
           </div>
+          
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg text-sm font-['Inter'] text-center">
+              {error}
+            </div>
+          )}
 
           {/* Form */}
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleLogin}>
             
             {/* Email Field */}
             <div>
@@ -68,6 +114,9 @@ const AdminLogin = () => {
                 </div>
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                   placeholder="admin@heritage.lk"
                   className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E5646]/50 focus:border-[#1E5646] transition-colors placeholder:text-gray-400 text-gray-700 font-['Inter'] text-[15px]"
                 />
@@ -85,11 +134,18 @@ const AdminLogin = () => {
                   <FiLock size={18} />
                 </div>
                 <input 
-                  type="password" 
+                  type={showPassword ? "text" : "password"} 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                   placeholder="••••••••••••"
                   className="w-full pl-11 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E5646]/50 focus:border-[#1E5646] transition-colors placeholder:text-gray-400 text-gray-700 font-['Inter'] tracking-widest text-[15px]"
                 />
-                <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
                   <FiEye size={18} />
                 </button>
               </div>
@@ -115,11 +171,12 @@ const AdminLogin = () => {
 
             {/* Sign In Button */}
             <button 
-              type="button"
-              className="w-full bg-[#275949] hover:bg-[#1c4437] text-white font-medium text-[15px] py-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group shadow-[0_4px_14px_0_rgb(39,89,73,0.39)] mt-2"
+              type="submit"
+              disabled={loading}
+              className={`w-full ${loading ? 'bg-[#1c4437] opacity-70' : 'bg-[#275949] hover:bg-[#1c4437]'} text-white font-medium text-[15px] py-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group shadow-[0_4px_14px_0_rgb(39,89,73,0.39)] mt-2`}
             >
-              <span>Sign In</span>
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+              <span>{loading ? 'Signing In...' : 'Sign In'}</span>
+              {!loading && <FiArrowRight className="group-hover:translate-x-1 transition-transform" />}
             </button>
             
           </form>
