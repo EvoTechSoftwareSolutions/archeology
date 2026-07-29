@@ -10,7 +10,7 @@ const AdminLayout = () => {
       className="
 flex
 min-h-screen
-bg-gray-100
+bg-[#FAFAFA]
 "
     >
       {/* Sidebar */}
