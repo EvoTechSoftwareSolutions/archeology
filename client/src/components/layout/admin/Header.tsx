@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
+import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
 
-const Header = () => {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -27,24 +31,31 @@ const Header = () => {
   }, []);
 
   return (
-    <header ref={containerRef} className="sticky top-0 h-22 bg-[#F8F6F1] flex items-center justify-between px-8 z-10">
-      
-      {/* Search Bar */}
-      <div className="flex-1 max-w-lg">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-            <FiSearch size={18} />
+    <header ref={containerRef} className="sticky top-0 h-22 bg-[#F8F6F1] flex items-center justify-between px-4 py-3 lg:px-8 z-10">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="lg:hidden p-2 bg-white rounded-full border border-gray-200 shadow-sm text-gray-600 hover:bg-gray-50"
+        >
+          <FiMenu size={20} />
+        </button>
+        <div className="hidden sm:block flex-1 min-w-0 max-w-lg">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+              <FiSearch size={18} />
+            </div>
+            <input
+              type="text"
+              placeholder="Search places, users..."
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"
+            />
           </div>
-          <input 
-            type="text" 
-            placeholder="Search places, users..." 
-            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"
-          />
         </div>
       </div>
 
       {/* Right side actions */}
-      <div className="flex items-center gap-4 relative">
+      <div className="flex items-center gap-3 relative">
         
         {/* Notifications */}
         <div className="relative">

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { 
   MdAccountBalance, 
   MdPublic, 
@@ -21,7 +22,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="font-['Inter'] pb-10">
+    <div className="font-['Inter'] pb-10 w-full max-w-[1600px] mx-auto px-2 sm:px-4 md:px-0">
       
       {/* Header text */}
       <div className="mb-6">
@@ -34,14 +35,14 @@ const Dashboard = () => {
       </div>
 
       {/* Hero Banner */}
-      <div className="relative w-full h-48 rounded-[1.5rem] bg-gradient-to-r from-[#275949] to-[#1E4538] overflow-hidden mb-8 shadow-md">
+      <div className="relative w-full h-80 sm:h-72 lg:h-48 rounded-3xl bg-linear-to-r from-[#275949] to-[#1E4538] overflow-hidden mb-8 shadow-md">
         <div className="absolute inset-0 right-0 left-auto w-1/2 md:w-1/3 z-0">
           <img 
             src={daladamaligawa} 
             alt="Dalada Maligawa" 
             className="w-full h-full object-cover opacity-90 mix-blend-overlay"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1E4538] to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#1E4538] to-transparent"></div>
         </div>
         
         <div className="relative z-10 p-8 flex flex-col justify-center h-full">
@@ -56,7 +57,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
           return (
@@ -79,7 +80,7 @@ const Dashboard = () => {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         
         {/* Visitor Analytics Chart (Mock) */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -140,12 +141,15 @@ const Dashboard = () => {
           <h3 className="font-bold text-gray-900 font-['Playfair_Display'] mb-6">Quick Actions</h3>
           
           <div className="flex-1 flex flex-col gap-4">
-            <button className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group">
+            <Link
+              to="/admin/add-place"
+              className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group"
+            >
               <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white text-[#275949] group-hover:shadow-sm">
                 <MdAdd />
               </div>
               <span className="font-semibold text-sm text-gray-800">Add a New Place</span>
-            </button>
+            </Link>
             
             <button className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group">
               <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white text-[#D97757] group-hover:shadow-sm">
@@ -172,7 +176,7 @@ const Dashboard = () => {
       </div>
 
       {/* Provincial Distribution Chart (Mock) */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100">
         <h3 className="font-bold text-gray-900 font-['Playfair_Display'] mb-6">Provincial Distribution</h3>
         <div className="relative h-64 w-full">
           <svg viewBox="0 0 1000 250" className="w-full h-full preserve-aspect-ratio-none">

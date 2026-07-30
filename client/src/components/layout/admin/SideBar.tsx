@@ -7,12 +7,18 @@ import {
   FiImage, 
   FiUsers, 
   FiLogOut,
-  FiChevronLeft
+  FiChevronLeft,
+  FiX
 } from "react-icons/fi";
 import { MdAccountBalance, MdBarChart } from "react-icons/md";
 import logo from "../../../assets/Admin/logo2.png";
 
-const SideBar = () => {
+interface SideBarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const SideBar = ({ isOpen, onClose }: SideBarProps) => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -43,10 +49,10 @@ const SideBar = () => {
   ];
 
   return (
-    <aside 
-      className={`${
-        isCollapsed ? "w-20" : "w-64"
-      } min-h-screen bg-[#275949] text-white flex flex-col font-['Inter'] relative transition-all duration-300 z-20`}
+    <aside
+      className={`fixed inset-y-0 left-0 z-30 transform bg-[#275949] text-white flex flex-col font-['Inter'] transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'
+      } ${isCollapsed ? 'w-20' : 'w-64'} lg:w-auto lg:min-h-screen`}
     >
       
       {/* Logo Area */}
@@ -54,12 +60,20 @@ const SideBar = () => {
         {!isCollapsed && (
           <img src={logo} alt="Logo" className="h-8 transition-opacity duration-300" />
         )}
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="min-w-[24px] w-6 h-6 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors"
-        >
-          <FiChevronLeft size={14} className={`text-white/70 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex w-6 h-6 rounded-full border border-white/20 items-center justify-center hover:bg-white/10 transition-colors"
+          >
+            <FiChevronLeft size={14} className={`text-white/70 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+          </button>
+          <button
+            onClick={onClose}
+            className="lg:hidden w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors"
+          >
+            <FiX size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -89,7 +103,7 @@ const SideBar = () => {
                           : "text-white/70 hover:bg-white/5 hover:text-white border-transparent"
                       }`}
                     >
-                      <Icon size={18} className={`flex-shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
+                      <Icon size={18} className={`shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
                       {!isCollapsed && (
                         <span className="whitespace-nowrap overflow-hidden transition-all duration-300">
                           {item.name}

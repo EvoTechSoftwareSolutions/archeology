@@ -28,6 +28,7 @@ import MediaLibrary from "../pages/admin/MediaLibrary";
 import Categories from "../pages/admin/Categories";
 import Analytics from "../pages/admin/Analytics";
 import Users from "../pages/admin/Users";
+import AddNewPlace from "../pages/admin/AddNewPlace";
 import AdminProfile from "../pages/admin/AdminProfile";
 import AdminSettings from "../pages/admin/AdminSettings";
 
@@ -63,6 +64,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Dashboard /> },
       { path: "heritage", element: <HistoricalPlaces /> },
+      { path: "add-place", element: <AddNewPlace /> },
       { path: "media", element: <MediaLibrary /> },
       { path: "categories", element: <Categories /> },
       { path: "analytics", element: <Analytics /> },
