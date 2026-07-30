@@ -8,8 +8,7 @@ import {
   deleteProvince,
 } from "../controllers/province.controller.js";
 
-import { authenticate } from "../middleware/auth.middleware.js";
-import { authorize } from "../middleware/role.middleware.js";
+
 import { validate } from "../middleware/validate.middleware.js";
 
 import {
@@ -31,8 +30,7 @@ router.get("/:id", getProvinceById);
 // Create province
 router.post(
   "/",
-  authenticate,
-  authorize("ADMIN"),
+
   validate(createProvinceSchema),
   createProvince,
 );
@@ -40,13 +38,12 @@ router.post(
 // Update province
 router.put(
   "/:id",
-  authenticate,
-  authorize("admin"),
+
   validate(updateProvinceSchema),
   updateProvince,
 );
 
 // Delete province
-router.delete("/:id", authenticate, authorize("admin"), deleteProvince);
+router.delete("/:id", deleteProvince);
 
 export default router;

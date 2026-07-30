@@ -7,21 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  password   String
-  department String
-  role       String   @default("USER")
-
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-
-  // Relations
-  auditLogs       AuditLog[]
-  verifiedSites   SiteMonograph[]
-}
 
 model Province {
   id          Int      @id @default(autoincrement())
@@ -89,7 +74,6 @@ model SiteMonograph {
 
   historicalPlaceId   Int
 
-  verifiedById        Int
 
   contentBody         String
 
@@ -103,13 +87,11 @@ model SiteMonograph {
   // Relations
   historicalPlace HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
 
-  verifiedBy User @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
 }
 
 model AuditLog {
   id              Int      @id @default(autoincrement())
 
-  userId          Int
 
   targetPlaceId   Int
 
@@ -120,7 +102,6 @@ model AuditLog {
   createdAt       DateTime @default(now())
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   historicalPlace HistoricalPlace @relation(fields: [targetPlaceId], references: [id], onDelete: Cascade)
 }
