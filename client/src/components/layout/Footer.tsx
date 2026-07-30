@@ -134,7 +134,7 @@ const Footer: React.FC = () => {
           {/* Row 1 — copyright left, Login right (both screens) */}
           <div className="flex items-center justify-between mb-1 md:mb-0 md:hidden">
             <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
-            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
+            <Link to="/admin/login" className="whitespace-nowrap">Login as Admin</Link>
           </div>
 
           {/* Row 2 — Design by centred on mobile only */}
@@ -145,7 +145,7 @@ const Footer: React.FC = () => {
           {/* Desktop — all three in one row */}
           <div className="hidden md:flex items-center justify-between">
             <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
-            <Link to="/admin" className="whitespace-nowrap">Login as Admin</Link>
+            <Link to="/admin/login" className="whitespace-nowrap">Login as Admin</Link>
             <span className="whitespace-nowrap text-right">Design by Evon Technology Software Solution (PVT) Ltd</span>
           </div>
         </div>
