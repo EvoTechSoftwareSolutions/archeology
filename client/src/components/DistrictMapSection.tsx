@@ -29,12 +29,12 @@ const DistrictMapSection = () => {
         {/* Map Layout */}
         <div className="relative flex items-center justify-center">
           {/* Compass */}
-          <div className="hidden xl:block absolute left-0">
-            <img src="/images/COMPASS.png" alt="Compass" className="w-28" />
+          <div className="hidden xl:block absolute left-0 top-4">
+            <img src="/images/COMPASS.png" alt="Compass" className="w-38" />
           </div>
 
           {/* Interactive Map — no max-w cap here, so it can use the full 700px map size */}
-          <div className="relative z-20 flex w-full justify-center">
+          <div className="relative z-20 flex w-[-1200px] justify-center">
             <DistrictHeritageExplorer />
           </div>
 

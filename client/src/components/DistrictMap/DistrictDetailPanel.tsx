@@ -9,7 +9,7 @@ interface Props {
 const DistrictDetailPanel = ({ district, onClose }: Props) => {
   return (
     <div
-      className={`flex w-1/3 flex-shrink-0 flex-col items-center gap-3 px-4 transition-all duration-500 ease-out ${
+      className={`flex w-[400px]  flex-shrink-0 flex-col items-center gap-3 px-2 transition-all duration-500 ease-out ${
         district
           ? "translate-x-0 opacity-100"
           : "pointer-events-none translate-x-10 opacity-0"

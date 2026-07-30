@@ -14,11 +14,11 @@ const DistrictHeritageExplorer = () => {
   } = useDistrictMap();
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl items-center overflow-hidden px-4 py-10">
+    <div className="mx-auto flex w-full max-w-7xl items-center overflow-hidden px-20 py-1">
       {/* Full map: bigger, w-full at rest, shrinks to the left 2/3 once a district is picked */}
       <div
         className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
-          selectedDistrict ? "w-2/3" : "w-full"
+          selectedDistrict ? "w-3/5" : "w-full"
         }`}
       >
         <SriLankaDistrictMap
