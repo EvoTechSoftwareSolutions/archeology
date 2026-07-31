@@ -1,9 +1,16 @@
 interface FacilitiesTravelFormProps {
+  value: {
+    nearbyHotels: string;
+    nearbyHospitals: string;
+    nearbyRestaurant: string;
+    travelTips: string;
+  };
+  onChange: (field: "nearbyHotels" | "nearbyHospitals" | "nearbyRestaurant" | "travelTips", value: string) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
-const FacilitiesTravelForm = ({ onBack, onNext }: FacilitiesTravelFormProps) => {
+const FacilitiesTravelForm = ({ value, onChange, onBack, onNext }: FacilitiesTravelFormProps) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col h-full">
       <h2 className="text-[24px] font-bold font-serif mb-6 text-gray-900 tracking-tight">Facilities & Travel</h2>
@@ -15,6 +22,8 @@ const FacilitiesTravelForm = ({ onBack, onNext }: FacilitiesTravelFormProps) => 
           <textarea
             placeholder="List nearby accommodation options"
             rows={4}
+            value={value.nearbyHotels}
+            onChange={(event) => onChange("nearbyHotels", event.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1E604B] focus:border-[#1E604B] resize-none"
           ></textarea>
         </div>
@@ -25,6 +34,8 @@ const FacilitiesTravelForm = ({ onBack, onNext }: FacilitiesTravelFormProps) => 
           <textarea
             placeholder="List nearby medical facilities"
             rows={4}
+            value={value.nearbyHospitals}
+            onChange={(event) => onChange("nearbyHospitals", event.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1E604B] focus:border-[#1E604B] resize-none"
           ></textarea>
         </div>
@@ -35,6 +46,8 @@ const FacilitiesTravelForm = ({ onBack, onNext }: FacilitiesTravelFormProps) => 
           <textarea
             placeholder="List nearby restaurants"
             rows={4}
+            value={value.nearbyRestaurant}
+            onChange={(event) => onChange("nearbyRestaurant", event.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1E604B] focus:border-[#1E604B] resize-none"
           ></textarea>
         </div>
@@ -45,6 +58,8 @@ const FacilitiesTravelForm = ({ onBack, onNext }: FacilitiesTravelFormProps) => 
           <textarea
             placeholder="Best time to visit, entry fee, dress code"
             rows={4}
+            value={value.travelTips}
+            onChange={(event) => onChange("travelTips", event.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#1E604B] focus:border-[#1E604B] resize-none"
           ></textarea>
         </div>

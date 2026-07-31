@@ -30,7 +30,14 @@ export const getHistoricalPlaces = async (
   next: NextFunction,
 ) => {
   try {
-    const places = await historicalPlaceService.getAllPlaces();
+    const { district } = req.query;
+    let places;
+
+    if (district) {
+      places = await historicalPlaceService.getPlacesByDistrictName(district as string);
+    } else {
+      places = await historicalPlaceService.getAllPlaces();
+    }
 
     return res.status(200).json({
       success: true,

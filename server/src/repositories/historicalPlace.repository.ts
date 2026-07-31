@@ -6,7 +6,11 @@ export const historicalPlaceRepository = {
   getAll() {
     return prisma.historicalPlace.findMany({
       include: {
-        district: true,
+        district: {
+          include: {
+            province: true,
+          },
+        },
       },
     });
   },
@@ -18,7 +22,11 @@ export const historicalPlaceRepository = {
       },
 
       include: {
-        district: true,
+        district: {
+          include: {
+            province: true,
+          },
+        },
       },
     });
   },
@@ -38,7 +46,28 @@ export const historicalPlaceRepository = {
       },
 
       include: {
-        district: true,
+        district: {
+          include: {
+            province: true,
+          },
+        },
+      },
+    });
+  },
+
+  getByDistrictName(districtName: string) {
+    return prisma.historicalPlace.findMany({
+      where: {
+        district: {
+          name: districtName,
+        },
+      },
+      include: {
+        district: {
+          include: {
+            province: true,
+          },
+        },
       },
     });
   },

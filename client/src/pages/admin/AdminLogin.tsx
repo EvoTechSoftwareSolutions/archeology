@@ -18,11 +18,10 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      // Temporarily bypassing backend auth since DB is down
-      /*
       const response = await fetch('http://localhost:5000/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -32,11 +31,12 @@ const AdminLogin = () => {
         throw new Error(data.message || 'Login failed');
       }
 
+      if (data.data?.role !== 'ADMIN') {
+        throw new Error('Only admin users can access this dashboard');
+      }
+
       localStorage.setItem('adminToken', data.token);
-      localStorage.setItem('adminUser', JSON.stringify(data.user));
-      */
-      
-      // Force redirect to dashboard for now
+      localStorage.setItem('adminUser', JSON.stringify(data.data));
       navigate('/admin');
     } catch (err: any) {
       setError(err.message);

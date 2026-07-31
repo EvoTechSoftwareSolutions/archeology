@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiMoreHorizontal, FiSearch, FiPlus, FiEdit2, FiTrash2, FiShield } from 'react-icons/fi';
 
 interface User {
   id: number;
   name: string;
   email: string;
-  initials: string;
-  initialsColor: string;
   role: 'Administrator' | 'Editor' | 'Researcher' | 'Viewer';
-  status: 'Active' | 'Inactive';
-  lastActive: string;
+  department?: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 const roleColors: Record<string, string> = {
@@ -19,32 +18,53 @@ const roleColors: Record<string, string> = {
   Viewer: '#6b7280',
 };
 
-const initialUsers: User[] = [
-  { id: 1, name: 'Priyanka Gunawardena', email: 'priyanka@heritage.lk', initials: 'PG', initialsColor: '#1E4538', role: 'Administrator', status: 'Active', lastActive: '2 min ago' },
-  { id: 2, name: 'Ravindu Jayawardena',  email: 'ravindu@heritage.lk',  initials: 'RJ', initialsColor: '#1E4538', role: 'Editor',        status: 'Active', lastActive: '1 hr ago' },
-  { id: 3, name: 'Dr. Malini Jayasuriya',email: 'malini@hejceylon.org', initials: 'DJ', initialsColor: '#C9A84C', role: 'Researcher',    status: 'Active', lastActive: '3 hrs ago' },
-  { id: 4, name: 'Sanduni Alwis',        email: 'sanduni@royalcollege.lk', initials: 'SA', initialsColor: '#1E4538', role: 'Editor',     status: 'Inactive', lastActive: '5 days ago' },
-  { id: 5, name: 'Chamara Perera',       email: 'chamara@archaeology.gov.lk', initials: 'CP', initialsColor: '#1E4538', role: 'Viewer',  status: 'Active', lastActive: 'Yesterday' },
-];
-
 const Users: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Add / Edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState({ name: '', email: '', role: 'Viewer' as User['role'], status: 'Active' as User['status'] });
+  const [formData, setFormData] = useState({ name: '', email: '', role: 'Viewer' as User['role'], status: 'Active' as 'Active' | 'Inactive' });
 
   const getInitials = (name: string) =>
     name.split(' ').filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+  const loadUsers = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/users', {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Unable to load users from the server.');
+      }
+
+      const payload = await response.json();
+      setUsers(payload.data ?? []);
+    } catch (err) {
+      console.error(err);
+      setError('Unable to load users. Please refresh the page.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadUsers();
+  }, []);
 
   const handleOpenModal = (user: User | null = null) => {
     setOpenMenuId(null);
     if (user) {
       setEditingUser(user);
-      setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
+      setFormData({ name: user.name, email: user.email, role: user.role, status: user.isActive ? 'Active' : 'Inactive' });
     } else {
       setEditingUser(null);
       setFormData({ name: '', email: '', role: 'Viewer', status: 'Active' });
@@ -54,38 +74,99 @@ const Users: React.FC = () => {
 
   const handleCloseModal = () => { setIsModalOpen(false); setEditingUser(null); };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id
-        ? { ...u, ...formData, initials: getInitials(formData.name) }
-        : u
-      ));
-    } else {
+    if (!editingUser) {
+      // New user creation is not supported by the current backend API,
+      // so keep it as a local-only placeholder for now.
       const newId = Math.max(0, ...users.map(u => u.id)) + 1;
       setUsers([...users, {
         id: newId,
-        ...formData,
-        initials: getInitials(formData.name),
-        initialsColor: roleColors[formData.role] || '#1E4538',
-        lastActive: 'Just now',
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        isActive: formData.status === 'Active',
+        createdAt: new Date().toISOString(),
       }]);
+      handleCloseModal();
+      return;
     }
-    handleCloseModal();
+
+    setOpenMenuId(null);
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          role: formData.role,
+          isActive: formData.status === 'Active',
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || 'Unable to update user');
+      }
+
+      await loadUsers();
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Unable to update user.');
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     setOpenMenuId(null);
-    if (window.confirm('Are you sure you want to remove this user?')) {
-      setUsers(users.filter(u => u.id !== id));
+    if (!window.confirm('Are you sure you want to remove this user?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/users/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || 'Unable to delete user');
+      }
+
+      await loadUsers();
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Unable to delete user.');
     }
   };
 
-  const handleToggleStatus = (id: number) => {
+  const handleToggleStatus = async (id: number) => {
     setOpenMenuId(null);
-    setUsers(users.map(u =>
-      u.id === id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u
-    ));
+    const user = users.find(u => u.id === id);
+    if (!user) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/v1/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          role: user.role,
+          isActive: !user.isActive,
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || 'Unable to update user status');
+      }
+
+      await loadUsers();
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'Unable to update user status.');
+    }
   };
 
   const filtered = users.filter(u =>
@@ -130,8 +211,18 @@ const Users: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-visible relative">
-        <table className="w-full text-left">
+      {error && (
+        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+      {loading ? (
+        <div className="rounded-2xl border border-gray-100 bg-white p-10 text-center text-gray-500">
+          Loading users from the database...
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-visible relative">
+          <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-100">
               <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">User</th>
@@ -170,14 +261,14 @@ const Users: React.FC = () => {
 
                 {/* Status */}
                 <td className="px-6 py-4">
-                  <span className="flex items-center gap-1.5 text-sm">
-                    <span className={`w-2 h-2 rounded-full ${user.status === 'Active' ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                    <span className={user.status === 'Active' ? 'text-emerald-600 font-medium' : 'text-gray-400 font-medium'}>{user.status}</span>
+                              <span className="flex items-center gap-1.5 text-sm">
+                    <span className={`w-2 h-2 rounded-full ${user.isActive ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+                    <span className={user.isActive ? 'text-emerald-600 font-medium' : 'text-gray-400 font-medium'}>{user.isActive ? 'Active' : 'Inactive'}</span>
                   </span>
                 </td>
 
                 {/* Last Active */}
-                <td className="px-6 py-4 text-sm text-gray-500">{user.lastActive}</td>
+                <td className="px-6 py-4 text-sm text-gray-500">{new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
 
                 {/* Actions */}
                 <td className="px-6 py-4 relative">
@@ -200,7 +291,7 @@ const Users: React.FC = () => {
                         onClick={() => handleToggleStatus(user.id)}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
-                        <FiShield size={14} /> {user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                        <FiShield size={14} /> {user.isActive ? 'Deactivate' : 'Activate'}
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
@@ -224,6 +315,7 @@ const Users: React.FC = () => {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

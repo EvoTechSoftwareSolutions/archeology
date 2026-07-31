@@ -4,7 +4,12 @@ const prisma = new PrismaClient();
 
 export const districtRepository = {
   getAll() {
-    return prisma.district.findMany();
+    return prisma.district.findMany({
+      include: {
+        province: true,
+        historicalPlaces: true,
+      },
+    });
   },
 
     getById(id: number) {
@@ -14,6 +19,7 @@ export const districtRepository = {
             },
             include:{
                 historicalPlaces:true,
+                province: true,
             }
             
         });

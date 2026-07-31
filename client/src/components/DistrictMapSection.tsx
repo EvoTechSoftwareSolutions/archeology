@@ -29,7 +29,7 @@ const DistrictMapSection = () => {
         {/* Map Layout */}
         <div className="relative flex items-center justify-center">
           {/* Compass */}
-          <div className="hidden xl:block absolute left-0">
+          <div className="hidden xl:block absolute left-0 -top-10 z-30 pointer-events-none">
             <img src="/images/COMPASS.png" alt="Compass" className="w-28" />
           </div>
 
