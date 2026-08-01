@@ -1,13 +1,21 @@
-declare namespace Express {
+import "express";
 
-    export interface Request {
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        role: string;
+        email: string;
+      };
 
-        user?:{
-            id:number;
-            role:string;
-            email:string;
-        }
+      file?: Express.Multer.File;
 
+      files?: Express.Multer.File[] | {
+        [fieldname: string]: Express.Multer.File[];
+      };
     }
-
+  }
 }
+
+export {};

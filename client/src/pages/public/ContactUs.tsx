@@ -3,13 +3,37 @@ import { FiMail, FiPhone, FiMapPin, FiSend, FiCheck, FiPrinter } from 'react-ico
 
 const ContactUs = () => {
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
-    setForm({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSent(false), 4000);
+    setSent(false);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Unable to send your message right now.');
+      }
+
+      setSent(true);
+      setForm({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => setSent(false), 4000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,6 +60,12 @@ const ContactUs = () => {
             {sent && (
               <div className="flex items-center gap-3 bg-[#E8F3EE] border border-[#1C5F46]/30 rounded-[14px] p-4 mb-6 text-[#1C5F46] font-bold text-sm">
                 <FiCheck size={18} /> Your message has been sent! We'll get back to you shortly.
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-[14px] p-4 mb-6 text-red-600 font-bold text-sm">
+                {error}
               </div>
             )}
 
@@ -88,9 +118,10 @@ const ContactUs = () => {
               </div>
               <button
                 type="submit"
-                className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#1C5F46] text-white font-bold text-sm hover:bg-[#154633] transition-colors shadow-md"
+                disabled={isLoading}
+                className="flex items-center gap-2 px-8 py-3 rounded-full bg-[#1C5F46] text-white font-bold text-sm hover:bg-[#154633] transition-colors shadow-md disabled:opacity-70"
               >
-                <FiSend size={16} /> Send Message
+                <FiSend size={16} /> {isLoading ? 'Sending...' : 'Send Message'}
               </button>
             </form>
           </div>

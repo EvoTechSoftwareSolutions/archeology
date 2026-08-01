@@ -1,6 +1,6 @@
 
 
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
 import buddhaImg from '../../assets/image 35.png';
@@ -33,12 +33,7 @@ const heroSlides = [
     subtitle: "Vadahitina Maligawa (Inner Chamber)",
     desc: "The innermost sanctum of the temple, the Vadahitina Maligawa houses the golden casket containing the Sacred Tooth Relic of the Buddha. Devotees offer flowers, incense, and prayers at the gilded doors during the three daily Thevava ceremonies."
   },
-  {
-    id: 3,
-    image: dm3,
-    subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
-    desc: "This ornate pavilion resonates with the sound of traditional Kandyan drums and woodwind instruments during each Thevava ritual. The rhythmic drumming, known as Hewisi, has echoed through this courtyard for centuries as an offering to the Sacred Relic."
-  },
+  
   {
     id: 4,
     image: dm4,
@@ -68,6 +63,12 @@ const heroSlides = [
 
 const TempleOfToothDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+  const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number; }[]>([]);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  const API = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
+    : '/api/v1';
 
   // Selected slide drives the hero section
   const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
@@ -80,6 +81,40 @@ const TempleOfToothDetails = () => {
       heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
   };
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        setReviewError(null);
+        const res = await fetch(`${API}/reviews`, { credentials: 'include' });
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json?.message || 'Failed to load reviews.');
+        }
+
+        const activeReviews = (json.data ?? [])
+          .filter((review: any) => review?.isActive !== false)
+          .map((review: any) => ({
+            name: review.reviewerName || 'Guest Reviewer',
+            role: review.reviewerRole || 'Visitor',
+            review: review.reviewText || '',
+            image: review.image || null,
+            rating: Number(review.rating) || 5,
+          }));
+
+        setReviewCards(activeReviews);
+        if (activeReviews.length === 0) {
+          setReviewError('No active reviews were returned by the API.');
+        }
+      } catch (error) {
+        console.error('TempleOfToothDetails loadReviews error:', error);
+        setReviewCards([]);
+        setReviewError('Unable to load visitor reviews.');
+      }
+    };
+
+    void loadReviews();
+  }, [API]);
 
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=Temple+of+the+Sacred+Tooth+Relic,+Kandy,+Sri+Lanka&travelmode=${routeMode}`;
   const routeInfo = routeMode === 'driving'
@@ -486,28 +521,37 @@ const TempleOfToothDetails = () => {
 
         <div className="overflow-hidden rounded-[24px]">
           <div className="review-carousel-track flex gap-6 text-left pb-4">
-            {[1, 2, 3, 1, 2, 3].map((i, index) => {
-              const isDuplicate = index >= 3;
-              return (
+            {reviewCards.length > 0 ? (
+              reviewCards.map((item, index) => (
                 <div
-                  key={`${i}-${index}`}
-                  aria-hidden={isDuplicate}
+                  key={`${item.name}-${index}`}
                   className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <img src={avatarImg} alt="Reviewer" className="w-12 h-12 rounded-full object-cover bg-gray-200" />
+                    <img
+                      src={item.image || avatarImg}
+                      alt={item.name}
+                      className="w-12 h-12 rounded-full object-cover bg-gray-200"
+                    />
                     <div>
-                      <h5 className="font-bold text-[1rem] text-[#1f2937]">Dr. Himali Perera</h5>
-                      <p className="text-[#6b7280] text-[0.75rem]">Researcher</p>
+                      <h5 className="font-bold text-[1rem] text-[#1f2937]">{item.name}</h5>
+                      <p className="text-[#6b7280] text-[0.75rem]">{item.role}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">★★★★★</div>
-                  <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">
-                    "Impeccably documented. A vital reference for my fieldwork."
-                  </p>
+                  <div className="flex gap-1 text-[#C89B3C] text-[0.8rem] mb-4">
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <span key={starIndex}>{starIndex < item.rating ? '★' : '☆'}</span>
+                    ))}
+                  </div>
+                  <p className="text-[#4b5563] text-[0.95rem] leading-relaxed">"{item.review}"</p>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              <div className="w-full bg-white rounded-[24px] p-10 shadow-sm border border-gray-100">
+                <p className="text-[#6b7280] mb-2">No reviews are available at the moment. Please check back later.</p>
+                {reviewError && <p className="text-[#b91c1c] text-[0.95rem]">{reviewError}</p>}
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -1,32 +1,61 @@
-import React, { useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import { FiPlus, FiEdit2, FiTrash2, FiSearch } from "react-icons/fi";
 
-const initialCategories = [
-  { id: 1, name: 'Religious Site', description: 'Temples, shrines, and places of worship.', count: 45 },
-  { id: 2, name: 'Ancient City', description: 'Ruins and remnants of ancient civilizations.', count: 12 },
-  { id: 3, name: 'Fortress', description: 'Historical forts and defensive structures.', count: 8 },
-  { id: 4, name: 'Museum', description: 'Institutions that conserve a collection of artifacts.', count: 24 },
-  { id: 5, name: 'Natural Heritage', description: 'Naturally occurring heritage sites.', count: 15 },
-];
+interface Category {
+  id: number;
+  name: string;
+  description?: string;
+  count: number;
+}
 
 const Categories = () => {
-  const [categories, setCategories] = useState(initialCategories);
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  // Modal states
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
-  
-  // Form state
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState({ name: "", description: "" });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleOpenModal = (category: any = null) => {
+  const API_BASE =
+    import.meta.env.VITE_API_BASE_URL ??
+    (import.meta.env.DEV ? "" : "http://localhost:5000");
+
+  const loadCategories = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/v1/categories`, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to load categories");
+      }
+
+      const payload = await response.json();
+      setCategories(payload.data ?? []);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to load categories. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadCategories();
+  }, []);
+
+  const handleOpenModal = (category: Category | null = null) => {
     if (category) {
       setEditingCategory(category);
-      setFormData({ name: category.name, description: category.description });
+      setFormData({ name: category.name, description: category.description ?? "" });
     } else {
       setEditingCategory(null);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: "", description: "" });
     }
     setIsModalOpen(true);
   };
@@ -34,31 +63,73 @@ const Categories = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: '', description: '' });
+    setFormData({ name: "", description: "" });
+    setError(null);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingCategory) {
-      setCategories(categories.map(c => 
-        c.id === editingCategory.id ? { ...c, ...formData } : c
-      ));
-    } else {
-      const newId = Math.max(0, ...categories.map(c => c.id)) + 1;
-      setCategories([...categories, { id: newId, ...formData, count: 0 }]);
+    setSaving(true);
+    setError(null);
+
+    const endpoint = editingCategory
+      ? `${API_BASE}/api/v1/categories/${editingCategory.id}`
+      : `${API_BASE}/api/v1/categories`;
+    const method = editingCategory ? "PATCH" : "POST";
+
+    try {
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || "Unable to save category");
+      }
+
+      await loadCategories();
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Unable to save category.");
+    } finally {
+      setSaving(false);
     }
-    handleCloseModal();
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      setCategories(categories.filter(c => c.id !== id));
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this category?")) {
+      return;
+    }
+
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/v1/categories/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || "Unable to delete category");
+      }
+
+      await loadCategories();
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : "Unable to delete category.");
     }
   };
 
-  const filteredCategories = categories.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (category.description ?? "").toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -99,8 +170,18 @@ const Categories = () => {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10 pb-10">
-        {filteredCategories.map(category => (
+      {error && (
+        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+      {loading ? (
+        <div className="rounded-2xl border border-gray-100 bg-white p-10 text-center text-gray-500">
+          Loading categories...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10 pb-10">
+          {filteredCategories.map(category => (
           <div key={category.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
             <div className="flex justify-between items-start mb-4">
               <div className="w-12 h-12 rounded-2xl bg-[#1E4538]/5 text-[#1E4538] flex items-center justify-center font-bold text-xl border border-[#1E4538]/10">
@@ -129,12 +210,13 @@ const Categories = () => {
             </div>
           </div>
         ))}
-        {filteredCategories.length === 0 && (
-          <div className="col-span-full py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 border-dashed">
-            No categories found matching your search.
-          </div>
-        )}
-      </div>
+          {filteredCategories.length === 0 && (
+            <div className="col-span-full py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 border-dashed">
+              No categories found matching your search.
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

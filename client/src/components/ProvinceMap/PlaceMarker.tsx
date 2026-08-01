@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { HistoricalPlace } from "../../types/province";
+import sigiriya from "../../assets/places-sigiriya.png";
 
 interface Props {
   place: HistoricalPlace;
@@ -26,9 +27,10 @@ const PlaceMarker = ({ place, leftPct, topPct }: Props) => {
           }`}
         >
           <img
-            src={place.image}
+            src={place.image || sigiriya}
             alt={place.name}
             className="h-24 w-full rounded-t-2xl object-cover"
+            onError={(e) => { e.currentTarget.src = sigiriya; }}
           />
           <div className="p-3">
             <p className="font-serif text-[13px] font-bold leading-tight text-[#2B2118]">

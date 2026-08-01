@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { 
   MdAccountBalance, 
@@ -12,13 +13,67 @@ import {
 import { FiArrowUpRight } from "react-icons/fi";
 import daladamaligawa from "../../assets/Admin/daladamaligawa.png";
 
+type ContactMessage = {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+  createdAt: string;
+};
+
 const Dashboard = () => {
+  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [contactCount, setContactCount] = useState(0);
+  const [recentMessages, setRecentMessages] = useState<ContactMessage[]>([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [newsletterResponse, contactStatsResponse, contactMessagesResponse] = await Promise.all([
+          fetch("http://localhost:5000/api/v1/newsletter/stats"),
+          fetch("http://localhost:5000/api/v1/contact/stats", { credentials: "include" }),
+          fetch("http://localhost:5000/api/v1/contact/messages", { credentials: "include" }),
+        ]);
+
+        const newsletterPayload = await newsletterResponse.json();
+        if (newsletterResponse.ok) {
+          setSubscriberCount(newsletterPayload.data?.active ?? 0);
+        }
+
+        const contactStatsPayload = await contactStatsResponse.json();
+        if (contactStatsResponse.ok) {
+          setContactCount(contactStatsPayload.data?.unread ?? 0);
+        }
+
+        const contactMessagesPayload = await contactMessagesResponse.json();
+        if (contactMessagesResponse.ok) {
+          setRecentMessages(contactMessagesPayload.data ?? []);
+        }
+      } catch (error) {
+        console.error("Failed to load dashboard stats", error);
+      }
+    };
+
+    void fetchStats();
+
+    const intervalId = window.setInterval(() => {
+      void fetchStats();
+    }, 5000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   const stats = [
     { label: "Historical Places", value: "176", trend: "+ 8%", icon: MdAccountBalance },
     { label: "UNESCO Sites", value: "08", trend: "+ 0%", icon: MdPublic },
     { label: "Images", value: "9,640", trend: "+ 5%", icon: MdImage },
     { label: "Monthly Visitors", value: "22,400", trend: "+ 20%", icon: MdPeople },
+    { label: "Newsletter Subscribers", value: subscriberCount.toString(), trend: "Live", icon: MdBarChart },
+    { label: "Unread Messages", value: contactCount.toString(), trend: "Live", icon: MdPersonOutline },
   ];
 
   return (
@@ -158,12 +213,15 @@ const Dashboard = () => {
               <span className="font-semibold text-sm text-gray-800">Upload a Image</span>
             </button>
             
-            <button className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group">
+            <Link
+              to="/admin/users"
+              className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group"
+            >
               <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white text-blue-500 group-hover:shadow-sm">
                 <MdPersonOutline />
               </div>
-              <span className="font-semibold text-sm text-gray-800">Mange Users</span>
-            </button>
+              <span className="font-semibold text-sm text-gray-800">Manage Users</span>
+            </Link>
             
             <button className="flex items-center gap-4 p-4 rounded-xl border border-gray-200 hover:border-[#275949] hover:bg-[#F4F9F8] transition-colors w-full text-left group">
               <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white text-indigo-500 group-hover:shadow-sm">
@@ -172,6 +230,37 @@ const Dashboard = () => {
               <span className="font-semibold text-sm text-gray-800">View Analytics</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 mb-8">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="font-bold text-gray-900 font-['Playfair_Display'] mb-1">Recent Contact Messages</h3>
+            <p className="text-xs text-gray-500">Latest messages submitted from the public contact page</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {recentMessages.length === 0 ? (
+            <p className="text-sm text-gray-500 lg:col-span-3">No contact messages yet.</p>
+          ) : (
+            recentMessages.slice(0, 3).map((message) => (
+              <div key={message.id} className="border border-gray-100 rounded-xl p-4">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">{message.name}</p>
+                    <p className="text-xs text-gray-500">{message.email}</p>
+                  </div>
+                  <span className="text-[10px] uppercase font-bold text-[#275949] bg-[#E8F1EF] px-2 py-1 rounded-md">
+                    {message.status}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-gray-800 mb-2">{message.subject}</p>
+                <p className="text-xs text-gray-500 line-clamp-3">{message.message}</p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

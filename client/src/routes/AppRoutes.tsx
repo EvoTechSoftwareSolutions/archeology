@@ -19,6 +19,7 @@ import ContactUs from "../pages/public/ContactUs";
 import PrivacyPolicy from "../pages/public/PrivacyPolicy";
 import TermsAndConditions from "../pages/public/TermsAndConditions";
 import FAQs from "../pages/public/FAQs";
+import HeritagePlaceDetails from "../pages/public/HeritagePlaceDetails";
 
 // Admin Pages
 import Dashboard from "../pages/admin/Dashboard";
@@ -28,9 +29,12 @@ import MediaLibrary from "../pages/admin/MediaLibrary";
 import Categories from "../pages/admin/Categories";
 import Analytics from "../pages/admin/Analytics";
 import Users from "../pages/admin/Users";
+import AddNewPlace from "../pages/admin/AddNewPlace";
 import AdminProfile from "../pages/admin/AdminProfile";
 import AdminSettings from "../pages/admin/AdminSettings";
-import AddHistoricalPlace from "../pages/admin/AddHistoricalPlace"
+import Newsletter from "../pages/admin/Newsletter";
+import Contact from "../pages/admin/Contact";
+import Reviews from "../pages/admin/Reviews";
 
 
 
@@ -52,6 +56,7 @@ const router = createBrowserRouter([
       { path: "privacy-policy",      element: <PrivacyPolicy /> },
       { path: "terms-and-conditions",element: <TermsAndConditions /> },
       { path: "faqs",                element: <FAQs /> },
+      { path: "places/:id",          element: <HeritagePlaceDetails /> },
     ],
   },
   {
@@ -64,11 +69,14 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Dashboard /> },
       { path: "heritage", element: <HistoricalPlaces /> },
-      { path: "add-place", element: <AddHistoricalPlace /> },
+      { path: "add-place", element: <AddNewPlace /> },
       { path: "media", element: <MediaLibrary /> },
       { path: "categories", element: <Categories /> },
       { path: "analytics", element: <Analytics /> },
       { path: "users", element: <Users /> },
+      { path: "newsletter", element: <Newsletter /> },
+      { path: "contact", element: <Contact /> },
+      { path: "reviews", element: <Reviews /> },
       { path: "profile", element: <AdminProfile /> },
       { path: "settings", element: <AdminSettings /> },
     ],

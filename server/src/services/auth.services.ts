@@ -5,22 +5,18 @@ import { ApiError } from "../utils/ApiError.js";
 
 class AuthService {
   private userRepository: UserRepository;
+
   constructor() {
     this.userRepository = new UserRepository();
   }
 
   async register(data: {
     name: string;
-
     email: string;
-
     password: string;
-
     department: string;
-
     isActive?: boolean;
-  }) 
-  {
+  }) {
     const existingUser = await this.userRepository.findByEmail(data.email);
 
     if (existingUser) {
@@ -31,37 +27,23 @@ class AuthService {
 
     const user = await this.userRepository.create({
       name: data.name,
-
       email: data.email,
-
       password: hashedPassword,
-
       department: data.department,
     });
 
     return {
       id: user.id,
-
       name: user.name,
-
       email: user.email,
-
       department: user.department,
-
       role: user.role,
-
       isActive: user.isActive,
     };
   }
 
-  
-  async login(
-    email: string,
 
-    password: string,
-
-    
-  ) {
+  async login(email: string, password: string) {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -74,8 +56,7 @@ class AuthService {
 
     const passwordMatch = await comparePassword(
       password,
-
-      user.password,
+      user.password
     );
 
     if (!passwordMatch) {
@@ -84,11 +65,8 @@ class AuthService {
 
     const token = generateToken({
       id: user.id,
-
       email: user.email,
-
       role: user.role,
-      
     });
 
     return {
@@ -96,16 +74,17 @@ class AuthService {
 
       user: {
         id: user.id,
-
         name: user.name,
-
         email: user.email,
-
         department: user.department,
-
         role: user.role,
       },
     };
+  }
+
+
+  async logout() {
+    return true;
   }
 }
 

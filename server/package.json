@@ -26,6 +26,8 @@
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "nodemailer": "^9.0.3",
     "prisma": "^6.19.3",
     "zod": "^4.4.3"
   },
@@ -36,6 +38,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.1.2",
+    "@types/nodemailer": "^8.0.1",
     "tsx": "^4.23.1",
     "typescript": "^5.7.3"
   }

@@ -1,19 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  FiSearch,
-  FiChevronDown,
-  FiPlus,
-  FiDownload,
-  FiMoreHorizontal,
-  FiEdit2,
-  FiTrash2,
-  FiEye,
-  FiX,
-} from "react-icons/fi";
+import React, { useEffect, useMemo, useState } from "react";
+import { FiSearch, FiChevronDown, FiPlus, FiDownload, FiMoreHorizontal, FiEdit2, FiTrash2, FiEye, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { getHistoricalPlaces } from "../../services/historicalPlace.service";
-import dalada from "../../assets/Admin/daladamaligawa.png";
 import sigiriya from "../../assets/Admin/LoginImage.png";
+import { districts as staticDistricts } from "../../data/districts";
 
 interface Place {
   id: number;
@@ -24,15 +13,26 @@ interface Place {
   status: string;
   date: string;
   image: string;
+  category?: string;
+  description?: string;
+  districtId?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
-
+interface DistrictOption {
+  id: number;
+  name: string;
+  province: string;
+}
 
 const ITEMS_PER_PAGE = 7;
 
 const HistoricalPlaces = () => {
   const [places, setPlaces] = useState<Place[]>([]);
+  const [districtOptions, setDistrictOptions] = useState<DistrictOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,123 +51,122 @@ const HistoricalPlaces = () => {
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    district: "",
-    province: "Central",
-    era: "",
-    status: "Draft",
-  });
+  const [formData, setFormData] = useState({ name: "", district: "", province: "Central", era: "", status: "Draft", image: "", latitude: 7.8731, longitude: 80.7718 });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
 
   // View detail modal
   const [viewingPlace, setViewingPlace] = useState<Place | null>(null);
 
-  // ─── Derived data ────────────────────────────────────────────────────
+  const mapPlace = (place: any): Place => ({
+    id: place.id,
+    name: place.name,
+    district: place.district?.name ?? "Unknown District",
+    province: place.district?.province?.name ?? "Unknown Province",
+    era: place.century ?? "Unknown",
+    status: place.statusFlag ?? "Draft",
+    date: new Date(place.createdAt).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    image: place.image || sigiriya,
+    category: place.category,
+    description: place.description,
+    districtId: place.districtId,
+    latitude: place.latitude,
+    longitude: place.longitude,
+  });
 
-  //from db
-  const loadHistoricalPlaces = async () => {
+  const loadPlaces = async () => {
     try {
       setLoading(true);
+      setError(null);
 
-      const response = await getHistoricalPlaces();
+      const [placesResponse, districtsResponse] = await Promise.all([
+        fetch("http://localhost:5000/api/v1/historicalPlace", { credentials: "include" }),
+        fetch("http://localhost:5000/api/v1/districts", { credentials: "include" }),
+      ]);
 
-      const mappedPlaces = response.items.map((place: any) => ({
-        id: place.id,
+      if (!placesResponse.ok) {
+        throw new Error("Unable to load heritage places");
+      }
 
-        name: place.name,
+      const placesPayload = await placesResponse.json();
+      const districtPayload = await districtsResponse.json();
 
-        district: place.district?.name ?? "Unknown",
-
-        province: place.district?.province?.name ?? "Unknown",
-
-        era: place.century ?? "-",
-
-        status: place.statusFlag,
-
-        date: new Date(place.createdAt).toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-
-        image: place.image ?? sigiriya,
-      }));
-
+      const mappedPlaces = (placesPayload.data ?? []).map(mapPlace);
       setPlaces(mappedPlaces);
-    } catch (error) {
-      console.error("Failed to fetch places", error);
+
+      if (districtsResponse.ok) {
+        const options = (districtPayload.data ?? []).map((district: any) => ({
+          id: district.id,
+          name: district.name,
+          province: district.province?.name ?? "Unknown Province",
+        }));
+        setDistrictOptions(options);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Unable to load heritage places from the database.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadHistoricalPlaces();
+    void loadPlaces();
   }, []);
 
+  // ─── Derived data ────────────────────────────────────────────────────
+
   const provinces = useMemo(() => {
-    const set = new Set(places.map((p) => p.province));
+    const set = new Set(places.map(p => p.province));
     return ["All Provinces", ...Array.from(set).sort()];
   }, [places]);
 
   const statuses = ["All Status", "Published", "In Review", "Draft"];
 
   const filtered = useMemo(() => {
-    return places.filter((p) => {
+    return places.filter(p => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.district.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProvince =
-        provinceFilter === "All Provinces" || p.province === provinceFilter;
-      const matchesStatus =
-        statusFilter === "All Status" || p.status === statusFilter;
+      const matchesProvince = provinceFilter === "All Provinces" || p.province === provinceFilter;
+      const matchesStatus = statusFilter === "All Status" || p.status === statusFilter;
       return matchesSearch && matchesProvince && matchesStatus;
     });
   }, [places, searchTerm, provinceFilter, statusFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
-  const paged = filtered.slice(
-    (safePage - 1) * ITEMS_PER_PAGE,
-    safePage * ITEMS_PER_PAGE,
-  );
+  const paged = filtered.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
   // Reset page when filters change
-  const handleSearch = (val: string) => {
-    setSearchTerm(val);
-    setCurrentPage(1);
-  };
-  const handleProvinceChange = (val: string) => {
-    setProvinceFilter(val);
-    setCurrentPage(1);
-  };
-  const handleStatusChange = (val: string) => {
-    setStatusFilter(val);
-    setCurrentPage(1);
-  };
+  const handleSearch = (val: string) => { setSearchTerm(val); setCurrentPage(1); };
+  const handleProvinceChange = (val: string) => { setProvinceFilter(val); setCurrentPage(1); };
+  const handleStatusChange = (val: string) => { setStatusFilter(val); setCurrentPage(1); };
 
   // ─── Selection ───────────────────────────────────────────────────────
 
-  const allPageSelected =
-    paged.length > 0 && paged.every((p) => selectedIds.has(p.id));
+  const allPageSelected = paged.length > 0 && paged.every(p => selectedIds.has(p.id));
 
   const toggleSelectAll = () => {
-    setSelectedIds((prev) => {
+    setSelectedIds(prev => {
       const next = new Set(prev);
       if (allPageSelected) {
-        paged.forEach((p) => next.delete(p.id));
+        paged.forEach(p => next.delete(p.id));
       } else {
-        paged.forEach((p) => next.add(p.id));
+        paged.forEach(p => next.add(p.id));
       }
       return next;
     });
   };
 
   const toggleSelect = (id: number) => {
-    setSelectedIds((prev) => {
+    setSelectedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };
@@ -184,7 +183,12 @@ const HistoricalPlaces = () => {
         province: place.province,
         era: place.era,
         status: place.status,
+        image: place.image,
+        latitude: place.latitude ?? 7.8731,
+        longitude: place.longitude ?? 80.7718,
       });
+      setImageFile(null);
+      setImagePreviewUrl(place.image);
     } else {
       setEditingPlace(null);
       setFormData({
@@ -193,7 +197,12 @@ const HistoricalPlaces = () => {
         province: "Central",
         era: "",
         status: "Draft",
+        image: "",
+        latitude: 7.8731,
+        longitude: 80.7718,
       });
+      setImageFile(null);
+      setImagePreviewUrl("");
     }
     setIsModalOpen(true);
   };
@@ -201,49 +210,144 @@ const HistoricalPlaces = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingPlace(null);
+    setImageFile(null);
+    setImagePreviewUrl("");
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingPlace) {
-      setPlaces(
-        places.map((p) =>
-          p.id === editingPlace.id ? { ...p, ...formData } : p,
-        ),
-      );
-    } else {
-      const newId = Math.max(0, ...places.map((p) => p.id)) + 1;
-      const today = new Date();
-      const dateStr = today.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      });
-      setPlaces([
-        ...places,
-        { id: newId, ...formData, date: dateStr, image: sigiriya },
-      ]);
+
+    const selectedDistrict = districtOptions.find(option =>
+      option.name.toLowerCase() === formData.district.toLowerCase() ||
+      option.name.toLowerCase().includes(formData.district.toLowerCase())
+    );
+
+    // 1. Upload image if selected, otherwise use URL field or existing image
+    const normalizedImageInput = formData.image?.trim() || "";
+    let imageUrl = normalizedImageInput || editingPlace?.image || sigiriya;
+    if (imageFile) {
+      const uploadData = new FormData();
+      uploadData.append("image", imageFile);
+      try {
+        const upRes = await fetch("http://localhost:5000/api/v1/upload", {
+          method: "POST",
+          body: uploadData,
+        });
+        const upJson = await upRes.json();
+        if (upRes.ok && upJson.success) {
+          imageUrl = upJson.data.url;
+        } else {
+          throw new Error(upJson.message || "Image upload failed");
+        }
+      } catch (err) {
+        console.error("Image upload failed", err);
+        setError("Unable to upload the selected image file.");
+        return;
+      }
     }
-    handleCloseModal();
+
+    // 2. Map Lat/Long to map SVG bounds
+    const lon = formData.longitude;
+    const lat = formData.latitude;
+    const mapX = 242.5 + ((lon - 79.5166) / (81.8833 - 79.5166)) * (757.5 - 242.5);
+    const mapY = 45.5 + ((9.8500 - lat) / (9.8500 - 5.9166)) * (954.5 - 45.5);
+
+    let anchorXPct = 0.5;
+    let anchorYPct = 0.5;
+    
+    // Find district bounding box to calculate relative percentage
+    const staticDistrict = staticDistricts.find(d => d.name.toLowerCase() === formData.district.toLowerCase() || d.name.toLowerCase().includes(formData.district.toLowerCase()));
+    if (staticDistrict && staticDistrict.bbox) {
+       anchorXPct = (mapX - staticDistrict.bbox.x) / staticDistrict.bbox.width;
+       anchorYPct = (mapY - staticDistrict.bbox.y) / staticDistrict.bbox.height;
+    }
+
+    const payload = {
+      name: formData.name,
+      category: editingPlace?.category ?? "Heritage Site",
+      description: editingPlace?.description ?? `Heritage place in ${formData.district || "Sri Lanka"}`,
+      image: imageUrl,
+      century: formData.era || "Unknown",
+      statusFlag: formData.status || "Draft",
+      latitude: formData.latitude,
+      longitude: formData.longitude,
+      anchorXPct,
+      anchorYPct,
+      districtId: selectedDistrict?.id ?? editingPlace?.districtId ?? districtOptions[0]?.id ?? 1,
+    };
+
+    try {
+      const response = editingPlace
+        ? await fetch(`http://localhost:5000/api/v1/historicalPlace/${editingPlace.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(payload),
+          })
+        : await fetch("http://localhost:5000/api/v1/historicalPlace", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(payload),
+          });
+
+      if (!response.ok) {
+        throw new Error("Failed to save heritage place");
+      }
+
+      const savedPayload = await response.json();
+      const savedPlace = mapPlace(savedPayload.data ?? savedPayload);
+
+      setPlaces(prev => editingPlace
+        ? prev.map(place => place.id === editingPlace.id ? savedPlace : place)
+        : [savedPlace, ...prev]);
+      handleCloseModal();
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to save the heritage place right now.");
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     setOpenMenuId(null);
     if (window.confirm("Are you sure you want to delete this place?")) {
-      setPlaces(places.filter((p) => p.id !== id));
-      setSelectedIds((prev) => {
-        const n = new Set(prev);
-        n.delete(id);
-        return n;
-      });
+      try {
+        const response = await fetch(`http://localhost:5000/api/v1/historicalPlace/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete heritage place");
+        }
+
+        setPlaces(prev => prev.filter(p => p.id !== id));
+        setSelectedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to delete the heritage place right now.");
+      }
     }
   };
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     if (selectedIds.size === 0) return;
     if (window.confirm(`Delete ${selectedIds.size} selected place(s)?`)) {
-      setPlaces(places.filter((p) => !selectedIds.has(p.id)));
-      setSelectedIds(new Set());
+      try {
+        await Promise.all(Array.from(selectedIds).map(id => fetch(`http://localhost:5000/api/v1/historicalPlace/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        })));
+
+        setPlaces(prev => prev.filter(p => !selectedIds.has(p.id)));
+        setSelectedIds(new Set());
+        setError(null);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to delete selected heritage places right now.");
+      }
     }
   };
 
@@ -257,16 +361,9 @@ const HistoricalPlaces = () => {
   const handleExportCSV = () => {
     const rows = [
       ["Name", "District", "Province", "Era", "Status", "Date"],
-      ...filtered.map((p) => [
-        p.name,
-        p.district,
-        p.province,
-        p.era,
-        p.status,
-        p.date,
-      ]),
+      ...filtered.map(p => [p.name, p.district, p.province, p.era, p.status, p.date])
     ];
-    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(",")).join("\n");
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -283,15 +380,13 @@ const HistoricalPlaces = () => {
       case "Published":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-green-200 bg-green-50/50 text-[11px] font-semibold text-green-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
-            Published
+            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>Published
           </span>
         );
       case "In Review":
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-200 bg-amber-50/50 text-[11px] font-semibold text-amber-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>In
-            Review
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>In Review
           </span>
         );
       case "Draft":
@@ -309,12 +404,10 @@ const HistoricalPlaces = () => {
 
   return (
     <div className="font-['Inter'] pb-10">
+      
       {/* Breadcrumbs */}
       <div className="text-sm text-gray-500 mb-4">
-        <Link to="/admin" className="hover:text-gray-900">
-          Home
-        </Link>{" "}
-        &gt; Historical places
+        <Link to="/admin" className="hover:text-gray-900">Home</Link> &gt; Historical places
       </div>
 
       {/* Header section */}
@@ -327,7 +420,7 @@ const HistoricalPlaces = () => {
             Manage catalogued heritage sites across Sri Lanka.
           </p>
         </div>
-
+        
         <div className="flex items-center gap-3">
           {selectedIds.size > 0 && (
             <button
@@ -344,8 +437,8 @@ const HistoricalPlaces = () => {
             Export CSV <FiDownload />
           </button>
           <Link
-            to="/admin/add-place" // Replace with your actual route path
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#275949] rounded-lg text-sm font-semibold text-white hover:bg-[#1E4538] transition-colors shadow-sm"
+            to="/admin/add-place"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#275949] rounded-lg text-sm font-semibold text-white hover:bg-[#1E4538] transition-colors shadow-sm"
           >
             <FiPlus size={16} /> Add New Place
           </Link>
@@ -354,17 +447,26 @@ const HistoricalPlaces = () => {
 
       {/* Main Table Container */}
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        {loading && (
+          <div className="p-6 text-sm text-gray-500">Loading heritage places from the database…</div>
+        )}
+
+        {error && (
+          <div className="p-6 text-sm text-red-600 border-b border-red-100 bg-red-50">{error}</div>
+        )}
+        
         {/* Filters Bar */}
         <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-center bg-white">
+          
           <div className="relative w-full sm:max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
               <FiSearch size={16} />
             </div>
-            <input
+            <input 
               type="text"
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search places, districts..."
+              onChange={e => handleSearch(e.target.value)}
+              placeholder="Search places, districts..." 
               className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#275949] focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter']"
             />
           </div>
@@ -373,37 +475,30 @@ const HistoricalPlaces = () => {
             <div className="relative w-full sm:w-44">
               <select
                 value={provinceFilter}
-                onChange={(e) => handleProvinceChange(e.target.value)}
+                onChange={e => handleProvinceChange(e.target.value)}
                 className="w-full appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-[#275949] font-medium cursor-pointer"
               >
-                {provinces.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
+                {provinces.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <FiChevronDown />
               </div>
             </div>
-
+            
             <div className="relative w-full sm:w-36">
               <select
                 value={statusFilter}
-                onChange={(e) => handleStatusChange(e.target.value)}
+                onChange={e => handleStatusChange(e.target.value)}
                 className="w-full appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-[#275949] font-medium cursor-pointer"
               >
-                {statuses.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
+                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <FiChevronDown />
               </div>
             </div>
           </div>
+          
         </div>
 
         {/* Table */}
@@ -420,9 +515,7 @@ const HistoricalPlaces = () => {
                   />
                 </th>
                 <th className="py-4 px-2 whitespace-nowrap text-gray-500 font-medium">
-                  {selectedIds.size > 0
-                    ? `${selectedIds.size} selected`
-                    : "Select all places"}
+                  {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all places"}
                 </th>
                 <th className="py-4 px-4 font-bold text-gray-900">Province</th>
                 <th className="py-4 px-4 font-bold text-gray-900">Era</th>
@@ -432,23 +525,8 @@ const HistoricalPlaces = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {
-loading ? (
-
-<tr>
-<td colSpan={7}
-className="text-center py-10">
-Loading...
-</td>
-</tr>
-
-):(
-
-paged.map((place)=>(
-                <tr
-                  key={place.id}
-                  className={`hover:bg-gray-50 transition-colors ${selectedIds.has(place.id) ? "bg-[#275949]/[0.03]" : "bg-white"}`}
-                >
+              {paged.map((place) => (
+                <tr key={place.id} className={`hover:bg-gray-50 transition-colors ${selectedIds.has(place.id) ? 'bg-[#275949]/[0.03]' : 'bg-white'}`}>
                   <td className="p-4">
                     <input
                       type="checkbox"
@@ -460,37 +538,23 @@ paged.map((place)=>(
                   <td className="py-4 px-2">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-200 shadow-sm">
-                        <img
-                          src={place.image}
-                          alt={place.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={place.image || sigiriya} alt={place.name} className="w-full h-full object-cover" onError={e => { e.currentTarget.src = sigiriya; }} />
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 text-[15px]">
-                          {place.name}
-                        </h3>
-                        <p className="text-gray-500 text-[13px]">
-                          {place.district}
-                        </p>
+                        <h3 className="font-bold text-gray-900 text-[15px]">{place.name}</h3>
+                        <p className="text-gray-500 text-[13px]">{place.district}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-600">
-                    {place.province}
+                  <td className="py-4 px-4 text-sm text-gray-600">{place.province}</td>
+                  <td className="py-4 px-4 text-sm text-gray-600">{place.era}</td>
+                  <td className="py-4 px-4">
+                    {getStatusBadge(place.status)}
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-600">
-                    {place.era}
-                  </td>
-                  <td className="py-4 px-4">{getStatusBadge(place.status)}</td>
-                  <td className="py-4 px-4 text-sm text-gray-600">
-                    {place.date}
-                  </td>
+                  <td className="py-4 px-4 text-sm text-gray-600">{place.date}</td>
                   <td className="p-4 relative">
                     <button
-                      onClick={() =>
-                        setOpenMenuId(openMenuId === place.id ? null : place.id)
-                      }
+                      onClick={() => setOpenMenuId(openMenuId === place.id ? null : place.id)}
                       className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       <FiMoreHorizontal size={20} />
@@ -520,14 +584,11 @@ paged.map((place)=>(
                     )}
                   </td>
                 </tr>
-              )))}
+              ))}
 
               {paged.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center py-16 text-gray-400 text-sm"
-                  >
+                  <td colSpan={7} className="text-center py-16 text-gray-400 text-sm">
                     No places found matching your filters.
                   </td>
                 </tr>
@@ -535,30 +596,25 @@ paged.map((place)=>(
             </tbody>
           </table>
         </div>
-
+        
         {/* Pagination */}
         <div className="p-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white">
           <div className="text-sm text-gray-500 font-medium">
-            Showing{" "}
-            {filtered.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1} -{" "}
-            {Math.min(safePage * ITEMS_PER_PAGE, filtered.length)} of{" "}
-            {filtered.length}
+            Showing {filtered.length === 0 ? 0 : (safePage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(safePage * ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
           </div>
-
+          
           <div className="flex items-center gap-1">
             <button
               disabled={safePage <= 1}
               onClick={() => setCurrentPage(safePage - 1)}
               className={`px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium transition-colors ${
-                safePage <= 1
-                  ? "text-gray-300 bg-gray-50 cursor-not-allowed"
-                  : "text-gray-600 bg-[#F3F4F6] hover:bg-gray-200"
+                safePage <= 1 ? "text-gray-300 bg-gray-50 cursor-not-allowed" : "text-gray-600 bg-[#F3F4F6] hover:bg-gray-200"
               }`}
             >
               Previous
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
@@ -576,138 +632,115 @@ paged.map((place)=>(
               disabled={safePage >= totalPages}
               onClick={() => setCurrentPage(safePage + 1)}
               className={`px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium transition-colors ${
-                safePage >= totalPages
-                  ? "text-gray-300 bg-gray-50 cursor-not-allowed"
-                  : "text-gray-600 bg-white hover:bg-gray-50"
+                safePage >= totalPages ? "text-gray-300 bg-gray-50 cursor-not-allowed" : "text-gray-600 bg-white hover:bg-gray-50"
               }`}
             >
               Next
             </button>
           </div>
         </div>
+
       </div>
 
       {/* ── Add / Edit Modal ──────────────────────────────────────────── */}
       {isModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" onClick={handleCloseModal}>
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
               <h2 className="text-2xl font-bold font-['Playfair_Display'] text-[#2a2a2a]">
                 {editingPlace ? "Edit Place" : "Add New Place"}
               </h2>
-              <button
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <FiX size={22} />
               </button>
             </div>
             <form onSubmit={handleSave} className="p-8">
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Place Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Place Name</label>
+                  <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-                    placeholder="e.g. Sigiriya Rock Fortress"
-                  />
+                    placeholder="e.g. Sigiriya Rock Fortress" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    District
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.district}
-                    onChange={(e) =>
-                      setFormData({ ...formData, district: e.target.value })
-                    }
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                  <input type="url" value={formData.image} onChange={e => {
+                      setFormData({ ...formData, image: e.target.value });
+                      if (!imageFile) {
+                        setImagePreviewUrl(e.target.value);
+                      }
+                    }}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-                    placeholder="e.g. Matale District"
+                    placeholder="https://example.com/place-image.jpg" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Upload Image File</label>
+                  <input type="file" accept="image/*" onChange={e => {
+                      const file = e.target.files?.[0] ?? null;
+                      setImageFile(file);
+                      if (file) {
+                        setImagePreviewUrl(URL.createObjectURL(file));
+                      } else {
+                        setImagePreviewUrl(formData.image);
+                      }
+                    }}
+                    className="w-full text-sm text-gray-700"
                   />
+                  <p className="mt-2 text-xs text-gray-500">Choose a local image file to upload, or leave blank to use the Image URL above.</p>
+                </div>
+                {imagePreviewUrl && (
+                  <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50 p-2">
+                    <span className="block text-sm font-medium text-gray-700 mb-2">Preview</span>
+                    <img src={imagePreviewUrl || sigiriya} alt="Place preview" className="w-full h-44 object-cover rounded-xl" onError={e => { e.currentTarget.src = sigiriya; }} />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                  <input type="text" required value={formData.district} onChange={e => setFormData({ ...formData, district: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
+                    placeholder="e.g. Matale District" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Province
-                    </label>
-                    <select
-                      value={formData.province}
-                      onChange={(e) =>
-                        setFormData({ ...formData, province: e.target.value })
-                      }
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer"
-                    >
-                      <option>Central</option>
-                      <option>North Central</option>
-                      <option>Southern</option>
-                      <option>Western</option>
-                      <option>North Western</option>
-                      <option>Uva</option>
-                      <option>Sabaragamuwa</option>
-                      <option>Eastern</option>
-                      <option>Northern</option>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Province</label>
+                    <select value={formData.province} onChange={e => setFormData({ ...formData, province: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer">
+                      <option>Central</option><option>North Central</option><option>Southern</option><option>Western</option>
+                      <option>North Western</option><option>Uva</option><option>Sabaragamuwa</option><option>Eastern</option><option>Northern</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Era
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.era}
-                      onChange={(e) =>
-                        setFormData({ ...formData, era: e.target.value })
-                      }
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Era</label>
+                    <input type="text" required value={formData.era} onChange={e => setFormData({ ...formData, era: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-                      placeholder="e.g. Anuradhapura"
-                    />
+                      placeholder="e.g. Anuradhapura" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
-                    }
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer"
-                  >
-                    <option>Draft</option>
-                    <option>In Review</option>
-                    <option>Published</option>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                  <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer">
+                    <option>Draft</option><option>In Review</option><option>Published</option>
                   </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
+                    <input type="number" step="any" required value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
+                      placeholder="e.g. 7.9570" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
+                    <input type="number" step="any" required value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
+                      placeholder="e.g. 80.7603" />
+                  </div>
                 </div>
               </div>
               <div className="mt-8 flex gap-3 justify-end pt-4 border-t border-gray-50">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#275949] hover:bg-[#1E4538] text-white font-medium shadow-sm transition-colors text-sm"
-                >
+                <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors text-sm">Cancel</button>
+                <button type="submit" className="px-5 py-2.5 rounded-xl bg-[#275949] hover:bg-[#1E4538] text-white font-medium shadow-sm transition-colors text-sm">
                   {editingPlace ? "Save Changes" : "Add Place"}
                 </button>
               </div>
@@ -718,64 +751,28 @@ paged.map((place)=>(
 
       {/* ── View Detail Modal ─────────────────────────────────────────── */}
       {viewingPlace && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
-          onClick={() => setViewingPlace(null)}
-        >
-          <div
-            className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" onClick={() => setViewingPlace(null)}>
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="relative h-48 overflow-hidden">
-              <img
-                src={viewingPlace.image}
-                alt={viewingPlace.name}
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => setViewingPlace(null)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
-              >
+              <img src={viewingPlace.image || sigiriya} alt={viewingPlace.name} className="w-full h-full object-cover" onError={e => { e.currentTarget.src = sigiriya; }} />
+              <button onClick={() => setViewingPlace(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors">
                 <FiX size={16} />
               </button>
             </div>
             <div className="p-8">
-              <h2 className="text-2xl font-bold font-['Playfair_Display'] text-[#2a2a2a] mb-1">
-                {viewingPlace.name}
-              </h2>
-              <p className="text-gray-400 text-sm mb-6">
-                {viewingPlace.district}
-              </p>
+              <h2 className="text-2xl font-bold font-['Playfair_Display'] text-[#2a2a2a] mb-1">{viewingPlace.name}</h2>
+              <p className="text-gray-400 text-sm mb-6">{viewingPlace.district}</p>
               <div className="grid grid-cols-2 gap-y-4 text-sm">
-                <div>
-                  <span className="text-gray-400 font-medium">Province</span>
-                  <p className="text-gray-800 font-semibold mt-0.5">
-                    {viewingPlace.province}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-gray-400 font-medium">Era</span>
-                  <p className="text-gray-800 font-semibold mt-0.5">
-                    {viewingPlace.era}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-gray-400 font-medium">Status</span>
-                  <div className="mt-1">
-                    {getStatusBadge(viewingPlace.status)}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-gray-400 font-medium">Date Added</span>
-                  <p className="text-gray-800 font-semibold mt-0.5">
-                    {viewingPlace.date}
-                  </p>
-                </div>
+                <div><span className="text-gray-400 font-medium">Province</span><p className="text-gray-800 font-semibold mt-0.5">{viewingPlace.province}</p></div>
+                <div><span className="text-gray-400 font-medium">Era</span><p className="text-gray-800 font-semibold mt-0.5">{viewingPlace.era}</p></div>
+                <div><span className="text-gray-400 font-medium">Status</span><div className="mt-1">{getStatusBadge(viewingPlace.status)}</div></div>
+                <div><span className="text-gray-400 font-medium">Date Added</span><p className="text-gray-800 font-semibold mt-0.5">{viewingPlace.date}</p></div>
               </div>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

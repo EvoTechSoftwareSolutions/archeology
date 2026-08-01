@@ -21,7 +21,7 @@ const SriLankaDistrictMap = ({
   return (
     <svg
       viewBox="0 0 1000 1000"
-      className="h-[600px] w-auto max-w-full drop-shadow-[0_16px_36px_rgba(0,0,0,0.28)]"
+      className="h-[700px] w-auto max-w-full drop-shadow-[0_16px_36px_rgba(0,0,0,0.28)]"
       role="group"
       aria-label="Districts of Sri Lanka"
     >

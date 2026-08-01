@@ -7,21 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String   @unique
-  password   String
-  department String
-  role       String   @default("USER")
-
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-
-  // Relations
-  auditLogs       AuditLog[]
-  verifiedSites   SiteMonograph[]
-}
 
 model Province {
   id          Int      @id @default(autoincrement())
@@ -48,6 +33,14 @@ model District {
   province    Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
 
   historicalPlaces HistoricalPlace[]
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model HistoricalPlace {
@@ -82,6 +75,25 @@ model HistoricalPlace {
 
 }
 
+model NewsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  status    String   @default("unread")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model SiteMonograph {
   id                  Int      @id @default(autoincrement())
 
@@ -89,7 +101,6 @@ model SiteMonograph {
 
   historicalPlaceId   Int
 
-  verifiedById        Int
 
   contentBody         String
 
@@ -102,14 +113,13 @@ model SiteMonograph {
 
   // Relations
   historicalPlace HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
-
-  verifiedBy User @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
+  verifiedById        Int?
+  verifiedBy          User?           @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
 }
 
 model AuditLog {
   id              Int      @id @default(autoincrement())
 
-  userId          Int
 
   targetPlaceId   Int
 
@@ -120,7 +130,37 @@ model AuditLog {
   createdAt       DateTime @default(now())
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   historicalPlace HistoricalPlace @relation(fields: [targetPlaceId], references: [id], onDelete: Cascade)
+  userId          Int?
+  user            User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  department String
+  role       String   @default("USER")
+
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  auditLogs       AuditLog[]
+  verifiedSites   SiteMonograph[]
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  reviewerName String
+  reviewerRole String?
+  image       String?
+  rating      Int      @default(5)
+  reviewText  String   @db.Text
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

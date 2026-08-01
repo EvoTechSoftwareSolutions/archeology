@@ -16,11 +16,10 @@ router.post(
   authController.login,
 );
 
-router.get("/profile", authenticate, (req, res) => {
-  res.json({
-    message: "Protected route",
-    user: (req as any).user,
-  });
-});
+// Get current logged-in user
+router.get("/me", authenticate, authController.getMe);
+
+// Logout
+router.post("/logout", authenticate, authController.logout);
 
 export default router;

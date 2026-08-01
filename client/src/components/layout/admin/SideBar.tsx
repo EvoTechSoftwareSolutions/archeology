@@ -8,7 +8,10 @@ import {
   FiUsers, 
   FiLogOut,
   FiChevronLeft,
-  FiX
+  FiX,
+  FiMail,
+  FiMessageSquare,
+  FiStar
 } from "react-icons/fi";
 import { MdAccountBalance, MdBarChart } from "react-icons/md";
 import logo from "../../../assets/Admin/logo2.png";
@@ -43,6 +46,9 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
       items: [
         { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
         { name: "Users", path: "/admin/users", icon: FiUsers },
+        { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
+        { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },
+        { name: "Visitor Reviews", path: "/admin/reviews", icon: FiStar },
         { name: "Logout", path: "/admin/login", icon: FiLogOut },
       ]
     }
