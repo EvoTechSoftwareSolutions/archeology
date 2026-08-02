@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 type ContactMessageInput = {
   name: string;
   email: string;
+  phone?: string;
   subject: string;
   message: string;
 };
@@ -60,6 +61,7 @@ class ContactService {
           <h2 style="color:#2a4a3a">New Contact Message</h2>
           <p><strong>Name:</strong> ${message.name}</p>
           <p><strong>Email:</strong> ${message.email}</p>
+          <p><strong>Phone:</strong> ${message.phone || "N/A"}</p>
           <p><strong>Subject:</strong> ${message.subject}</p>
           <p><strong>Message:</strong></p>
           <p>${message.message.replace(/\n/g, "<br>")}</p>

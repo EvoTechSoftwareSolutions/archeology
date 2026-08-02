@@ -8,11 +8,12 @@ const prisma = new PrismaClient();
 const messageSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
+  phone: z.string().optional(),
   subject: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
-const sendNotificationEmail = async (name: string, email: string, message: string) => {
+const sendNotificationEmail = async (name: string, email: string, phone: string | undefined, message: string) => {
   const host = process.env.SMTP_HOST;
   if (!host) {
     console.warn("SMTP is not configured. Contact notification email was skipped.");
@@ -72,6 +73,7 @@ export const createMessage = async (req: Request, res: Response) => {
         data: {
           name: parsedData.name,
           email: parsedData.email,
+          phone: parsedData.phone,
           subject: parsedData.subject || "No Subject",
           message: parsedData.message,
         },
