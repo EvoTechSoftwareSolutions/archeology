@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   FiArrowLeft,
@@ -12,7 +12,7 @@ import {
   FiMap,
   FiMapPin,
   FiNavigation,
-  FiPhone,
+  
   FiTruck,
   FiUsers,
   FiWind,
@@ -24,7 +24,6 @@ import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import galleFort from '../../assets/places-gallefort.png';
 import mandalaImg from '../../assets/image 36.png';
-import avatarImg from '../../assets/avatar.png';
 
 interface HistoricalPlace {
   id: number;
@@ -144,10 +143,10 @@ const HeritagePlaceDetails = () => {
             <div className="relative z-10">
               <p className="text-[#C89B3C] text-[0.8rem] font-bold uppercase tracking-[2px] mb-2">THE STORY</p>
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 {place.description || 'This heritage site has played an important role in Sri Lanka’s history and culture, reflecting both religious devotion and architectural skill.'}
               </p>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] font-sans">
                 Explore the place name, its historic context, and the cultural legacy that makes this site an essential stop on any heritage journey.
               </p>
             </div>
@@ -422,7 +421,14 @@ const HeritagePlaceDetails = () => {
             ].map((item, index) => (
               <div key={`${item.name}-${index}`} className="review-card rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm min-w-[280px] md:min-w-[320px]">
                 <div className="mb-4 flex items-center gap-4">
-                  <img src={avatarImg} alt="Reviewer" className="h-12 w-12 rounded-full object-cover bg-gray-200" />
+                  <img
+                    src={item.image || avatarImg}
+                    alt={item.name}
+                    className="h-12 w-12 rounded-full object-cover bg-gray-200"
+                    onError={(event) => {
+                      event.currentTarget.src = avatarImg;
+                    }}
+                  />
                   <div>
                     <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
                     <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>

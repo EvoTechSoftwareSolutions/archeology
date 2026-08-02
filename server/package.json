@@ -5,9 +5,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "predev": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "prestart": "npm run build",
     "start": "node dist/server.js",
+    "postinstall": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio"
@@ -37,6 +40,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.1.2",
     "@types/nodemailer": "^8.0.1",
     "tsx": "^4.23.1",

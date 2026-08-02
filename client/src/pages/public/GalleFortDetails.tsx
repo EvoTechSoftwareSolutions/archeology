@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import avatarImg from '../../assets/avatar.png';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
@@ -11,7 +12,6 @@ import sigiriya from '../../assets/places-sigiriya.png';
 import galViharaya from '../../assets/galvihara.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
-import avatarImg from '../../assets/avatar.png';
 
 const heroSlides = [
   {
@@ -112,7 +112,7 @@ const GalleFortDetails = () => {
           </h2>
 
           {selectedSlide.desc && (
-            <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
+            <p className="text-white font-sans font-medium text-[0.95rem] md:text-[1rem] leading-[1.6] max-w-[700px]">
               {selectedSlide.desc}
             </p>
           )}
@@ -163,10 +163,10 @@ const GalleFortDetails = () => {
             <div className="relative z-10">
               <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">THE STORY</p>
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Galle Fort is a fortified coastal city first established by the Portuguese and later expanded by the Dutch in the 17th century. Its ramparts, bastions, and street grid still define the old town.
               </p>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Today the fort is both a protected heritage site and a living neighborhood, with museums, religious buildings, boutiques, cafes, and sea-facing walks.
               </p>
             </div>
@@ -495,6 +495,9 @@ const GalleFortDetails = () => {
                       src={item.image || avatarImg}
                       alt={item.name}
                       className="w-12 h-12 rounded-full object-cover bg-gray-200"
+                      onError={(event) => {
+                        event.currentTarget.src = avatarImg;
+                      }}
                     />
                     <div>
                       <h5 className="font-bold text-[1rem] text-[#1f2937]">{item.name}</h5>

@@ -16,7 +16,7 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
 
 export const getReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id), 10);
     const review = await reviewService.getReviewById(id);
     if (!review) {
       return res.status(404).json({ success: false, message: "Review not found" });
@@ -52,7 +52,7 @@ export const createReview = async (req: Request, res: Response, next: NextFuncti
 
 export const updateReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id), 10);
     const { reviewerName, reviewerRole, image, rating, reviewText, isActive } = req.body;
 
     const updated = await reviewService.updateReview(id, {
@@ -72,7 +72,7 @@ export const updateReview = async (req: Request, res: Response, next: NextFuncti
 
 export const deleteReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id), 10);
     await reviewService.deleteReview(id);
     return res.json({ success: true, message: "Review deleted" });
   } catch (error) {
