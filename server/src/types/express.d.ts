@@ -1,4 +1,5 @@
 import "express";
+import type { File } from "multer";
 
 declare global {
   namespace Express {
@@ -9,10 +10,10 @@ declare global {
         email: string;
       };
 
-      file?: Express.Multer.File;
+      file?: File;
 
-      files?: Express.Multer.File[] | {
-        [fieldname: string]: Express.Multer.File[];
+      files?: {
+        [fieldname: string]: File[];
       };
     }
   }

@@ -5,6 +5,7 @@ import {
 
 import MainLayout from "../layout/MainLayout";
 import AdminLayout from "../layout/AdminLayout";
+import ProtectedRoute from "../components/admin/ProtectedRoute";
 
 // Public Pages
 import Home from "../pages/public/Home";
@@ -65,20 +66,25 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: "heritage", element: <HistoricalPlaces /> },
-      { path: "add-place", element: <AddNewPlace /> },
-      { path: "media", element: <MediaLibrary /> },
-      { path: "categories", element: <Categories /> },
-      { path: "analytics", element: <Analytics /> },
-      { path: "users", element: <Users /> },
-      { path: "newsletter", element: <Newsletter /> },
-      { path: "contact", element: <Contact /> },
-      { path: "reviews", element: <Reviews /> },
-      { path: "profile", element: <AdminProfile /> },
-      { path: "settings", element: <AdminSettings /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <Dashboard /> },
+          { path: "heritage", element: <HistoricalPlaces /> },
+          { path: "add-place", element: <AddNewPlace /> },
+          { path: "media", element: <MediaLibrary /> },
+          { path: "categories", element: <Categories /> },
+          { path: "analytics", element: <Analytics /> },
+          { path: "users", element: <Users /> },
+          { path: "newsletter", element: <Newsletter /> },
+          { path: "contact", element: <Contact /> },
+          { path: "reviews", element: <Reviews /> },
+          { path: "profile", element: <AdminProfile /> },
+          { path: "settings", element: <AdminSettings /> },
+        ],
+      },
     ],
   },
 ]);

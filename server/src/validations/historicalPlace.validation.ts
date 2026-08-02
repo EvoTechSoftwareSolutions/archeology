@@ -1,28 +1,75 @@
 import { z } from "zod";
 
 export const createHistoricalPlaceSchema = z.object({
-  name: z.string().min(3),
 
-  category: z.string().min(2),
+  name: z
+    .string()
+    .min(3, "Name must be at least 3 characters"),
 
-  description: z.string().optional(),
+  category: z
+    .string()
+    .min(2, "Category is required"),
 
-  image: z.string().optional(),
+  description: z
+    .string()
+    .optional(),
 
-  century: z.string(),
+  image: z
+    .string()
+    .optional(),
 
-  statusFlag: z.string(),
+  century: z
+    .string()
+    .min(1, "Century is required"),
 
-  latitude: z.number(),
+  statusFlag: z
+    .string()
+    .min(1, "Status is required"),
 
-  longitude: z.number(),
 
-  anchorXPct: z.number(),
+  latitude: z
+    .number({
+      message: "Latitude must be a number",
+    }),
 
-  anchorYPct: z.number(),
 
-  districtId: z.number(),
+  longitude: z
+    .number({
+      message: "Longitude must be a number",
+    }),
+
+
+  anchorXPct: z
+    .number({
+      message: "Anchor X percentage must be a number",
+    }),
+
+
+  anchorYPct: z
+    .number({
+      message: "Anchor Y percentage must be a number",
+    }),
+
+
+  // REQUIRED
+  provinceId: z
+    .number({
+      message: "Province ID is required",
+    })
+    .int()
+    .positive(),
+
+
+  // REQUIRED
+  districtId: z
+    .number({
+      message: "District ID is required",
+    })
+    .int()
+    .positive(),
+
 });
+
 
 export const updateHistoricalPlaceSchema =
   createHistoricalPlaceSchema.partial();

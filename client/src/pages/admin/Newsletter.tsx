@@ -1,51 +1,8 @@
-import { useEffect, useState } from "react";
-import { MdDelete, MdCheckCircle } from "react-icons/md";
+import React from "react";
+import { useNewsletter } from "../../hooks/useNewsletter";
 
-interface Subscriber {
-  id: number;
-  email: string;
-  status: string;
-  createdAt: string;
-}
-
-const NewsletterManagement = () => {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
-  const [stats, setStats] = useState({ total: 0, active: 0 });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("adminToken");
-
-      const [statsRes, subsRes] = await Promise.all([
-        fetch("http://localhost:5000/api/v1/newsletter/stats"),
-        fetch("http://localhost:5000/api/v1/newsletter/subscribers", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
-      if (statsRes.ok) {
-        const statsData = await statsRes.json();
-        setStats(statsData.data);
-      }
-
-      if (subsRes.ok) {
-        const subsData = await subsRes.json();
-        setSubscribers(subsData.data || []);
-      }
-    } catch (err) {
-      setError("Failed to load newsletter data");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const Newsletter = () => {
+  const { subscribers, stats, loading, error } = useNewsletter();
 
   if (loading) {
     return <div className="text-center py-8">Loading...</div>;
@@ -90,11 +47,13 @@ const NewsletterManagement = () => {
                   <tr key={sub.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm text-gray-900">{sub.email}</td>
                     <td className="px-6 py-4 text-sm">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        sub.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          sub.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
                         {sub.status}
                       </span>
                     </td>
@@ -118,4 +77,4 @@ const NewsletterManagement = () => {
   );
 };
 
-export default NewsletterManagement;
+export default Newsletter;

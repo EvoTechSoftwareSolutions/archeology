@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { 
-  FiGrid, 
-  FiPlusCircle, 
-  FiTag, 
-  FiImage, 
-  FiUsers, 
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  FiGrid,
+  FiPlusCircle,
+  FiTag,
+  FiImage,
+  FiUsers,
   FiLogOut,
   FiChevronLeft,
   FiX,
@@ -15,6 +15,7 @@ import {
 } from "react-icons/fi";
 import { MdAccountBalance, MdBarChart } from "react-icons/md";
 import logo from "../../../assets/Admin/logo2.png";
+import { authService } from "../../../services/auth.service";
 
 interface SideBarProps {
   isOpen: boolean;
@@ -23,7 +24,9 @@ interface SideBarProps {
 
 const SideBar = ({ isOpen, onClose }: SideBarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const menuSections = [
     {
@@ -49,10 +52,25 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
         { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
         { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },
         { name: "Visitor Reviews", path: "/admin/reviews", icon: FiStar },
-        { name: "Logout", path: "/admin/login", icon: FiLogOut },
+        { name: "Logout", path: "/admin/login", icon: FiLogOut, action: "logout" as const },
       ]
     }
   ];
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await authService.logout();
+    } catch {
+      // Even if the server call fails, still log out locally.
+    } finally {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      setLoggingOut(false);
+      onClose();
+      navigate("/admin/login");
+    }
+  };
 
   return (
     <aside
@@ -60,7 +78,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
         isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'
       } ${isCollapsed ? 'w-20' : 'w-64'} lg:w-auto lg:min-h-screen`}
     >
-      
+
       {/* Logo Area */}
       <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-6 mb-2 h-20`}>
         {!isCollapsed && (
@@ -97,25 +115,46 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
               {section.items.map((item, itemIdx) => {
                 const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname === '/admin/');
                 const Icon = item.icon;
-                
+                const isLogout = "action" in item && item.action === "logout";
+
+                const content = (
+                  <>
+                    <Icon size={18} className={`shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
+                    {!isCollapsed && (
+                      <span className="whitespace-nowrap overflow-hidden transition-all duration-300">
+                        {isLogout && loggingOut ? "Logging out..." : item.name}
+                      </span>
+                    )}
+                  </>
+                );
+
+                const sharedClasses = `flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-4 px-8'} py-3 text-sm font-medium transition-colors border-l-4 w-full text-left ${
+                  isActive
+                    ? "bg-[#1E4538] text-white border-[#D97757]"
+                    : "text-white/70 hover:bg-white/5 hover:text-white border-transparent"
+                } ${isLogout && loggingOut ? "opacity-60 cursor-not-allowed" : ""}`;
+
                 return (
                   <li key={itemIdx}>
-                    <Link
-                      to={item.path}
-                      title={isCollapsed ? item.name : ""}
-                      className={`flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-4 px-8'} py-3 text-sm font-medium transition-colors border-l-4 ${
-                        isActive 
-                          ? "bg-[#1E4538] text-white border-[#D97757]" 
-                          : "text-white/70 hover:bg-white/5 hover:text-white border-transparent"
-                      }`}
-                    >
-                      <Icon size={18} className={`shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
-                      {!isCollapsed && (
-                        <span className="whitespace-nowrap overflow-hidden transition-all duration-300">
-                          {item.name}
-                        </span>
-                      )}
-                    </Link>
+                    {isLogout ? (
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        disabled={loggingOut}
+                        title={isCollapsed ? item.name : ""}
+                        className={sharedClasses}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        title={isCollapsed ? item.name : ""}
+                        className={sharedClasses}
+                      >
+                        {content}
+                      </Link>
+                    )}
                   </li>
                 );
               })}

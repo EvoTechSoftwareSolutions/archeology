@@ -9,6 +9,7 @@ import {
 } from "../controllers/historicalPlace.controller.js";
 
 import { validate } from "../middleware/validate.middleware.js";
+import { upload } from "../middleware/upload.middleware.js";
 
 import {
   createHistoricalPlaceSchema,
@@ -17,7 +18,21 @@ import {
 
 const router = Router();
 
-router.post("/", validate(createHistoricalPlaceSchema), createHistoricalPlace);
+// CREATE HISTORICAL PLACE
+router.post(
+  "/",
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1,
+    },
+    {
+      name: "galleryImages",
+      maxCount: 10,
+    },
+  ]),
+  createHistoricalPlace
+);
 
 router.get("/", getHistoricalPlaces);
 

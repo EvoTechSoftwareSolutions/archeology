@@ -1,106 +1,104 @@
-import { useMemo, useState } from "react";
-import { MdLocationOn } from "react-icons/md";
-
+import { useMemo } from "react";
 import { districts } from "../../data/districts";
-import type { District } from "../../types/district";
-import DistrictShape from "../DistrictMap/DistrictShape";
+import { svgPointToLatLng } from "../../utils/geoTransform";
 
-interface LocationMapPickerProps {
+interface Props {
   selectedDistrictName: string;
-  latitude: string;
-  longitude: string;
-  onDistrictSelect: (district: District) => void;
-  onCoordinatesChange: (latitude: string, longitude: string) => void;
+  anchorXPct: string;
+  anchorYPct: string;
+  onLocationPick: (latitude: string, longitude: string, anchorXPct: string, anchorYPct: string) => void;
 }
 
-const LocationMapPicker = ({
-  selectedDistrictName,
-  latitude,
-  longitude,
-  onDistrictSelect,
-  onCoordinatesChange,
-}: LocationMapPickerProps) => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+const PADDING = 16;
 
-  const selectedDistrict = useMemo(
-    () => districts.find((district) => district.name === selectedDistrictName) ?? null,
-    [selectedDistrictName],
+/**
+ * Matches the admin's typed/selected district name against our SVG data.
+ * Exact match first, then a loose "starts with" fallback — your DB's
+ * district names and the SVG's names may not be spelled identically
+ * (seen this already with "trinco" vs "Trincomalee").
+ */
+function findDistrictShape(name: string) {
+  const target = name.trim().toLowerCase();
+  if (!target) return null;
+  return (
+    districts.find((d) => d.name.toLowerCase() === target) ??
+    districts.find(
+      (d) => d.name.toLowerCase().startsWith(target) || target.startsWith(d.name.toLowerCase())
+    ) ??
+    null
   );
+}
+
+const LocationMapPicker = ({ selectedDistrictName, anchorXPct, anchorYPct, onLocationPick }: Props) => {
+  const district = useMemo(() => findDistrictShape(selectedDistrictName), [selectedDistrictName]);
+
+  if (!district) {
+    return (
+      <div className="w-full">
+        <label className="block text-[14px] font-bold text-gray-800 mb-2">Pin Location</label>
+        <div className="h-[320px] flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-400">
+          Select a district above to place the marker
+        </div>
+      </div>
+    );
+  }
+
+  const { x, y, width, height } = district.bbox;
+  const viewBox = `${x - PADDING} ${y - PADDING} ${width + PADDING * 2} ${height + PADDING * 2}`;
+
+  const hasPick = anchorXPct !== "" && anchorYPct !== "" && !Number.isNaN(Number(anchorXPct));
+  const ax = hasPick ? Number(anchorXPct) : null;
+  const ay = hasPick ? Number(anchorYPct) : null;
+
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
+    const point = svg.createSVGPoint();
+    point.x = e.clientX;
+    point.y = e.clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return;
+    const svgPoint = point.matrixTransform(ctm.inverse());
+
+    const nextAx = Math.min(1, Math.max(0, (svgPoint.x - x) / width));
+    const nextAy = Math.min(1, Math.max(0, (svgPoint.y - y) / height));
+    const { latitude, longitude } = svgPointToLatLng(svgPoint.x, svgPoint.y);
+
+    onLocationPick(
+      latitude.toFixed(4),
+      longitude.toFixed(4),
+      nextAx.toFixed(3),
+      nextAy.toFixed(3)
+    );
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-lg border border-gray-200 bg-[#f9faf8] p-4">
-        <div className="mb-3 flex items-center gap-2 text-gray-700">
-          <MdLocationOn size={18} className="text-[#1E604B]" />
-          <span className="text-[14px] font-bold">Map Location</span>
-        </div>
+    <div className="w-full">
+      <label className="block text-[14px] font-bold text-gray-800 mb-2">
+        Pin Location — {district.name} District
+      </label>
+      <p className="text-[12px] text-gray-400 mb-2">Click the exact spot on the map below.</p>
 
-        <p className="mb-4 text-[13px] text-gray-500">
-          Click a district on the map to sync the district and province fields.
-        </p>
-
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <svg
-            viewBox="0 0 1000 1000"
-            className="h-[380px] w-full max-w-full"
-            role="group"
-            aria-label="Sri Lanka district map"
-          >
-            {districts.map((district) => (
-              <DistrictShape
-                key={district.id}
-                district={district}
-                isSelected={district.name === selectedDistrictName}
-                isHovered={district.id === hoveredId}
-                onSelect={() => onDistrictSelect(district)}
-                onHoverStart={(id) => setHoveredId(id)}
-                onHoverEnd={() => setHoveredId(null)}
-              />
-            ))}
-          </svg>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-2 block text-[13px] font-bold text-gray-700">Latitude</span>
-            <input
-              type="number"
-              step="any"
-              value={latitude}
-              onChange={(event) => onCoordinatesChange(event.target.value, longitude)}
-              placeholder="7.8731"
-              className="w-full rounded-lg border border-gray-300 p-3 text-[14px] text-gray-700 focus:border-[#1E604B] focus:outline-none focus:ring-1 focus:ring-[#1E604B]"
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-2 block text-[13px] font-bold text-gray-700">Longitude</span>
-            <input
-              type="number"
-              step="any"
-              value={longitude}
-              onChange={(event) => onCoordinatesChange(latitude, event.target.value)}
-              placeholder="80.7718"
-              className="w-full rounded-lg border border-gray-300 p-3 text-[14px] text-gray-700 focus:border-[#1E604B] focus:outline-none focus:ring-1 focus:ring-[#1E604B]"
-            />
-          </label>
-        </div>
-      </div>
-
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        <p className="text-[13px] font-semibold uppercase tracking-wide text-gray-400">Selected area</p>
-        {selectedDistrict ? (
-          <div className="mt-2 space-y-1 text-[14px] text-gray-700">
-            <p className="font-bold text-gray-900">{selectedDistrict.name}</p>
-            <p>{selectedDistrict.province} Province</p>
-            <p className="text-gray-500">Use the coordinates fields to fine-tune the exact pin location.</p>
-          </div>
-        ) : (
-          <p className="mt-2 text-[14px] text-gray-500">
-            No district selected yet. Pick one on the map to continue.
-          </p>
+      <svg
+        viewBox={viewBox}
+        onClick={handleClick}
+        className="h-[320px] w-full max-w-md cursor-crosshair rounded-lg border border-gray-300 bg-gray-50"
+        role="img"
+        aria-label={`Click a location within ${district.name} District`}
+      >
+        <path
+          d={district.path}
+          fill={district.color}
+          stroke="#FFFFFF"
+          strokeWidth={2}
+          strokeLinejoin="round"
+        />
+        {ax !== null && ay !== null && (
+          <g className="pointer-events-none">
+            <circle cx={x + ax * width} cy={y + ay * height} r={7} fill="none" stroke="#D92D20" strokeWidth={2} />
+            <circle cx={x + ax * width} cy={y + ay * height} r={3} fill="#D92D20" />
+          </g>
         )}
-      </div>
+      </svg>
     </div>
   );
 };
