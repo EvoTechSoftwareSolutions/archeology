@@ -1,6 +1,8 @@
 
 
 const PartnersSection = () => {
+  const boxShadowClasses = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)]';
+
   return (
     <section className="bg-[#F8F6F1] py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden">
       {/* Background Image / Buddha Outline */}
@@ -30,7 +32,7 @@ const PartnersSection = () => {
         <div className="flex justify-center gap-[24px] flex-wrap items-stretch">
           
           {/* Card 1: Royal College - Colombo */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
+          <div className={`bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] ${boxShadowClasses} max-w-[360px] text-left border border-white/60`}>
             <img 
               src="/images/image 2.png" 
               alt="Royal College Colombo" 
@@ -47,7 +49,7 @@ const PartnersSection = () => {
           </div>
           
           {/* Card 2: Department of Archaeology */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
+          <div className={`bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] ${boxShadowClasses} max-w-[360px] text-left border border-white/60`}>
             <img 
               src="/images/archelogicaldeptlogo.png" 
               alt="Department of Archaeology" 
@@ -64,7 +66,7 @@ const PartnersSection = () => {
           </div>
           
           {/* Card 3: HejCeylon */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] max-w-[360px] text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/60">
+          <div className={`bg-white/80 backdrop-blur-sm rounded-xl py-[24px] px-[24px] flex items-center gap-[18px] ${boxShadowClasses} max-w-[360px] text-left border border-white/60`}>
             <img 
               src="/images/WhatsApp_Image_2025-02-23_at_22.38.43-removebg-preview 2.png" 
               alt="HejCeylon" 

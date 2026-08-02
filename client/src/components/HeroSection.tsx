@@ -43,7 +43,7 @@ const HeroSection = () => {
 
   return (
     /* Adjusted height to h-[440px] for a perfectly balanced mobile frame */
-    <section id="home" className="relative w-full h-[440px] sm:h-[480px] md:h-[540px] lg:h-screen lg:min-h-[600px] flex flex-col justify-between overflow-hidden">
+    <section id="home" className="relative w-full h-[440px] sm:h-[480px] md:h-[540px] lg:h-[720px] lg:min-h-[600px] flex flex-col justify-center overflow-hidden">
       
       {/* Background Slider */}
       <div 
@@ -62,14 +62,21 @@ const HeroSection = () => {
         ))}
       </div>
 
-      {/* Gradient Overlay - Smooth transition to transparent */}
-      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-[#F8F6F1] via-[#F8F6F1]/80 to-transparent sm:from-[#F8F6F1] sm:via-[#F8F6F1]/70" />
+      {/* Left-side white shade - strong cream wash fading to transparent */}
+      <div 
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to right, rgba(248, 246, 241, 0.92) 0%, rgba(248, 246, 241, 0.85) 35%, rgba(248, 246, 241, 0.5) 55%, rgba(248, 246, 241, 0) 75%)',
+        }}
+      />
+      {/* Additional vertical gradient for mobile bottom readability */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-[#F8F6F1]/40 via-transparent to-transparent sm:hidden" />
 
       {/* Hero Content - Matching the design's typography */}
       <div className="relative z-20 w-full pt-4 sm:pt-6 md:pt-8 lg:pt-10 px-6 sm:px-8 md:px-[60px] lg:px-[100px]">
         {/* Constrained heading container */}
         <div className="pointer-events-auto max-w-[680px] lg:max-w-[820px]">
-          <h1 className="font-serif font-medium text-[28px] sm:text-[38px] md:text-[42px] lg:text-[52px] leading-[1.1] text-[#1F5E4E] mt-0 mb-3 sm:mb-5 lg:mb-6 drop-shadow-sm">
+          <h1 className="font-serif font-medium text-[34px] sm:text-[38px] md:text-[42px] lg:text-[52px] leading-[1.1] text-[#1F5E4E] mt-0 mb-3 sm:mb-5 lg:mb-6 drop-shadow-sm">
             Discover the<br />
             Timeless <span className="text-[#CBA853]">Heritage</span><br />
             Of Sri Lanka
@@ -78,7 +85,7 @@ const HeroSection = () => {
 
         {/* Full width flex container - always horizontal row */}
         <div className="pointer-events-auto flex flex-row items-center justify-between gap-2 sm:gap-8 md:gap-20 lg:gap-32 mb-2 sm:mb-3 lg:mb-4 w-full">
-          <p className="font-sans text-[10px] sm:text-[13px] md:text-[15px] lg:text-[16px] leading-[1.5] font-medium text-gray-700 opacity-90 max-w-[140px] sm:max-w-[300px] md:max-w-[320px] lg:max-w-[500px] shrink-0">
+          <p className="font-sans text-[12px] sm:text-[13px] md:text-[16px] lg:text-[16px] leading-[1.5] font-medium text-gray-700 opacity-90 max-w-[160px] sm:max-w-[300px] md:max-w-[500px] lg:max-w-[500px] shrink-0">
             Explore ancient kingdoms, sacred temples, archaeological wonders and <span className="hidden xl:inline-block"><br /></span>
             forgotten civilizations through an immersive digital journey across Sri Lanka
           </p>
@@ -132,13 +139,13 @@ const HeroSection = () => {
             href="#contact-section"
             className="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 bg-[#1F5E4E] hover:bg-[#C5A253] text-white font-medium rounded-[6px] transition-all duration-300 w-fit no-underline shadow-md"
           >
-            <FiPhone size={13} className="sm:w-[14px] md:w-[16px]" /> <span className="text-[0.75rem] sm:text-[0.8rem] md:text-[0.85rem]">Contact Us</span>
+            <FiPhone size={13} className="sm:w-[14px] md:w-[16px]" /> <span className="text-[0.7rem] sm:text-[0.8rem] md:text-[0.85rem]">Contact Us</span>
           </a>
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-1 sm:bottom-1 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center justify-center pointer-events-none opacity-90">
+      <div className="absolute bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center justify-center pointer-events-none opacity-90">
         <span className="text-[10px] md:text-[11px] uppercase tracking-[0.25em] text-[#333] font-bold mb-1 ml-1">Scroll</span>
         <div className="w-[1px] h-[25px] sm:h-[35px] bg-[#CBA853]"></div>
       </div>
