@@ -41,6 +41,7 @@ const SEOForm = ({ value, onChange, onBack, onPublish }: SEOFormProps) => {
         <div>
           <label className="block text-[14px] font-bold text-gray-800 mb-2">URL Slug</label>
           <input
+            disabled
             type="text"
             placeholder="e.g. sigiriya-rock-fortress"
             value={value.slug}
