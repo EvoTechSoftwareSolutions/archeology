@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import { useEffect, useState, type ComponentType, type SVGProps } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   FiArrowLeft,
@@ -8,23 +8,24 @@ import {
   FiClock,
   FiCoffee,
   FiDroplet,
+  FiHome,
   FiInfo,
   FiMap,
   FiMapPin,
   FiNavigation,
-  FiPhone,
+  FiPlus,
   FiTruck,
   FiUsers,
   FiWind,
+  FiXCircle,
 } from 'react-icons/fi';
+import avatarImg from '../../assets/avatar.png';
 import sigiriya from '../../assets/places-sigiriya.png';
 import galViharaya from '../../assets/galvihara.png';
-import polonnaruwa from '../../assets/Polonnaruwa.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import galleFort from '../../assets/places-gallefort.png';
 import mandalaImg from '../../assets/image 36.png';
-import avatarImg from '../../assets/avatar.png';
 
 interface HistoricalPlace {
   id: number;
@@ -44,14 +45,83 @@ interface HistoricalPlace {
   };
 }
 
+interface ContactDetail {
+  label: string;
+  value: string;
+}
+
+interface EssentialItem {
+  title: string;
+  subtitle: string;
+  icon?: SvgIconComponent;
+}
+
+type SvgIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
+
+interface TipItem {
+  title: string;
+  text: string;
+  icon?: SvgIconComponent;
+}
+
+interface ReviewItem {
+  name: string;
+  role: string;
+  review: string;
+  image?: string | null;
+}
+
+interface HeritagePlaceDetailsProps {
+  title?: string;
+  province?: string;
+  storyLabel?: string;
+  mapTitle?: string;
+  mapQuery?: string;
+  slides?: { id: number; image: string; subtitle: string; desc: string }[];
+  story?: string[];
+  timeline?: { year: string; title: string; text: string }[];
+  distance?: string;
+  drivingTime?: string;
+  walkingTime?: string;
+  crowd?: string;
+  weather?: string;
+  bestTime?: string;
+  photographyTime?: string;
+  openingHours?: string;
+  visitNote?: string;
+  contactDetails?: ContactDetail[];
+  essentials?: EssentialItem[];
+  tips?: TipItem[];
+  dos?: string[];
+  donts?: string[];
+  review?: string;
+  nearbyPlaces?: { img: string; title: string; loc: string; route: string }[];
+}
+
 const routeDefault = { distance: 'Varies by location', time: 'Varies by location' };
 
-const HeritagePlaceDetails = () => {
+const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const { id } = useParams<{ id: string }>();
   const [place, setPlace] = useState<HistoricalPlace | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+
+  const fallbackPlace: HistoricalPlace = {
+    id: 0,
+    name: props.title || 'Heritage Place',
+    category: props.storyLabel || 'Heritage',
+    description: props.story?.[0] || 'This heritage site has played an important role in Sri Lanka’s history and culture, reflecting both religious devotion and architectural skill.',
+    image: props.slides?.[0]?.image || sigiriya,
+    century: props.drivingTime || 'Unknown',
+    statusFlag: 'Active',
+    latitude: 0,
+    longitude: 0,
+    district: {
+      name: props.province || 'Unknown',
+      province: { name: props.province || 'Sri Lanka' },
+    },
+  };
 
   useEffect(() => {
     const fetchPlace = async () => {
@@ -72,8 +142,11 @@ const HeritagePlaceDetails = () => {
 
     if (id) {
       void fetchPlace();
+    } else if (props.title) {
+      setPlace(fallbackPlace);
+      setLoading(false);
     }
-  }, [id]);
+  }, [id, props.title]);
 
   if (loading) {
     return (
@@ -95,11 +168,66 @@ const HeritagePlaceDetails = () => {
     );
   }
 
-  const pageMapImage = place.image || sigiriya;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=${encodeURIComponent(place.name)},+Sri+Lanka&travelmode=${routeMode}`;
+  const pageMapImage = props.slides?.[0]?.image || place.image || sigiriya;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=${encodeURIComponent(props.title || place.name)},+Sri+Lanka&travelmode=${routeMode}`;
   const routeInfo = routeMode === 'driving'
-    ? { ...routeDefault, distance: '170 KM', time: '4 HR' }
-    : { ...routeDefault, distance: '170 KM', time: '35 HR' };
+    ? { ...routeDefault, distance: props.distance || '170 KM', time: props.drivingTime || '4 HR' }
+    : { ...routeDefault, distance: props.distance || '170 KM', time: props.walkingTime || '35 HR' };
+
+  const storyLines = props.story?.length
+    ? props.story
+    : [place.description || 'This heritage site has played an important role in Sri Lanka’s history and culture, reflecting both religious devotion and architectural skill.'];
+
+  const timelineItems = props.timeline?.length
+    ? props.timeline
+    : [
+        { year: place.century, title: 'ANCIENT FOUNDATION', text: `${place.name} was established during the ${place.century}.` },
+        { year: 'COLONIAL ERA', title: 'PRESERVED BY SCHOLARS', text: 'Scholars and conservationists helped protect the site through changing times.' },
+        { year: '1982', title: 'UNESCO CONTEXT', text: 'Sri Lanka’s heritage sites were recognized for their global significance.' },
+        { year: 'TODAY', title: 'CULTURAL LANDMARK', text: 'It remains a protected destination for visitors and historians alike.' },
+      ];
+
+  const contactDetails = props.contactDetails?.length
+    ? props.contactDetails
+    : [
+        { label: 'Address', value: `${place.name}, ${place.district?.name}, Sri Lanka` },
+        { label: 'Visitor Information', value: '+94 11 2692840' },
+        { label: 'Official Website', value: 'www.heritage.gov.lk' },
+      ];
+
+  const travelTips = props.tips?.length
+    ? props.tips
+    : [
+        { icon: FiInfo, title: 'Dress Code', text: 'Wear modest clothing suitable for a sacred historic site.' },
+        { icon: FiCamera, title: 'Photography rules', text: 'Photography is allowed in public areas, but be respectful around sacred objects and ceremonies.' },
+        { icon: FiCheckCircle, title: 'Accessibility', text: 'Ground-level areas are generally accessible. The top sections may involve steps.' },
+      ];
+
+  const doItems = props.dos?.length
+    ? props.dos
+    : [
+        'Visit early to avoid heat and crowds.',
+        'Keep noise low in sacred areas.',
+        'Bring water and sun protection.',
+      ];
+
+  const dontItems = props.donts?.length
+    ? props.donts
+    : [
+        'Do not climb on protected monuments.',
+        'Do not litter or damage the site.',
+        'Do not ignore posted rules.',
+      ];
+
+  const nearbyPlaces = props.nearbyPlaces?.length
+    ? props.nearbyPlaces
+    : [
+        { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
+        { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
+        { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+        { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+        { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
+      ];
 
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
@@ -113,24 +241,45 @@ const HeritagePlaceDetails = () => {
           </Link>
 
           <span className="inline-block bg-[#C89B3C] text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4 w-fit">
-            {place.category}
+            {props.storyLabel || place.category}
           </span>
           <h1 className="font-serif text-white text-[3rem] md:text-[4.5rem] font-bold leading-tight mb-4 drop-shadow-lg">
-            {place.name}
+            {props.title || place.name}
           </h1>
 
           <div className="flex flex-wrap items-center gap-6 text-white/90 text-sm md:text-base font-medium">
             <div className="flex items-center gap-2">
               <FiMapPin className="text-[#C89B3C]" />
-              {place.district?.name}, {place.district?.province?.name}
+              {place.district?.name || props.province}
             </div>
             <div className="flex items-center gap-2">
               <FiClock className="text-[#C89B3C]" />
-              {place.century}
+              {place.century || props.drivingTime}
             </div>
           </div>
         </div>
       </section>
+
+      {props.slides?.length ? (
+        <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[8px] pt-14">
+          <div className="mb-6">
+            <p className="text-[#C89B3C] text-[0.8rem] font-bold uppercase tracking-[2px] mb-2">GALLERY</p>
+            <h3 className="font-serif text-[2rem] md:text-[2.5rem] font-bold text-[#1f2937]">Place Highlights</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+            {props.slides.map((slide) => (
+              <div key={slide.id} className="overflow-hidden rounded-[20px] border border-gray-100 bg-white shadow-sm">
+                <img src={slide.image} alt={slide.subtitle} className="h-[220px] w-full object-cover" />
+                <div className="p-4">
+                  <p className="text-[#C89B3C] text-[0.72rem] font-bold uppercase tracking-[1px] mb-1">{slide.subtitle}</p>
+                  <p className="text-[#4b5563] text-[0.9rem] leading-relaxed">{slide.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] pt-16">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-12">
@@ -144,12 +293,11 @@ const HeritagePlaceDetails = () => {
             <div className="relative z-10">
               <p className="text-[#C89B3C] text-[0.8rem] font-bold uppercase tracking-[2px] mb-2">THE STORY</p>
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
-                {place.description || 'This heritage site has played an important role in Sri Lanka’s history and culture, reflecting both religious devotion and architectural skill.'}
-              </p>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] font-sans">
-                Explore the place name, its historic context, and the cultural legacy that makes this site an essential stop on any heritage journey.
-              </p>
+              {storyLines.map((line, idx) => (
+                <p key={idx} className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
+                  {line}
+                </p>
+              ))}
             </div>
 
             <div className="relative z-10">
@@ -157,12 +305,7 @@ const HeritagePlaceDetails = () => {
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-8">Historical Timeline</h3>
 
               <div className="relative pl-8 border-l-[3px] border-[#E2DED5] space-y-10">
-                {[
-                  { year: place.century, title: 'ANCIENT FOUNDATION', text: `${place.name} was established during the ${place.century}.` },
-                  { year: 'COLONIAL ERA', title: 'PRESERVED BY SCHOLARS', text: 'Scholars and conservationists helped protect the site through changing times.' },
-                  { year: '1982', title: 'UNESCO CONTEXT', text: 'Sri Lanka’s heritage sites were recognized for their global significance.' },
-                  { year: 'TODAY', title: 'CULTURAL LANDMARK', text: 'It remains a protected destination for visitors and historians alike.' },
-                ].map((item, idx) => (
+                {timelineItems.map((item, idx) => (
                   <div key={item.year} className="relative">
                     <div className={`absolute -left-[41px] top-1 w-[18px] h-[18px] rounded-full border-[4px] border-[#F8F6F1] ${idx % 2 === 0 ? 'bg-[#C89B3C]' : 'bg-[#1C5F46]'}`} />
                     <span className="text-[#C89B3C] font-bold text-[0.95rem] mb-1 block tracking-wider">{item.year}</span>
@@ -182,13 +325,13 @@ const HeritagePlaceDetails = () => {
               </p>
 
               <div className="flex items-center gap-2 text-[#1C5F46] font-bold text-[0.85rem] mb-8">
-                <FiUsers size={16} /> High Crowd
+                <FiUsers size={16} /> {props.crowd || 'High Crowd'}
               </div>
 
               <div className="grid grid-cols-2 gap-x-2 gap-y-8 border-b border-[#E2DED5] pb-8 sm:grid-cols-3 mb-10">
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiMapPin className="text-[#1C5F46]" /> Distance</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{routeInfo.distance}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.distance || routeInfo.distance}</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiClock className="text-[#1C5F46]" /> Travel Time</div>
@@ -196,7 +339,7 @@ const HeritagePlaceDetails = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Best Photography</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">6:30 AM</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.photographyTime || '6:30 AM'}</div>
                 </div>
               </div>
 
@@ -216,7 +359,7 @@ const HeritagePlaceDetails = () => {
               </div>
 
               <div className="space-y-3 mb-10">
-                {[
+                {(props.essentials || [
                   { icon: FiCoffee, title: 'Restaurants', subtitle: 'Local village area' },
                   { icon: FiHome, title: 'Hotels', subtitle: 'Nearby guesthouses' },
                   { icon: FiDroplet, title: 'Fuel Stations', subtitle: 'Nearby town' },
@@ -224,17 +367,21 @@ const HeritagePlaceDetails = () => {
                   { icon: FiWind, title: 'Washrooms', subtitle: 'On-site facilities' },
                   { icon: FiTruck, title: 'Bus Stops', subtitle: 'Nearest stop' },
                   { icon: FiMap, title: 'Parking', subtitle: 'Visitor parking' },
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-[#f8faf7] rounded-3xl p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e7f3e7] text-[#1C5F46]">
-                      <item.icon size={18} />
+                ] as EssentialItem[]).map((item, idx) => {
+                  const IconComponent = item.icon ?? [FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap][idx % 7];
+
+                  return (
+                    <div key={`${item.title}-${idx}`} className="flex items-start gap-3 bg-[#f8faf7] rounded-3xl p-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e7f3e7] text-[#1C5F46]">
+                        <IconComponent size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm text-[#1f2937] font-semibold">{item.title}</p>
+                        <p className="text-sm text-[#6b7280]">{item.subtitle}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-[#1f2937] font-semibold">{item.title}</p>
-                      <p className="text-sm text-[#6b7280]">{item.subtitle}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <a
@@ -264,7 +411,7 @@ const HeritagePlaceDetails = () => {
           <div>
             <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full md:w-max pr-6 md:pr-16">
               <h4 className="font-bold text-[1.2rem] text-[#1f2937] mb-1">Opening Hours</h4>
-              <p className="text-[#6b7280] text-[0.95rem]">Open Daily from 7:00 AM to 5:30 PM</p>
+              <p className="text-[#6b7280] text-[0.95rem]">{props.openingHours || 'Open Daily from 7:00 AM to 5:30 PM'}</p>
             </div>
 
             <p className="text-[#4b5563] text-[0.95rem] mb-8 font-sans leading-relaxed">
@@ -292,18 +439,18 @@ const HeritagePlaceDetails = () => {
               <div className="h-[1px] w-full bg-gradient-to-r from-gray-100 to-transparent mb-8" />
 
               <div className="space-y-6">
-                <div>
-                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Address</h5>
-                  <p className="text-[#6b7280] text-[0.95rem]">{place.name}, {place.district?.name}, Sri Lanka</p>
-                </div>
-                <div>
-                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Visitor Information</h5>
-                  <p className="text-[#6b7280] text-[0.95rem]">+94 11 2692840</p>
-                </div>
-                <div>
-                  <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">Official Website</h5>
-                  <a href="https://www.heritage.gov.lk" target="_blank" rel="noreferrer" className="text-[#4b5563] text-[0.95rem] underline underline-offset-4 decoration-gray-400 hover:text-[#1C5F46]">www.heritage.gov.lk</a>
-                </div>
+                {contactDetails.map((detail) => (
+                  <div key={detail.label}>
+                    <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-1">{detail.label}</h5>
+                    {detail.label.toLowerCase().includes('http') || detail.value.startsWith('http') ? (
+                      <a href={detail.value} target="_blank" rel="noreferrer" className="text-[#4b5563] text-[0.95rem] underline underline-offset-4 decoration-gray-400 hover:text-[#1C5F46]">
+                        {detail.value}
+                      </a>
+                    ) : (
+                      <p className="text-[#6b7280] text-[0.95rem]">{detail.value}</p>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -372,13 +519,12 @@ const HeritagePlaceDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
           <div className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-sm">
-            {[
-              { icon: FiInfo, title: 'Dress Code', text: 'Wear modest clothing suitable for a sacred historic site.' },
-              { icon: FiCamera, title: 'Photography rules', text: 'Photography is allowed in public areas, but be respectful around sacred objects and ceremonies.' },
-              { icon: FiCheckCircle, title: 'Accessibility', text: 'Ground-level areas are generally accessible. The top sections may involve steps.' },
-            ].map((item, index) => (
+            {travelTips.map((item, index) => (
               <div key={item.title} className={`flex gap-4 p-6 ${index < 2 ? 'border-b border-gray-100' : ''}`}>
-                <item.icon className="mt-1 shrink-0 text-[#1C5F46]" size={24} />
+                {(() => {
+                  const TipIcon = item.icon ?? FiInfo;
+                  return <TipIcon className="mt-1 shrink-0 text-[#1C5F46]" size={24} />;
+                })()}
                 <div>
                   <h5 className="font-bold text-[#1f2937] mb-1">{item.title}</h5>
                   <p className="text-[#6b7280] text-[0.9rem]">{item.text}</p>
@@ -391,18 +537,18 @@ const HeritagePlaceDetails = () => {
             <div className="rounded-[24px] border border-[#1C5F46] bg-[#F4F9F7] p-6">
               <h5 className="mb-4 flex items-center gap-2 font-bold text-[#1C5F46]"><FiCheckCircle /> Do's</h5>
               <ul className="space-y-3 text-[0.9rem] text-[#4b5563]">
-                <li className="flex gap-2"><FiCheck className="mt-0.5 shrink-0 text-[#1C5F46]" /> Visit early to avoid heat and crowds.</li>
-                <li className="flex gap-2"><FiCheck className="mt-0.5 shrink-0 text-[#1C5F46]" /> Keep noise low in sacred areas.</li>
-                <li className="flex gap-2"><FiCheck className="mt-0.5 shrink-0 text-[#1C5F46]" /> Bring water and sun protection.</li>
+                {doItems.map((item) => (
+                  <li key={item} className="flex gap-2"><FiCheck className="mt-0.5 shrink-0 text-[#1C5F46]" /> {item}</li>
+                ))}
               </ul>
             </div>
 
             <div className="rounded-[24px] border border-[#C66846] bg-[#FFF6F5] p-6">
               <h5 className="mb-4 flex items-center gap-2 font-bold text-[#C66846]"><FiXCircle /> Don'ts</h5>
               <ul className="space-y-3 text-[0.9rem] text-[#4b5563]">
-                <li className="flex gap-2"><FiXCircle className="mt-0.5 shrink-0 text-[#C66846]" size={14} /> Do not climb on protected monuments.</li>
-                <li className="flex gap-2"><FiXCircle className="mt-0.5 shrink-0 text-[#C66846]" size={14} /> Do not litter or damage the site.</li>
-                <li className="flex gap-2"><FiXCircle className="mt-0.5 shrink-0 text-[#C66846]" size={14} /> Do not ignore posted rules.</li>
+                {dontItems.map((item) => (
+                  <li key={item} className="flex gap-2"><FiXCircle className="mt-0.5 shrink-0 text-[#C66846]" size={14} /> {item}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -415,14 +561,21 @@ const HeritagePlaceDetails = () => {
 
         <div className="overflow-hidden rounded-[24px]">
           <div className="review-carousel-track flex gap-6 pb-4 text-left">
-            {[
-              { name: 'Dr. Himali Perera', role: 'Researcher', review: 'Impeccably documented. A vital reference for my fieldwork.' },
-              { name: 'Saman Wickrama', role: 'Historian', review: 'A beautiful site with rich cultural layers and impressive preservation.' },
-              { name: 'Nadeesha Fernando', role: 'Traveler', review: 'Excellent walkthrough and a calm place to connect with history.' },
-            ].map((item, index) => (
+            {([
+              { name: 'Dr. Himali Perera', role: 'Researcher', review: 'Impeccably documented. A vital reference for my fieldwork.', image: avatarImg },
+              { name: 'Saman Wickrama', role: 'Historian', review: 'A beautiful site with rich cultural layers and impressive preservation.', image: avatarImg },
+              { name: 'Nadeesha Fernando', role: 'Traveler', review: 'Excellent walkthrough and a calm place to connect with history.', image: avatarImg },
+            ] as ReviewItem[]).map((item, index) => (
               <div key={`${item.name}-${index}`} className="review-card rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm min-w-[280px] md:min-w-[320px]">
                 <div className="mb-4 flex items-center gap-4">
-                  <img src={avatarImg} alt="Reviewer" className="h-12 w-12 rounded-full object-cover bg-gray-200" />
+                  <img
+                    src={item.image || avatarImg}
+                    alt={item.name}
+                    className="h-12 w-12 rounded-full object-cover bg-gray-200"
+                    onError={(event) => {
+                      event.currentTarget.src = avatarImg;
+                    }}
+                  />
                   <div>
                     <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
                     <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>
@@ -441,13 +594,7 @@ const HeritagePlaceDetails = () => {
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Nearby Places</h3>
 
         <div className="flex overflow-x-auto snap-x gap-4 pb-4 text-left md:grid md:grid-cols-5 md:pb-0">
-          {[
-            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
-            { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
-            { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
-            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
-            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
-          ].map((placeInfo, idx) => (
+          {nearbyPlaces.map((placeInfo, idx) => (
             <Link key={idx} to={placeInfo.route} className="group flex w-[240px] shrink-0 snap-start flex-col overflow-hidden rounded-[16px] border border-gray-100 bg-white shadow-sm sm:w-[280px] md:w-auto">
               <div className="relative h-[150px] overflow-hidden md:h-[120px]">
                 <img src={placeInfo.img} alt={placeInfo.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />

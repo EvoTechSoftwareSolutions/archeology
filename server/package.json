@@ -5,9 +5,16 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "predev": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+<<<<<<< HEAD
     "start": "node server.js",
+=======
+    "prestart": "npm run build",
+    "start": "node dist/server.js",
+    "postinstall": "prisma generate",
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio"
@@ -17,6 +24,8 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@types/multer": "^2.2.0",
+    "@types/nodemailer": "^8.0.1",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

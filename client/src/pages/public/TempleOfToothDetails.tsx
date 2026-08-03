@@ -1,99 +1,113 @@
 
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle, FiX } from 'react-icons/fi';
+import avatarImg from '../../assets/avatar.png';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import polonnaruwa from '../../assets/Polonnaruwa.png';
 import sigiriya from '../../assets/places-sigiriya.png';
-import avatarImg from '../../assets/avatar.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 
 import dm1 from '../../assets/dm1.png';
-import dm2 from '../../assets/dm2.png';
-import dm3 from '../../assets/dm3.png';
-import dm4 from '../../assets/dm4.png';
-import dm5 from '../../assets/dm5.png';
-import dm6 from '../../assets/dm6.png';
-import dm7 from '../../assets/dm7.png';
+import dm2 from '../../assets/single page 3.png';
+import dm3 from '../../assets/single page 5.png';
+import dm4 from '../../assets/single page 6.png';
+import dm5 from '../../assets/single page 7.png';
+import dm6 from '../../assets/single page 4.png';
+import dm7 from '../../assets/single page 2.png';
 
-const heroSlides = [
-  {
-    id: 1,
-    image: dm1,
-    subtitle: "PATHTHIRIPPUWA (THE OCTAGON)",
-    desc: "Built during the reign of King Sri Vikrama Rajasinha, this iconic octagonal tower is a hallmark of Kandyan architecture. It was originally used by kings to address the public and is now a repository for ancient ola-leaf manuscripts."
-  },
-  {
-    id: 2,
-    image: dm2,
-    subtitle: "Vadahitina Maligawa (Inner Chamber)",
-    desc: "The innermost sanctum of the temple, the Vadahitina Maligawa houses the golden casket containing the Sacred Tooth Relic of the Buddha. Devotees offer flowers, incense, and prayers at the gilded doors during the three daily Thevava ceremonies."
-  },
+const templeCards = [
   
   {
-    id: 4,
+    image: dm2,
+    title: 'Temple of the Tooth',
+    subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
+  },
+  {
+    image: dm3,
+    title: 'Temple of the Tooth',
+    subtitle: 'Vadahitina Maligawa (Inner Chamber)',
+  },
+  {
     image: dm4,
-    subtitle: "Natha Devalaya",
-    desc: "One of the oldest shrines in Kandy, the Natha Devalaya is dedicated to Bodhisattva Natha — believed by many to be Maitreya, the future Buddha. Dating back to the 14th century, its stone architecture and moonstone steps stand as some of the finest examples of medieval Sri Lankan craftsmanship."
+    title: 'Temple of the Tooth',
+    subtitle: 'Makara Thorana (Dragon Arch)',
   },
   {
-    id: 5,
-    image: dm7,
-    subtitle: "Walakulu Bamma (Cloud Wall)",
-    desc: "The distinctive Cloud Wall, named for its undulating wave-like form, encircles the sacred precincts of the temple complex. Adorned with intricate carvings of elephants and floral motifs, it serves as both a protective boundary and a canvas of traditional Kandyan artistry."
-  },
-  {
-    id: 6,
-    image: dm6,
-    subtitle: "Sri Dalada Museum",
-    desc: "Located within the temple complex, the Sri Dalada Museum preserves centuries of royal offerings, ancient regalia, and ceremonial artifacts presented to the Sacred Tooth Relic by kings and devotees. Exhibits include jewelled caskets, royal palanquins, ivory carvings, and rare manuscripts."
-  },
-  {
-    id: 7,
     image: dm5,
-    subtitle: "Makara Thorana (Dragon Arch)",
-    desc: "The Makara Thorana is a magnificent gateway arch flanked by mythical sea-dragon figures called Makaras. Serving as the ceremonial entrance to the inner shrine, it symbolises the threshold between the earthly realm and the sacred space beyond, intricately carved with celestial motifs and guardians."
-  }
+    title: 'Temple of the Tooth',
+    subtitle: 'Walakulu Bamma (Cloud Wall)',
+  },
+  {
+    image: dm6,
+    title: 'Temple of the Tooth',
+    subtitle: 'Sri Dalada Museum',
+  },
+  {
+    image: dm7,
+    title: 'Temple of the Tooth',
+    subtitle: 'Natha Devalaya',
+  },
 ];
+const mainHeroImage = dm1;
 
 
 const TempleOfToothDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number; }[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<typeof templeCards[number] | null>(null);
 
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
   const API = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
     : '/api/v1';
 
-  // Selected slide drives the hero section
-  const [selectedSlide, setSelectedSlide] = useState(heroSlides[0]);
-  
-  const heroRef = useRef<HTMLElement>(null);
+  const resolveReviewImage = (image: string | null) => {
+    if (!image) {
+      return avatarImg;
+    }
 
-  const handleSelectSlide = (slide: typeof heroSlides[0]) => {
-    setSelectedSlide(slide);
-    setTimeout(() => {
-      heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
+    if (/^(https?:)?\/\//i.test(image) || image.startsWith('data:') || image.startsWith('blob:')) {
+      return image;
+    }
+
+    return `${API_BASE}${image.startsWith('/') ? image : `/${image}`}`;
+  };
+
+  const openCard = (card: typeof templeCards[number]) => {
+    setActiveCard(card);
+  };
+
+  const closeCard = () => {
+    setActiveCard(null);
   };
 
   useEffect(() => {
     const loadReviews = async () => {
       try {
         setReviewError(null);
-        const res = await fetch(`${API}/reviews`, { credentials: 'include' });
-        const json = await res.json();
+        const res = await fetch(`${API}/reviews?all=true`, { credentials: 'include' });
+        const responseText = await res.text();
+        let json: any = { data: [] };
+
+        if (responseText) {
+          try {
+            json = JSON.parse(responseText);
+          } catch {
+            json = { data: [] };
+          }
+        }
+
         if (!res.ok) {
           throw new Error(json?.message || 'Failed to load reviews.');
         }
 
-        const activeReviews = (json.data ?? [])
-          .filter((review: any) => review?.isActive !== false)
+        const publicReviews = (json.data ?? [])
           .map((review: any) => ({
             name: review.reviewerName || 'Guest Reviewer',
             role: review.reviewerRole || 'Visitor',
@@ -102,9 +116,9 @@ const TempleOfToothDetails = () => {
             rating: Number(review.rating) || 5,
           }));
 
-        setReviewCards(activeReviews);
-        if (activeReviews.length === 0) {
-          setReviewError('No active reviews were returned by the API.');
+        setReviewCards(publicReviews);
+        if (publicReviews.length === 0) {
+          setReviewError('No reviews were returned by the API.');
         }
       } catch (error) {
         console.error('TempleOfToothDetails loadReviews error:', error);
@@ -123,60 +137,75 @@ const TempleOfToothDetails = () => {
 
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
-      {/* Hero Section — updates when a gallery thumbnail is clicked */}
-      <section ref={heroRef} className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
+      {/* Hero Section */}
+      <section className="relative min-h-[520px] md:min-h-[600px] flex flex-col justify-center px-5 md:px-[28px] py-10 mb-8 md:mb-12 overflow-hidden">
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
-          style={{ backgroundImage: `url('${selectedSlide.image}')` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-        </div>
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.58) 42%, rgba(0,0,0,0.16) 75%, rgba(0,0,0,0.10) 100%), url('${mainHeroImage}')` }}
+        />
 
-        <div className="relative z-10 max-w-[800px] pt-12">
-          <h1 className="font-serif text-white text-[45px] md:text-[64px] font-bold leading-[1.2] mb-1 uppercase tracking-wide">
-            Temple Of The Tooth
+        <div className="relative z-10 max-w-[760px] pt-8 md:pt-12 pl-1 md:pl-2">
+          <h1 className="font-serif text-white text-[34px] md:text-[58px] font-bold leading-[1.1] mb-2 uppercase tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+            PATHTHIRIPPUWA (THE OCTAGON)
           </h1>
-          <h2 className="font-serif text-white text-[18px] md:text-[22px] font-bold tracking-wide uppercase mb-6 opacity-95">
-            {selectedSlide.subtitle}
+          <h2 className="font-serif text-white text-[16px] md:text-[20px] font-bold tracking-wide uppercase mb-5 opacity-95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
+            Temple Of The Tooth
           </h2>
 
-          {selectedSlide.desc && (
-            <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
-              {selectedSlide.desc}
-            </p>
-          )}
+          <p className="text-white font-sans font-medium text-[0.95rem] md:text-[1rem] leading-[1.55] max-w-[640px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+            Built during the reign of King Sri Vikrama Rajasinha, this iconic octagonal tower is a hallmark of Kandyan architecture. It was originally used by kings to address the public and is now a repository for ancient ola-leaf manuscripts.
+          </p>
         </div>
       </section>
 
-      {/* Image Gallery Grid */}
-      <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
-        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x">
-          {/* First slide (hero default) as first thumbnail */}
-          {heroSlides.map((slide) => (
-            <div
-              key={slide.id}
-              onClick={() => handleSelectSlide(slide)}
-              className={`relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start cursor-pointer transition-all duration-200 ${
-                selectedSlide.id === slide.id
-                  ? 'ring-[3px] ring-[#1C5F46] ring-offset-2'
-                  : 'opacity-90 hover:opacity-100'
-              }`}
+      {/* Temple Highlights */}
+      <section className="max-w-[1400px] mx-auto px-5 md:px-8 pb-10 md:pb-12 relative z-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {templeCards.map((card) => (
+            <button
+              key={card.subtitle}
+              type="button"
+              onClick={() => openCard(card)}
+              className="relative group overflow-hidden aspect-[16/9] bg-black rounded-[2px] text-left"
             >
-              <img src={slide.image} alt={slide.subtitle} className="w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
-                <span className="text-white font-serif text-[1.2rem] md:text-[1.4rem] font-bold uppercase truncate mb-0.5">Temple Of The Tooth</span>
-                <span className="text-white/90 font-sans text-[0.85rem] md:text-[0.95rem] truncate">{slide.subtitle}</span>
+              <img src={card.image} alt={card.subtitle} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/25 to-transparent flex flex-col justify-end p-4 md:p-5">
+                <span className="text-white font-serif text-[0.95rem] md:text-[1.15rem] font-bold uppercase tracking-[0.5px] truncate mb-0.5">{card.title}</span>
+                <span className="text-white/90 font-sans text-[0.7rem] md:text-[0.9rem] truncate">{card.subtitle}</span>
               </div>
-              {/* Hover icon */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="bg-black/50 backdrop-blur-sm rounded-full p-3">
-                  <FiCamera className="text-white w-5 h-5" />
-                </div>
-              </div>
-            </div>
+            </button>
           ))}
         </div>
       </section>
+
+      {activeCard && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 px-4 py-8 backdrop-blur-sm" onClick={closeCard}>
+          <div
+            className="relative mt-4 w-full max-w-5xl overflow-hidden rounded-[28px] bg-[#0f172a] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeCard}
+              className="absolute right-4 top-8 z-10 rounded-full bg-black/55 p-2 text-white transition hover:bg-black/75"
+              aria-label="Close image preview"
+            >
+              <FiX size={20} />
+            </button>
+            <div className="flex items-start justify-center bg-black p-4 md:p-6">
+              <img
+                src={activeCard.image}
+                alt={activeCard.subtitle}
+                className="max-h-[70vh] w-auto max-w-full object-contain object-top md:max-h-[78vh]"
+              />
+            </div>
+            <div className="space-y-2 bg-[#111827] px-6 py-5 text-white md:px-8">
+              <p className="text-xs font-bold uppercase tracking-[3px] text-[#C89B3C]">Temple Of The Tooth</p>
+              <h3 className="font-serif text-2xl font-bold uppercase tracking-wide">{activeCard.subtitle}</h3>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Split */}
       <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px]">
@@ -194,10 +223,10 @@ const TempleOfToothDetails = () => {
             <div className="relative z-10">
               <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">THE STORY</p>
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Sri Dalada Maligawa enshrines a tooth relic of the Buddha, historically the palladium of Sinhalese kingship. The temple complex sits within the former royal palace of Kandy beside a serene lake.
               </p>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Each August the relic is honoured with the Esala Perahera, one of Asia's grandest processions of dancers, drummers and caparisoned elephants.
               </p>
             </div>
@@ -265,7 +294,7 @@ const TempleOfToothDetails = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937] text-center">2:30 PM</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">2:30 PM</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>
@@ -529,9 +558,12 @@ const TempleOfToothDetails = () => {
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <img
-                      src={item.image || avatarImg}
+                      src={resolveReviewImage(item.image)}
                       alt={item.name}
                       className="w-12 h-12 rounded-full object-cover bg-gray-200"
+                      onError={(event) => {
+                        event.currentTarget.src = avatarImg;
+                      }}
                     />
                     <div>
                       <h5 className="font-bold text-[1rem] text-[#1f2937]">{item.name}</h5>

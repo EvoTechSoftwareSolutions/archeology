@@ -12,5 +12,11 @@ export const env = {
     DATABASE_URL: getEnv("DATABASE_URL"),
     JWT_SECRET: getEnv("JWT_SECRET"),
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
-    NODE_ENV: process.env.NODE_ENV || "development"
+    NODE_ENV: process.env.NODE_ENV || "development",
+    SMTP_HOST: process.env.SMTP_HOST || "",
+    SMTP_PORT: Number(process.env.SMTP_PORT || 587),
+    SMTP_USER: process.env.SMTP_USER || "",
+    SMTP_PASS: process.env.SMTP_PASS || "",
+    SMTP_FROM: process.env.SMTP_FROM || process.env.SMTP_USER || "newsletter@heritagesrilanka.com",
+    SMTP_SECURE: process.env.SMTP_SECURE === "true",
 };

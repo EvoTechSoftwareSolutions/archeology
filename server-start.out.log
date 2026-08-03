@@ -1,0 +1,19 @@
+
+> server@1.0.0 dev
+> tsx watch src/server.ts
+
+ Database connected successfully.
+prisma:query BEGIN
+prisma:query SELECT `archeology`.`User`.`id` FROM `archeology`.`User` WHERE (`archeology`.`User`.`email` = ? AND 1=1)
+prisma:query UPDATE `archeology`.`User` SET `password` = ?, `role` = ?, `isActive` = ? WHERE (`archeology`.`User`.`id` IN (?) AND (`archeology`.`User`.`email` = ? AND 1=1))
+prisma:query SELECT `archeology`.`User`.`id`, `archeology`.`User`.`name`, `archeology`.`User`.`email`, `archeology`.`User`.`password`, `archeology`.`User`.`department`, `archeology`.`User`.`role`, `archeology`.`User`.`isActive`, `archeology`.`User`.`createdAt` FROM `archeology`.`User` WHERE `archeology`.`User`.`id` = ? LIMIT ? OFFSET ?
+prisma:query COMMIT
+🚀 Server running on http://localhost:5000
+10:59:21 AM [tsx] change in ./src\services\contact.service.ts Rerunning...
+ Database connected successfully.
+prisma:query BEGIN
+prisma:query SELECT `archeology`.`User`.`id` FROM `archeology`.`User` WHERE (`archeology`.`User`.`email` = ? AND 1=1)
+prisma:query UPDATE `archeology`.`User` SET `password` = ?, `role` = ?, `isActive` = ? WHERE (`archeology`.`User`.`id` IN (?) AND (`archeology`.`User`.`email` = ? AND 1=1))
+prisma:query SELECT `archeology`.`User`.`id`, `archeology`.`User`.`name`, `archeology`.`User`.`email`, `archeology`.`User`.`password`, `archeology`.`User`.`department`, `archeology`.`User`.`role`, `archeology`.`User`.`isActive`, `archeology`.`User`.`createdAt` FROM `archeology`.`User` WHERE `archeology`.`User`.`id` = ? LIMIT ? OFFSET ?
+prisma:query COMMIT
+🚀 Server running on http://localhost:5000

@@ -1,7 +1,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle } from 'react-icons/fi';
+import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle, FiX } from 'react-icons/fi';
+import avatarImg from '../../assets/avatar.png';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import galleFort from '../../assets/places-gallefort.png';
@@ -11,7 +12,6 @@ import sigiriya from '../../assets/places-sigiriya.png';
 import galViharaya from '../../assets/galvihara.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
-import avatarImg from '../../assets/avatar.png';
 
 const heroSlides = [
   {
@@ -38,6 +38,7 @@ const GalleFortDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number; }[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [activeCard, setActiveCard] = useState<(typeof heroSlides)[number] | null>(null);
 
   const API = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
@@ -51,6 +52,15 @@ const GalleFortDetails = () => {
     setTimeout(() => {
       heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
+  };
+
+  const openCard = (slide: typeof heroSlides[number]) => {
+    setSelectedSlide(slide);
+    setActiveCard(slide);
+  };
+
+  const closeCard = () => {
+    setActiveCard(null);
   };
 
   useEffect(() => {
@@ -95,24 +105,22 @@ const GalleFortDetails = () => {
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
       {/* Hero Section */}
-      <section ref={heroRef} className="relative h-[80vh] min-h-[450px] flex flex-col justify-center px-6 md:px-[80px]">
+      <section ref={heroRef} className="relative min-h-[520px] md:min-h-[600px] flex flex-col justify-center px-5 md:px-[28px] py-10 mb-8 md:mb-12 overflow-hidden">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700"
-          style={{ backgroundImage: `url('${selectedSlide.image}')` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-        </div>
+          style={{ backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.58) 42%, rgba(0,0,0,0.16) 75%, rgba(0,0,0,0.10) 100%), url('${selectedSlide.image}')` }}
+        />
 
-        <div className="relative z-10 max-w-[800px] pt-12">
-          <h1 className="font-serif text-white text-[45px] md:text-[64px] font-bold leading-[1.2] mb-1 uppercase tracking-wide">
+        <div className="relative z-10 max-w-[760px] pt-8 md:pt-12 pl-1 md:pl-2">
+          <h1 className="font-serif text-white text-[34px] md:text-[58px] font-bold leading-[1.1] mb-2 uppercase tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
             Galle Fort
           </h1>
-          <h2 className="font-serif text-white text-[18px] md:text-[22px] font-bold tracking-wide uppercase mb-6 opacity-95">
+          <h2 className="font-serif text-white text-[16px] md:text-[20px] font-bold tracking-wide uppercase mb-5 opacity-95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
             {selectedSlide.subtitle}
           </h2>
 
           {selectedSlide.desc && (
-            <p className="text-white font-sans font-medium text-[16px] md:text-[18px] leading-[1.6] max-w-[700px]">
+            <p className="text-white font-sans font-medium text-[0.95rem] md:text-[1rem] leading-[1.55] max-w-[640px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
               {selectedSlide.desc}
             </p>
           )}
@@ -123,10 +131,11 @@ const GalleFortDetails = () => {
       <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-16 relative z-20">
         <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x">
           {heroSlides.map((slide) => (
-            <div
+            <button
               key={slide.id}
-              onClick={() => handleSelectSlide(slide)}
-              className={`relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start cursor-pointer transition-all duration-200 ${
+              type="button"
+              onClick={() => openCard(slide)}
+              className={`relative group overflow-hidden aspect-[16/9] bg-black shrink-0 w-[280px] sm:w-[360px] md:w-auto snap-start cursor-pointer transition-all duration-200 text-left ${
                 selectedSlide.id === slide.id
                   ? 'ring-[3px] ring-[#1C5F46] ring-offset-2'
                   : 'opacity-90 hover:opacity-100'
@@ -142,10 +151,39 @@ const GalleFortDetails = () => {
                   <FiCamera className="text-white w-5 h-5" />
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </section>
+
+      {activeCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 px-4 py-8 backdrop-blur-sm" onClick={closeCard}>
+          <div
+            className="relative mt-4 w-full max-w-5xl overflow-hidden rounded-[28px] bg-[#0f172a] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeCard}
+              className="absolute right-4 top-8 z-10 rounded-full bg-black/55 p-2 text-white transition hover:bg-black/75"
+              aria-label="Close image preview"
+            >
+              <FiX size={20} />
+            </button>
+            <div className="flex items-center justify-center bg-black p-4 md:p-6">
+              <img
+                src={activeCard.image}
+                alt={activeCard.subtitle}
+                className="max-h-[70vh] w-auto max-w-full object-contain object-top md:max-h-[78vh]"
+              />
+            </div>
+            <div className="space-y-2 bg-[#111827] px-6 py-5 text-white md:px-8">
+              <p className="text-xs font-bold uppercase tracking-[3px] text-[#C89B3C]">Galle Fort</p>
+              <h3 className="font-serif text-2xl font-bold uppercase tracking-wide">{activeCard.subtitle}</h3>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Split */}
       <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px]">
@@ -163,10 +201,10 @@ const GalleFortDetails = () => {
             <div className="relative z-10">
               <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">THE STORY</p>
               <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-6">Historical Significance</h3>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Galle Fort is a fortified coastal city first established by the Portuguese and later expanded by the Dutch in the 17th century. Its ramparts, bastions, and street grid still define the old town.
               </p>
-              <p className="text-[#4b5563] text-[1.1rem] leading-[1.8] mb-4 font-sans">
+              <p className="text-[#4b5563] text-[0.95rem] md:text-[1rem] leading-[1.8] mb-4 font-sans">
                 Today the fort is both a protected heritage site and a living neighborhood, with museums, religious buildings, boutiques, cafes, and sea-facing walks.
               </p>
             </div>
@@ -228,7 +266,7 @@ const GalleFortDetails = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937] text-center">5:30 AM</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">5:30 AM</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>
@@ -495,6 +533,9 @@ const GalleFortDetails = () => {
                       src={item.image || avatarImg}
                       alt={item.name}
                       className="w-12 h-12 rounded-full object-cover bg-gray-200"
+                      onError={(event) => {
+                        event.currentTarget.src = avatarImg;
+                      }}
                     />
                     <div>
                       <h5 className="font-bold text-[1rem] text-[#1f2937]">{item.name}</h5>

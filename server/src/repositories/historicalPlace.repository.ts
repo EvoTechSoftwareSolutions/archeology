@@ -3,6 +3,19 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const historicalPlaceRepository = {
+<<<<<<< HEAD
+  getAll() {
+    return prisma.historicalPlace.findMany({
+      include: {
+        district: {
+          include: {
+            province: true,
+          },
+        },
+      },
+    });
+  },
+=======
 getAll() {
   return prisma.historicalPlace.findMany({
     include: {
@@ -16,6 +29,7 @@ getAll() {
     },
   });
 },
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
 
   getById(id: number) {
     return prisma.historicalPlace.findUnique({
@@ -23,9 +37,17 @@ getAll() {
         id,
       },
       include: {
+<<<<<<< HEAD
+        district: {
+          include: {
+            province: true,
+          },
+        },
+=======
         district: true,
         galleryImages: true,
         siteMonograph: true,
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
       },
     });
   },
@@ -44,8 +66,33 @@ getAll() {
         districtId,
       },
       include: {
+<<<<<<< HEAD
+        district: {
+          include: {
+            province: true,
+          },
+        },
+      },
+    });
+  },
+
+  getByDistrictName(districtName: string) {
+    return prisma.historicalPlace.findMany({
+      where: {
+        district: {
+          name: districtName,
+        },
+      },
+      include: {
+        district: {
+          include: {
+            province: true,
+          },
+        },
+=======
         district: true,
         galleryImages: true,
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
       },
     });
   },

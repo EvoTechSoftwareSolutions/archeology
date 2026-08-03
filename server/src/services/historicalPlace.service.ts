@@ -30,6 +30,10 @@ export const historicalPlaceService = {
     return historicalPlaceRepository.getByDistrictId(districtId);
   },
 
+  async getPlacesByDistrictName(districtName: string) {
+    return historicalPlaceRepository.getByDistrictName(districtName);
+  },
+
   async updatePlace(id: number, data: any) {
     const place = await historicalPlaceRepository.getById(id);
 
