@@ -18,6 +18,7 @@ model Province {
 
   // Relations
   districts   District[]
+  historicalPlaces HistoricalPlace[]
 }
 
 model District {
@@ -42,15 +43,30 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+<<<<<<< HEAD
 
 model HistoricalPlace {
+=======
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
 
-  id          Int @id @default(autoincrement())
+// -----------------------------------------------------------------------
+// Extended HistoricalPlace model, adding the fields your Add New Place
+// form now collects: gallery images, nearby facilities, travel tips, and
+// SEO fields. Everything from your original model is preserved.
+//
+// Your District/Province models, SiteMonograph, and AuditLog are
+// untouched — only shown here as relation targets for context.
+// -----------------------------------------------------------------------
+
+model HistoricalPlace {
+  id          Int     @id @default(autoincrement())
 
   name        String
   category    String
   description String?
-  image       String?
+  image       String? // hero image
+
+  
 
   century     String
   statusFlag  String
@@ -60,19 +76,58 @@ model HistoricalPlace {
 
   anchorXPct  Float
   anchorYPct  Float
-
+  provinceId   Int
+  province     Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
   districtId  Int
+  district    District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+
+  // --- NEW: facilities & travel --------------------------------------
+  nearbyHotels     String?
+  nearbyHospitals  String?
+  nearbyRestaurant String?
+  travelTips       String?
+
+  // --- NEW: SEO --------------------------------------------------------
+  seoTitle        String?
+  metaDescription String?
+  slug            String? @unique
+  focusKeywords   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  galleryImages PlaceGalleryImage[]
+  siteMonograph SiteMonograph[]
+  auditLog      AuditLog[]
+}
 
-  district District @relation(fields:[districtId], references:[id], onDelete:Cascade)
-    
-   
-   siteMonograph SiteMonograph[]
-  auditLog AuditLog []
+model PlaceGalleryImage {
+  id                Int             @id @default(autoincrement())
+  url               String
+  position          Int             @default(0)
+  historicalPlaceId Int
+  historicalPlace   HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
+}
 
+
+model NewsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?  // Added optional phone number field
+  subject     String?
+  message     String   @db.Text
+  status      String   @default("unread")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model NewsletterSubscriber {
@@ -142,7 +197,12 @@ model User {
   email      String   @unique
   password   String
   department String
+<<<<<<< HEAD
   role       String   @default("USER")
+=======
+
+  role       UserRole @default(USER)
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
 
   isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
@@ -152,6 +212,16 @@ model User {
   verifiedSites   SiteMonograph[]
 }
 
+<<<<<<< HEAD
+=======
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
 model Review {
   id          Int      @id @default(autoincrement())
   reviewerName String
@@ -163,4 +233,8 @@ model Review {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

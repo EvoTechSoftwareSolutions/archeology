@@ -1,4 +1,5 @@
 import { Router } from "express";
+<<<<<<< HEAD
 import multer from "multer";
 import path from "path";
 import { uploadImage } from "../controllers/upload.controller.js";
@@ -24,3 +25,20 @@ const upload = multer({
 uploadRouter.post("/", upload.single("image"), uploadImage);
 
 export default uploadRouter;
+=======
+import { uploadImage } from "../controllers/upload.controller.js";
+import { upload } from "../middleware/upload.middleware.js";
+
+
+const router = Router();
+
+
+router.post(
+ "/image",
+ upload.single("image"),
+ uploadImage
+);
+
+
+export default router;
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

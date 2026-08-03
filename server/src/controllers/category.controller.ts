@@ -72,4 +72,8 @@ export const deleteCategory = async (
   } catch (error) {
     next(error);
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

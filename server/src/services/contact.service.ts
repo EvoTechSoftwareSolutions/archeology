@@ -5,6 +5,10 @@ import { ApiError } from "../utils/ApiError.js";
 type ContactMessageInput = {
   name: string;
   email: string;
+<<<<<<< HEAD
+=======
+  phone?: string;
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
   subject: string;
   message: string;
 };
@@ -60,6 +64,10 @@ class ContactService {
           <h2 style="color:#2a4a3a">New Contact Message</h2>
           <p><strong>Name:</strong> ${message.name}</p>
           <p><strong>Email:</strong> ${message.email}</p>
+<<<<<<< HEAD
+=======
+          <p><strong>Phone:</strong> ${message.phone || "N/A"}</p>
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
           <p><strong>Subject:</strong> ${message.subject}</p>
           <p><strong>Message:</strong></p>
           <p>${message.message.replace(/\n/g, "<br>")}</p>
@@ -134,4 +142,8 @@ class ContactService {
   }
 }
 
+<<<<<<< HEAD
 export const contactService = new ContactService();
+=======
+export const contactService = new ContactService();
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

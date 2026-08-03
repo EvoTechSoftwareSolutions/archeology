@@ -1,5 +1,4 @@
 import type { Request, Response, NextFunction } from "express";
-
 import type { ZodType } from "zod";
 
 export function validate(schema: ZodType) {
@@ -9,11 +8,16 @@ export function validate(schema: ZodType) {
     next: NextFunction,
   ) {
     try {
-      schema.parse(req.body);
+
+      const validatedData = schema.parse(req.body);
+      req.body = validatedData;
 
       next();
+
     } catch (error) {
+
       next(error);
+
     }
   };
 }

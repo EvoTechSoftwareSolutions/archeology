@@ -150,4 +150,8 @@ class NewsletterService {
   }
 }
 
+<<<<<<< HEAD
 export const newsletterService = new NewsletterService();
+=======
+export const newsletterService = new NewsletterService();
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

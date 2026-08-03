@@ -8,11 +8,19 @@ const prisma = new PrismaClient();
 const messageSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
+<<<<<<< HEAD
+=======
+  phone: z.string().optional(),
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
   subject: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
+<<<<<<< HEAD
 const sendNotificationEmail = async (name: string, email: string, message: string) => {
+=======
+const sendNotificationEmail = async (name: string, email: string, phone: string | undefined, message: string) => {
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
   const host = process.env.SMTP_HOST;
   if (!host) {
     console.warn("SMTP is not configured. Contact notification email was skipped.");
@@ -72,6 +80,10 @@ export const createMessage = async (req: Request, res: Response) => {
         data: {
           name: parsedData.name,
           email: parsedData.email,
+<<<<<<< HEAD
+=======
+          phone: parsedData.phone,
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
           subject: parsedData.subject || "No Subject",
           message: parsedData.message,
         },
@@ -214,4 +226,8 @@ export const replyMessage = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error while sending reply" });
   }
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
