@@ -92,7 +92,17 @@ const TempleOfToothDetails = () => {
       try {
         setReviewError(null);
         const res = await fetch(`${API}/reviews?all=true`, { credentials: 'include' });
-        const json = await res.json();
+        const responseText = await res.text();
+        let json: any = { data: [] };
+
+        if (responseText) {
+          try {
+            json = JSON.parse(responseText);
+          } catch {
+            json = { data: [] };
+          }
+        }
+
         if (!res.ok) {
           throw new Error(json?.message || 'Failed to load reviews.');
         }
