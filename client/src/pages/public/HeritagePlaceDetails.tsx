@@ -53,6 +53,7 @@ interface ContactDetail {
 interface EssentialItem {
   title: string;
   subtitle: string;
+  icon?: SvgIconComponent;
 }
 
 type SvgIconComponent = ComponentType<SVGProps<SVGSVGElement>>;
@@ -259,6 +260,27 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         </div>
       </section>
 
+      {props.slides?.length ? (
+        <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[8px] pt-14">
+          <div className="mb-6">
+            <p className="text-[#C89B3C] text-[0.8rem] font-bold uppercase tracking-[2px] mb-2">GALLERY</p>
+            <h3 className="font-serif text-[2rem] md:text-[2.5rem] font-bold text-[#1f2937]">Place Highlights</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+            {props.slides.map((slide) => (
+              <div key={slide.id} className="overflow-hidden rounded-[20px] border border-gray-100 bg-white shadow-sm">
+                <img src={slide.image} alt={slide.subtitle} className="h-[220px] w-full object-cover" />
+                <div className="p-4">
+                  <p className="text-[#C89B3C] text-[0.72rem] font-bold uppercase tracking-[1px] mb-1">{slide.subtitle}</p>
+                  <p className="text-[#4b5563] text-[0.9rem] leading-relaxed">{slide.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] pt-16">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-12">
           <div className="space-y-16 relative overflow-hidden md:overflow-visible">
@@ -345,17 +367,21 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
                   { icon: FiWind, title: 'Washrooms', subtitle: 'On-site facilities' },
                   { icon: FiTruck, title: 'Bus Stops', subtitle: 'Nearest stop' },
                   { icon: FiMap, title: 'Parking', subtitle: 'Visitor parking' },
-                ] as any[]).map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 bg-[#f8faf7] rounded-3xl p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e7f3e7] text-[#1C5F46]">
-                      <item.icon size={18} />
+                ] as EssentialItem[]).map((item, idx) => {
+                  const IconComponent = item.icon ?? [FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap][idx % 7];
+
+                  return (
+                    <div key={`${item.title}-${idx}`} className="flex items-start gap-3 bg-[#f8faf7] rounded-3xl p-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#e7f3e7] text-[#1C5F46]">
+                        <IconComponent size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm text-[#1f2937] font-semibold">{item.title}</p>
+                        <p className="text-sm text-[#6b7280]">{item.subtitle}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-[#1f2937] font-semibold">{item.title}</p>
-                      <p className="text-sm text-[#6b7280]">{item.subtitle}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <a
