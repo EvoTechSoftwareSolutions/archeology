@@ -17,9 +17,19 @@ const DistrictShape = ({
   onHoverStart,
   onHoverEnd,
 }: Props) => {
-  const stroke = isSelected ? "#D92D20" : isHovered ? "#3B2F1E" : "#FFFFFF";
-  const strokeWidth = isSelected ? 2.6 : isHovered ? 2 : 1.1;
   const words = district.name.split(" ");
+
+  const stroke = isSelected
+    ? "#D92D20"
+    : isHovered
+    ? "#3B2F1E"
+    : "#FFFFFF";
+
+  const strokeWidth = isSelected
+    ? 3
+    : isHovered
+    ? 2
+    : 1.1;
 
   return (
     <g>
@@ -29,7 +39,14 @@ const DistrictShape = ({
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinejoin="round"
-        style={{ filter: isHovered ? "brightness(1.12)" : "none" }}
+        style={{
+          filter: isHovered
+            ? "brightness(1.18) drop-shadow(0 0 8px rgba(255,255,255,0.7))"
+            : isSelected
+            ? "brightness(1.08)"
+            : "none",
+          transition: "all .25s ease",
+        }}
         onClick={() => onSelect(district.id)}
         onMouseEnter={() => onHoverStart(district.id)}
         onMouseLeave={onHoverEnd}
@@ -45,20 +62,30 @@ const DistrictShape = ({
         role="button"
         aria-label={`${district.name} District`}
         aria-pressed={isSelected}
-        className="cursor-pointer outline-none transition-all duration-200 ease-out focus-visible:stroke-[#D92D20] focus-visible:stroke-[3px]"
+        className="cursor-pointer outline-none transition-all duration-200"
       />
 
-      {/* District name, always visible on the map */}
       <text
         x={district.labelX}
         y={district.labelY}
         textAnchor="middle"
         dominantBaseline="middle"
-        className="pointer-events-none select-none fill-[#2B2118] text-[14px] font-semibold"
-        style={{ paintOrder: "stroke", stroke: "#FFFFFF", strokeWidth: 0.5 }}
+        className="pointer-events-none select-none transition-all duration-200"
+        style={{
+          fill: isSelected ? "#FFFFFF" : "#2B2118",
+          fontWeight: isSelected ? 800 : isHovered ? 700 : 600,
+          fontSize: isSelected ? "15px" : "14px",
+          paintOrder: "stroke",
+          stroke: isSelected ? "#2B2118" : "#FFFFFF",
+          strokeWidth: isSelected ? 1.8 : 0.6,
+        }}
       >
         {words.map((word, i) => (
-          <tspan key={word} x={district.labelX} dy={i === 0 ? -((words.length - 1) * 5) : 10}>
+          <tspan
+            key={word}
+            x={district.labelX}
+            dy={i === 0 ? -((words.length - 1) * 5) : 10}
+          >
             {word}
           </tspan>
         ))}

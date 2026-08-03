@@ -47,6 +47,23 @@ export interface HistoricalPlaceRecord {
   updatedAt?: string;
 }
 
+//for API responses fetch
+export interface ApiHistoricalPlace {
+ id:number;
+ name:string;
+ description:string;
+ image:string;
+ latitude:number;
+ longitude:number;
+ anchorXPct:number;
+ anchorYPct:number;
+ districtId:number;
+
+ district:{
+   id:number;
+   name:string;
+ }
+}
 
 export interface GalleryImage {
   id?: number;
