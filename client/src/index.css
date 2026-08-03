@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #c8a84b;
+  --color-deep-green: #1a3a2a;
+  --color-dark-green: #0f2419;
+  --color-cream: #f5f0e8;
+  --color-cream-dark: #ede4d0;
+  --color-text-dark: #1a1a1a;
+  --color-text-mid: #4a4a3a;
+  --color-text-muted: #7a7a6a;
+  --color-border: #2e2e29;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", monospace;
+}
+@utility custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-text-dark);
+  overflow-x: hidden;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-decorative-bg {
+  background-position: center 89%;
+  background-size: contain;
+}
+
+@media (max-width: 768px) {
+  .footer-decorative-bg {
+    background-size: auto 30%;
+    background-position: center 95%;
+  }
+}
+
+@keyframes review-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.review-carousel-track {
+  width: max-content;
+  animation: review-scroll 18s linear infinite;
+  will-change: transform;
+}
+
+.review-carousel-track:hover {
+  animation-play-state: paused;
+}
+
+.review-card {
+  flex: 0 0 280px;
+}
+
+@media (min-width: 640px) {
+  .review-card {
+    flex-basis: 320px;
+  }
+}
