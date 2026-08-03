@@ -8,13 +8,9 @@
     "predev": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-<<<<<<< HEAD
-    "start": "node server.js",
-=======
     "prestart": "npm run build",
     "start": "node dist/server.js",
     "postinstall": "prisma generate",
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio"

@@ -65,7 +65,35 @@ export const historicalPlaceRepository = {
     },
     create(data) {
         return prisma.historicalPlace.create({
-            data,
+            data: {
+                name: data.name,
+                category: data.category,
+                description: data.description,
+                image: data.image,
+                century: data.century,
+                statusFlag: data.statusFlag,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                anchorXPct: data.anchorXPct,
+                anchorYPct: data.anchorYPct,
+                provinceId: data.provinceId,
+                districtId: data.districtId,
+                nearbyHotels: data.nearbyHotels,
+                nearbyHospitals: data.nearbyHospitals,
+                nearbyRestaurant: data.nearbyRestaurant,
+                travelTips: data.travelTips,
+                seoTitle: data.seoTitle,
+                metaDescription: data.metaDescription,
+                slug: data.slug,
+                focusKeywords: data.focusKeywords,
+                galleryImages: {
+                    create: data.galleryImages,
+                },
+            },
+            include: {
+                district: true,
+                galleryImages: true,
+            },
         });
     },
     update(id, data) {
@@ -74,6 +102,9 @@ export const historicalPlaceRepository = {
                 id,
             },
             data,
+            include: {
+                galleryImages: true,
+            },
         });
     },
     delete(id) {

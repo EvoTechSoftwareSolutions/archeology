@@ -24,12 +24,16 @@ class AuthService {
             email: user.email,
             department: user.department,
             role: user.role,
+            isActive: user.isActive,
         };
     }
     async login(email, password) {
         const user = await this.userRepository.findByEmail(email);
         if (!user) {
             throw new ApiError(401, "Invalid email or password");
+        }
+        if (!user.isActive) {
+            throw new ApiError(401, "User is not active");
         }
         const passwordMatch = await comparePassword(password, user.password);
         if (!passwordMatch) {
@@ -50,6 +54,9 @@ class AuthService {
                 role: user.role,
             },
         };
+    }
+    async logout() {
+        return true;
     }
 }
 export const authService = new AuthService();
