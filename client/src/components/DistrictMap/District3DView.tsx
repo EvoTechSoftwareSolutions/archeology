@@ -1,8 +1,10 @@
-import type { District } from "../../types/district";
+import { useState } from "react";
+import type { District, HistoricalPlace } from "../../types/district";
 import PlaceMarker from "../ProvinceMap/PlaceMarker";
 
 interface Props {
   district: District;
+  historicalPlaces: HistoricalPlace[];
 }
 
 const PADDING = 16;
@@ -20,17 +22,24 @@ function hexToRgb(hex: string) {
   };
 }
 
-/** Shade a hex color darker (t=0) to darkest (t=1), used for the extruded sides */
 function shade(hex: string, t: number) {
   const { r, g, b } = hexToRgb(hex);
-  const factor = 1 - t * 0.75; // fades toward ~25% brightness at the base
+  const factor = 1 - t * 0.75;
   const rr = Math.round(r * factor);
   const gg = Math.round(g * factor);
   const bb = Math.round(b * factor);
   return `rgb(${rr}, ${gg}, ${bb})`;
 }
 
-const District3DView = ({ district }: Props) => {
+const District3DView = ({ district, historicalPlaces }: Props) => {
+  // Every pin that's been clicked stays open; the most recently clicked
+  // one is "active" (full opacity), the rest fade down.
+const [openId, setOpenId] = useState<number | string | null>(null);
+
+  const togglePlace = (id: number | string) => {
+  setOpenId((prev) => (prev === id ? null : id));
+};
+
   const { x, y, width, height } = district.bbox;
   const viewBoxW = width + PADDING * 2;
   const viewBoxH = height + PADDING * 2 + EXTRUDE_DEPTH;
@@ -46,7 +55,6 @@ const District3DView = ({ district }: Props) => {
         role="img"
         aria-label={`3D relief of ${district.name} District`}
       >
-        {/* Extruded "sides" — stacked copies fading darker to fake depth */}
         {Array.from({ length: EXTRUDE_LAYERS }).map((_, i) => (
           <path
             key={i}
@@ -57,20 +65,64 @@ const District3DView = ({ district }: Props) => {
           />
         ))}
 
-        {/* Top face, in the district's own color */}
         <path d={district.path} fill={district.color} stroke="#FFFFFF" strokeWidth={2} strokeLinejoin="round" />
       </svg>
 
-      {/* Plain HTML overlay for the marker, sharing the SVG's tilt so it stays aligned */}
       <div className="absolute inset-0" style={{ transform: tilt, transformStyle: "preserve-3d" }}>
-        {district.historicalPlaces.map((place) => (
-          <PlaceMarker
-            key={place.name}
-            place={place}
-            leftPct={((place.anchorXPct * width + x - (x - PADDING)) / viewBoxW) * 100}
-            topPct={((place.anchorYPct * height + y - (y - PADDING)) / viewBoxH) * 100}
-          />
-        ))}
+        {historicalPlaces.map((place, i) => {
+  const id = place.id ?? i;
+  const isOpen = openId === id;
+  const px = x + place.anchorXPct * width;
+  const py = y + place.anchorYPct * height;
+
+  const leftPct = ((px - (x - PADDING)) / viewBoxW) * 100;
+  const topPct = ((py - (y - PADDING)) / viewBoxH) * 100;
+
+  return (
+    <>
+      <PlaceMarker
+        key={`marker-${id}`}
+        place={place}
+        leftPct={leftPct}
+        topPct={topPct}
+        onClick={() => togglePlace(id)}
+      />
+
+      {isOpen && (
+        <div
+          key={`card-${id}`}
+          className="absolute z-50 w-[200px] -translate-x-1/2 rounded-2xl border border-[#E0C98A] bg-white shadow-xl transition-opacity duration-300"
+          style={{
+            left: `${leftPct}%`,
+            top: `${topPct}%`,
+            transform: "translate(-50%, calc(-100% - 40px))",
+            opacity: 1,
+          }}
+        >
+          {place.image && (
+            <img
+              src={place.image}
+              alt={place.name}
+              className="h-24 w-full rounded-t-2xl object-cover"
+            />
+          )}
+
+          <div className="p-3">
+            <p className="font-serif text-[13px] font-bold leading-tight text-[#2B2118]">
+              {place.name}
+            </p>
+
+            <p className="mt-1 text-[11px] leading-snug text-[#4A3D2B]">
+              {place.description}
+            </p>
+          </div>
+
+          <div className="absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1.5 rotate-45 border-b border-r border-[#E0C98A] bg-white" />
+        </div>
+      )}
+    </>
+  );
+})}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { District } from "../../types/district";
 import District3DView from "./District3DView";
+import useDistrictHeritage from "../../hooks/useDistrictHeritage";
 
 interface Props {
   district: District | null;
@@ -7,9 +8,11 @@ interface Props {
 }
 
 const DistrictDetailPanel = ({ district, onClose }: Props) => {
+  const { places, isLoading, error } = useDistrictHeritage(district?.id ?? null);
+
   return (
     <div
-      className={`flex w-1/3 flex-shrink-0 flex-col items-center gap-3 px-4 transition-all duration-500 ease-out ${
+      className={`flex w-[400px] flex-shrink-0 flex-col items-center gap-3 px-2 transition-all duration-500 ease-out ${
         district
           ? "translate-x-0 opacity-100"
           : "pointer-events-none translate-x-10 opacity-0"
@@ -29,7 +32,17 @@ const DistrictDetailPanel = ({ district, onClose }: Props) => {
             </button>
           </div>
 
-          <District3DView district={district} />
+          {isLoading && (
+            <p className="text-sm text-[#8A7550]">Loading heritage places…</p>
+          )}
+          {error && <p className="text-sm text-[#C1483F]">{error}</p>}
+          {!isLoading && !error && places.length === 0 && (
+            <p className="text-sm text-[#8A7550]">
+              No heritage places added for this district yet.
+            </p>
+          )}
+
+          <District3DView district={district} historicalPlaces={places} />
         </>
       )}
     </div>

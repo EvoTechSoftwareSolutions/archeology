@@ -24,7 +24,7 @@ const DistrictHeritageExplorer = () => {
       {/* Full map: bigger, w-full at rest, shrinks to the left 2/3 once a district is picked */}
       <div
         className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
-          selectedDistrict ? "w-2/3" : "w-full"
+          selectedDistrict ? "w-3/5" : "w-full"
         }`}
       >
         <SriLankaDistrictMap
