@@ -231,7 +231,7 @@ const SigiriyaDetails = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937] text-center">6:00 AM</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">6:00 AM</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>

@@ -13,28 +13,29 @@ import sigiriya from '../../assets/places-sigiriya.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 
 import dm1 from '../../assets/dm1.png';
-import dm2 from '../../assets/dm2.png';
-import dm3 from '../../assets/dm3.png';
-import dm4 from '../../assets/dm4.png';
-import dm5 from '../../assets/dm5.png';
-import dm6 from '../../assets/dm6.png';
-import dm7 from '../../assets/dm7.png';
+import dm2 from '../../assets/single page 3.png';
+import dm3 from '../../assets/single page 5.png';
+import dm4 from '../../assets/single page 6.png';
+import dm5 from '../../assets/single page 7.png';
+import dm6 from '../../assets/single page 4.png';
+import dm7 from '../../assets/single page 2.png';
 
 const templeCards = [
-  {
-    image: dm3,
-    title: 'Temple of the Tooth',
-    subtitle: 'Vadahitina Maligawa (Inner Chamber)',
-  },
+  
   {
     image: dm2,
     title: 'Temple of the Tooth',
     subtitle: "Hevisi Mandapaya (Drummers' Courtyard)",
   },
   {
-    image: dm7,
+    image: dm3,
     title: 'Temple of the Tooth',
-    subtitle: 'Natha Devalaya',
+    subtitle: 'Vadahitina Maligawa (Inner Chamber)',
+  },
+  {
+    image: dm4,
+    title: 'Temple of the Tooth',
+    subtitle: 'Makara Thorana (Dragon Arch)',
   },
   {
     image: dm5,
@@ -47,12 +48,12 @@ const templeCards = [
     subtitle: 'Sri Dalada Museum',
   },
   {
-    image: dm4,
+    image: dm7,
     title: 'Temple of the Tooth',
-    subtitle: 'Makara Thorana (Dragon Arch)',
+    subtitle: 'Natha Devalaya',
   },
 ];
-  const mainHeroImage = dm1;
+const mainHeroImage = dm1;
 
 
 const TempleOfToothDetails = () => {
@@ -283,7 +284,7 @@ const TempleOfToothDetails = () => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937] text-center">2:30 PM</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">2:30 PM</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>
