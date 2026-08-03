@@ -115,6 +115,15 @@ const [openId, setOpenId] = useState<number | string | null>(null);
             <p className="mt-1 text-[11px] leading-snug text-[#4A3D2B]">
               {place.description}
             </p>
+
+            {place.id && (
+              <a
+                href={`/places/${place.id}`}
+                className="mt-2 block text-[11px] font-bold text-[#A67C52] hover:underline"
+              >
+                View Details
+              </a>
+            )}
           </div>
 
           <div className="absolute left-1/2 top-full h-3 w-3 -translate-x-1/2 -translate-y-1.5 rotate-45 border-b border-r border-[#E0C98A] bg-white" />

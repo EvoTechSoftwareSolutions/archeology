@@ -31,6 +31,7 @@ router.post(
       maxCount: 10,
     },
   ]),
+  validate(createHistoricalPlaceSchema),
   createHistoricalPlace
 );
 

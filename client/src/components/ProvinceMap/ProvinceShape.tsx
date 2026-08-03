@@ -23,20 +23,20 @@ const ProvinceShape = ({
   return (
     <g>
       <path
-        d={province.path}
+        d={province.path ?? ""}
         fill={fill}
         stroke="#FFFFFF"
         strokeWidth={1.6}
         strokeLinejoin="round"
-        onClick={() => onSelect(province.id)}
-        onMouseEnter={() => onHoverStart(province.id)}
+        onClick={() => onSelect(String(province.id))}
+        onMouseEnter={() => onHoverStart(String(province.id))}
         onMouseLeave={onHoverEnd}
-        onFocus={() => onHoverStart(province.id)}
+        onFocus={() => onHoverStart(String(province.id))}
         onBlur={onHoverEnd}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onSelect(province.id);
+            onSelect(String(province.id));
           }
         }}
         tabIndex={0}
@@ -48,8 +48,8 @@ const ProvinceShape = ({
 
       {/* Province name, always visible on the map */}
       <text
-        x={province.labelX}
-        y={province.labelY}
+        x={province.labelX ?? 0}
+        y={province.labelY ?? 0}
         textAnchor="middle"
         dominantBaseline="middle"
         className="pointer-events-none select-none fill-[#3B2F1E] text-[13px] font-medium"
@@ -58,7 +58,7 @@ const ProvinceShape = ({
         {words.map((word, i) => (
           <tspan
             key={word}
-            x={province.labelX}
+            x={province.labelX ?? 0}
             dy={i === 0 ? -((words.length - 1) * 7) : 14}
           >
             {word}

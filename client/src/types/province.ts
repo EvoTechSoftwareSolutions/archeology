@@ -1,7 +1,22 @@
-export interface Province {
-  id: number;
+export interface ProvinceHistoricalPlace {
+  id?: number;
   name: string;
+  image: string;
+  description: string;
+  anchorXPct: number;
+  anchorYPct: number;
 }
+
+export interface Province {
+  id: string | number;
+  name: string;
+  path?: string;
+  bbox?: { x: number; y: number; width: number; height: number };
+  labelX?: number;
+  labelY?: number;
+  historicalPlaces?: ProvinceHistoricalPlace[];
+}
+
 
 export interface District {
   id: number;
