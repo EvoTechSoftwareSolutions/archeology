@@ -80,7 +80,7 @@ export const createMessage = async (req: Request, res: Response) => {
       }),
       sendNotification: async () => {
         try {
-          await sendNotificationEmail(parsedData.name, parsedData.email, parsedData.message);
+          await sendNotificationEmail(parsedData.name, parsedData.email, parsedData.phone, parsedData.message);
         } catch (error) {
           console.error("Contact email delivery failed", error);
         }
