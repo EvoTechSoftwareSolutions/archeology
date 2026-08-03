@@ -1,7 +1,7 @@
 
 
 const PartnersSection = () => {
-  const boxShadowClasses = 'shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)]';
+  const boxShadowClasses = 'shadow-[0_6px_24px_rgba(31,94,78,0.18)] hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(31,94,78,0.28)] transition-all duration-300';
 
   return (
     <section className="bg-[#F8F6F1] py-[60px] md:py-[80px] px-4 md:px-[40px] relative overflow-hidden">
