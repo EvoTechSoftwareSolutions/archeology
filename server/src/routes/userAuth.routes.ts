@@ -11,7 +11,6 @@ router.post("/register", validate(registerSchema), authController.register);
 
 router.post(
   "/login",
-  loginRateLimiter,
   validate(loginSchema),
   authController.login,
 );

@@ -1,15 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
+import { authService } from "../../../services/auth.service";
+import type { LoginUser } from "../../../types/auth.types";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
 }
 
+const getStoredUser = (): LoginUser | null => {
+  try {
+    const raw = localStorage.getItem("adminUser");
+    return raw ? (JSON.parse(raw) as LoginUser) : null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitials = (name?: string) => {
+  if (!name) return "AD";
+  const parts = name.trim().split(/\s+/);
+  const initials = parts.slice(0, 2).map((p) => p.charAt(0).toUpperCase());
+  return initials.join("") || "AD";
+};
+
 const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [currentUser, setCurrentUser] = useState<LoginUser | null>(getStoredUser);
+  const [loggingOut, setLoggingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const notifications = [
@@ -29,6 +49,60 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Revalidate the cached user against the server in the background.
+useEffect(()=>{
+
+
+const loadUser = async()=>{
+
+try{
+
+const user = await authService.getCurrentUser();
+
+
+console.log("Current User:",user);
+
+
+setCurrentUser(user);
+
+
+localStorage.setItem(
+"adminUser",
+JSON.stringify(user)
+);
+
+
+}catch(error){
+
+console.log(error);
+
+}
+
+};
+
+
+loadUser();
+
+
+},[]);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await authService.logout();
+    } catch {
+      // Even if the server call fails, still log out locally.
+    } finally {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      setLoggingOut(false);
+      navigate("/admin/login");
+    }
+  };
+
+  const displayName = currentUser?.name ?? "Admin";
+  const displayRole = currentUser?.role ?? "Administrator";
 
   return (
     <header ref={containerRef} className="sticky top-0 h-22 bg-[#F8F6F1] flex items-center justify-between px-4 py-3 lg:px-8 z-10">
@@ -56,7 +130,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
 
       {/* Right side actions */}
       <div className="flex items-center gap-3 relative">
-        
+
         {/* Notifications */}
         <div className="relative">
           <button
@@ -102,11 +176,11 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             className="flex items-center gap-3 bg-white rounded-full border border-gray-100 shadow-sm px-3 py-2 text-sm text-gray-700 hover:border-gray-200 transition-colors"
           >
             <div className="w-10 h-10 rounded-full bg-[#1E5646] text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              EV
+              {getInitials(currentUser?.name)}
             </div>
             <div className="hidden md:block text-left">
-              <p className="font-bold text-gray-900 leading-tight">Evo Tech</p>
-              <p className="text-gray-500 text-xs">Administrator</p>
+              <p className="font-bold text-gray-900 leading-tight">{displayName}</p>
+              <p className="text-gray-500 text-xs capitalize">{displayRole}</p>
             </div>
             <FiChevronDown size={18} className="text-gray-500" />
           </button>
@@ -114,8 +188,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
           {showProfileMenu && (
             <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-3xl shadow-xl overflow-hidden z-20">
               <div className="px-5 py-4 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-900">Account</p>
-                <p className="text-xs text-gray-500">Manage your profile and settings</p>
+                <p className="text-sm font-semibold text-gray-900">{displayName}</p>
+                <p className="text-xs text-gray-500">{currentUser?.email ?? "Manage your profile and settings"}</p>
               </div>
               <div className="space-y-1 p-2">
                 <button
@@ -136,15 +210,19 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
                 >
                   <FiSettings size={16} /> Settings
                 </button>
-                <button className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <FiLogOut size={16} /> Logout
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  <FiLogOut size={16} /> {loggingOut ? "Logging out..." : "Logout"}
                 </button>
               </div>
             </div>
           )}
         </div>
       </div>
-      
+
     </header>
   );
 };

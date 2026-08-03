@@ -3,22 +3,21 @@ import { MdCloudUpload, MdClose } from "react-icons/md";
 
 interface MediaFormProps {
   value: {
-    heroImage: string;
-    galleryImages: string[];
+    heroImage: File | null;
+    galleryImages: (File | null)[];
   };
-  onHeroImageChange: (value: string) => void;
-  onGalleryImageChange: (index: number, value: string) => void;
+
+  onHeroImageChange: (value: File | null) => void;
+  onGalleryImageChange: (
+    index: number,
+    value: File | null
+  ) => void;
+
   onBack: () => void;
   onNext: () => void;
 }
 
-const readFileAsDataUrl = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
+
 
 const MediaForm = ({
   value,
@@ -30,23 +29,17 @@ const MediaForm = ({
   const heroInputRef = useRef<HTMLInputElement | null>(null);
   const galleryInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  const handleHeroPick = async (file?: File | null) => {
-    if (!file) {
-      return;
-    }
+const handleHeroPick = (file?: File | null) => {
+  if (!file) return;
 
-    const imageDataUrl = await readFileAsDataUrl(file);
-    onHeroImageChange(imageDataUrl);
-  };
+  onHeroImageChange(file);
+};
 
-  const handleGalleryPick = async (index: number, file?: File | null) => {
-    if (!file) {
-      return;
-    }
+const handleGalleryPick = (index: number, file?: File |null) => {
+  if (!file) return;
 
-    const imageDataUrl = await readFileAsDataUrl(file);
-    onGalleryImageChange(index, imageDataUrl);
-  };
+  onGalleryImageChange(index, file);
+};
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col h-full">
@@ -63,7 +56,7 @@ const MediaForm = ({
           >
             {value.heroImage ? (
               <>
-                <img src={value.heroImage} alt="Hero preview" className="absolute inset-0 h-full w-full object-cover" />
+                <img  src={URL.createObjectURL(value.heroImage)} alt="Hero preview" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-black/30" />
                 <span className="relative z-10 text-[14px] text-white font-semibold">Change hero image</span>
                 <span className="relative z-10 mt-1 text-[11px] text-white/80 uppercase tracking-wide">Click to replace</span>
@@ -89,7 +82,7 @@ const MediaForm = ({
           {value.heroImage && (
             <button
               type="button"
-              onClick={() => onHeroImageChange("")}
+              onClick={() => onHeroImageChange(null)}
               className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-red-600 hover:text-red-700"
             >
               <MdClose size={16} /> Remove hero image
@@ -110,7 +103,7 @@ const MediaForm = ({
               >
                 {value.galleryImages[index] ? (
                   <>
-                    <img src={value.galleryImages[index]} alt={`Gallery preview ${item}`} className="absolute inset-0 h-full w-full object-cover" />
+                    <img src={URL.createObjectURL(value.galleryImages[index])} alt={`Gallery preview ${item}`} className="absolute inset-0 h-full w-full object-cover" />
                     <div className="absolute inset-0 bg-black/20" />
                     <span className="relative z-10 text-[13px] text-white font-semibold">Replace image {item}</span>
                   </>
