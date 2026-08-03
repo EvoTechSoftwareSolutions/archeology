@@ -101,7 +101,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
+      <nav className="hide-scrollbar flex-1 overflow-y-auto overflow-x-hidden pb-4">
         {menuSections.map((section, idx) => (
           <div key={idx} className="mb-6">
             {!isCollapsed ? (

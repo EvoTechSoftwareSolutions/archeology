@@ -7,7 +7,9 @@ export const historicalPlaceRepository = {
     return prisma.historicalPlace.findMany({
       include: {
         province: true,
-        district: true,
+        district: {
+          include: { province: true },
+        },
         galleryImages: true,
       },
     });
@@ -42,7 +44,9 @@ export const historicalPlaceRepository = {
       },
       include: {
         province: true,
-        district: true,
+        district: {
+          include: { province: true },
+        },
         galleryImages: true,
       },
     });
@@ -57,7 +61,9 @@ export const historicalPlaceRepository = {
       },
       include: {
         province: true,
-        district: true,
+        district: {
+          include: { province: true },
+        },
         galleryImages: true,
       },
     });
@@ -96,7 +102,9 @@ export const historicalPlaceRepository = {
 
       include: {
         province: true,
-        district: true,
+        district: {
+          include: { province: true },
+        },
         galleryImages: true,
       },
     });
@@ -110,7 +118,9 @@ export const historicalPlaceRepository = {
       data,
       include: {
         province: true,
-        district: true,
+        district: {
+          include: { province: true },
+        },
         galleryImages: true,
       },
     });

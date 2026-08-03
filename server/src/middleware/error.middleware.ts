@@ -23,10 +23,20 @@ export function errorHandler(
     });
   }
 
-  console.error(err);
+  // Log full error details for debugging
+  const anyErr = err as any;
+  console.error("=== UNHANDLED ERROR ===");
+  console.error("Message:", anyErr?.message);
+  console.error("Code:", anyErr?.code);
+  console.error("Meta:", anyErr?.meta ? JSON.stringify(anyErr.meta) : "none");
+  console.error("Stack:", anyErr?.stack);
 
   return res.status(500).json({
     success: false,
     message: "Internal Server Error",
+    ...(process.env.NODE_ENV !== "production" && {
+      error: anyErr?.message,
+      code: anyErr?.code,
+    }),
   });
 }
