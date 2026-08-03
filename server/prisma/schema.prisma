@@ -64,11 +64,10 @@ model HistoricalPlace {
 
   anchorXPct  Float
   anchorYPct  Float
-
-  provinceId  Int
-  province    Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
-  districtId  Int
-  district    District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  provinceId   Int?
+  province     Province? @relation(fields: [provinceId], references: [id], onDelete: SetNull)
+  districtId  Int?
+  district    District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
 
   // --- Nearby facilities & travel tips ----------------------------------
   nearbyHotels     String?

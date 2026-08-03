@@ -5,7 +5,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "predev": "prisma generate",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "prestart": "npm run build",

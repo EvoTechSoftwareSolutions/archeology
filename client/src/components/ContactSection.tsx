@@ -85,7 +85,7 @@ const ContactSection = () => {
           {/* Info Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-10">
             {/* Address */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_6px_24px_rgba(31,94,78,0.18)] border border-gray-100">
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
                 <FiMapPin size={17} />
               </div>
@@ -104,7 +104,7 @@ const ContactSection = () => {
             </div>
 
             {/* Phone */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_6px_24px_rgba(31,94,78,0.18)] border border-gray-100">
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
                 <FiPhone size={17} />
               </div>
@@ -121,7 +121,7 @@ const ContactSection = () => {
             </div>
 
             {/* Email */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_6px_24px_rgba(31,94,78,0.18)] border border-gray-100">
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
                 <FiMail size={17} />
               </div>
@@ -136,7 +136,7 @@ const ContactSection = () => {
             </div>
 
             {/* Fax */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100">
+            <div className="bg-white/90 backdrop-blur-sm rounded-[14px] p-4 flex items-center gap-3.5 shadow-[0_6px_24px_rgba(31,94,78,0.18)] border border-gray-100">
               <div className="w-9 h-9 rounded-full border border-[#1F5E4E]/20 bg-[#1F5E4E]/5 flex items-center justify-center text-[#1F5E4E] shrink-0">
                 <FiPrinter size={17} />
               </div>
