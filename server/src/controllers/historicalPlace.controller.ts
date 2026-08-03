@@ -9,7 +9,69 @@ export const createHistoricalPlace = async (
   next: NextFunction,
 ) => {
   try {
-    const place = await historicalPlaceService.createPlace(req.body);
+ const files = req.files as {
+  image?: Express.Multer.File[];
+  galleryImages?: Express.Multer.File[];
+};
+
+    const placeData = {
+      // Text fields from FormData
+      name: req.body.name,
+
+      category: req.body.category,
+
+      description: req.body.description,
+
+      century: req.body.century,
+
+      statusFlag: req.body.statusFlag,
+
+      // Convert numbers
+      latitude: Number(req.body.latitude),
+
+      longitude: Number(req.body.longitude),
+
+      anchorXPct: Number(req.body.anchorXPct),
+
+      anchorYPct: Number(req.body.anchorYPct),
+
+      districtId: Number(req.body.districtId),
+
+      provinceId: Number(req.body.provinceId),
+
+      // Hero image
+      image: files?.image?.length
+        ? `/uploads/${files.image[0].filename}`
+        : null,
+
+      // Gallery images
+      galleryImages: files?.galleryImages
+        ? files.galleryImages.map((file, index) => ({
+            url: `/uploads/${file.filename}`,
+            position: index + 1,
+          }))
+        : [],
+
+      // Facilities
+      nearbyHotels: req.body.nearbyHotels || null,
+
+      nearbyHospitals: req.body.nearbyHospitals || null,
+
+      nearbyRestaurant: req.body.nearbyRestaurant || null,
+
+      travelTips: req.body.travelTips || null,
+
+      // SEO
+      seoTitle: req.body.seoTitle || null,
+
+      metaDescription: req.body.metaDescription || null,
+
+      slug: req.body.slug || null,
+
+      focusKeywords: req.body.focusKeywords || null,
+    };
+
+    const place = await historicalPlaceService.createPlace(placeData);
 
     return res.status(201).json({
       success: true,
@@ -74,11 +136,7 @@ export const updateHistoricalPlace = async (
   try {
     const id = Number(req.params.id);
 
-    const place = await historicalPlaceService.updatePlace(
-      id,
-
-      req.body,
-    );
+    const place = await historicalPlaceService.updatePlace(id, req.body);
 
     return res.status(200).json({
       success: true,

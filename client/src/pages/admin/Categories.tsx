@@ -1,64 +1,81 @@
-import React, { useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
+import React, { useState } from "react";
+import { FiPlus, FiSearch } from "react-icons/fi";
+import type { Category, CategoryFormData } from "../../types/category.types";
+import { useCategories } from "../../hooks/useCategories";
+import CategoryTable from "../../components/admin/categories/CategoryTable";
+import CategoryModal from "../../components/admin/categories/CategoryModal";
 
-const initialCategories = [
-  { id: 1, name: 'Religious Site', description: 'Temples, shrines, and places of worship.', count: 45 },
-  { id: 2, name: 'Ancient City', description: 'Ruins and remnants of ancient civilizations.', count: 12 },
-  { id: 3, name: 'Fortress', description: 'Historical forts and defensive structures.', count: 8 },
-  { id: 4, name: 'Museum', description: 'Institutions that conserve a collection of artifacts.', count: 24 },
-  { id: 5, name: 'Natural Heritage', description: 'Naturally occurring heritage sites.', count: 15 },
-];
+const EMPTY_FORM: CategoryFormData = { name: "", description: "" };
 
 const Categories = () => {
-  const [categories, setCategories] = useState(initialCategories);
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
-  
-  // Form state
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const { categories, loading, reload, create, update, remove } = useCategories();
 
-  const handleOpenModal = (category: any = null) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+  const [listError, setListError] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  const handleOpenModal = (category: Category | null = null) => {
     if (category) {
       setEditingCategory(category);
-      setFormData({ name: category.name, description: category.description });
+      setFormData({ name: category.name, description: category.description ?? "" });
     } else {
       setEditingCategory(null);
-      setFormData({ name: '', description: '' });
+      setFormData(EMPTY_FORM);
     }
+    setModalError(null);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: '', description: '' });
+    setFormData(EMPTY_FORM);
+    setModalError(null);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingCategory) {
-      setCategories(categories.map(c => 
-        c.id === editingCategory.id ? { ...c, ...formData } : c
-      ));
-    } else {
-      const newId = Math.max(0, ...categories.map(c => c.id)) + 1;
-      setCategories([...categories, { id: newId, ...formData, count: 0 }]);
+    setModalError(null);
+    setSaving(true);
+
+    try {
+      if (editingCategory) {
+        await update(editingCategory.id, formData);
+      } else {
+        await create(formData);
+      }
+      await reload();
+      handleCloseModal();
+    } catch (err) {
+      setModalError(err instanceof Error ? err.message : "Unable to save category.");
+    } finally {
+      setSaving(false);
     }
-    handleCloseModal();
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      setCategories(categories.filter(c => c.id !== id));
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this category?")) {
+      return;
+    }
+
+    setListError(null);
+
+    try {
+      await remove(id);
+      await reload();
+    } catch (err) {
+      setListError(err instanceof Error ? err.message : "Unable to delete category.");
     }
   };
 
-  const filteredCategories = categories.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    c.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (category.description ?? "").toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -66,14 +83,14 @@ const Categories = () => {
       {/* Header */}
       <div className="flex justify-between items-start mb-8 relative z-10">
         <div>
-          <div className="text-sm text-gray-500 mb-2">
-            Home &gt; Categories
-          </div>
-          <h1 className="text-4xl font-bold font-serif text-[#2a2a2a] mb-2 tracking-tight">Categories</h1>
+          <div className="text-sm text-gray-500 mb-2">Home &gt; Categories</div>
+          <h1 className="text-4xl font-bold font-serif text-[#2a2a2a] mb-2 tracking-tight">
+            Categories
+          </h1>
           <p className="text-gray-500 text-sm">Manage category classifications for historical places.</p>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => handleOpenModal()}
           className="bg-[#1E4538] hover:bg-[#15342a] text-white px-5 py-2.5 rounded-full flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
         >
@@ -98,98 +115,32 @@ const Categories = () => {
         </div>
       </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10 pb-10">
-        {filteredCategories.map(category => (
-          <div key={category.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#1E4538]/5 text-[#1E4538] flex items-center justify-center font-bold text-xl border border-[#1E4538]/10">
-                {category.name.charAt(0)}
-              </div>
-              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => handleOpenModal(category)}
-                  className="p-2 text-gray-400 hover:text-[#1E4538] hover:bg-[#1E4538]/10 rounded-lg transition-colors"
-                >
-                  <FiEdit2 size={16} />
-                </button>
-                <button 
-                  onClick={() => handleDelete(category.id)}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <FiTrash2 size={16} />
-                </button>
-              </div>
-            </div>
-            <h3 className="text-xl font-bold font-serif text-[#2a2a2a] mb-2">{category.name}</h3>
-            <p className="text-gray-500 text-sm mb-4 line-clamp-2 h-10">{category.description}</p>
-            <div className="flex items-center gap-2 text-xs text-gray-500 font-medium bg-gray-50/80 w-fit px-3 py-1.5 rounded-full border border-gray-100">
-              <span className="w-2 h-2 rounded-full bg-[#D97757]"></span>
-              {category.count} Places
-            </div>
-          </div>
-        ))}
-        {filteredCategories.length === 0 && (
-          <div className="col-span-full py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 border-dashed">
-            No categories found matching your search.
-          </div>
-        )}
-      </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
-              <h2 className="text-2xl font-bold font-serif text-[#2a2a2a]">
-                {editingCategory ? 'Edit Category' : 'Add New Category'}
-              </h2>
-              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 text-2xl leading-none transition-colors">&times;</button>
-            </div>
-            <form onSubmit={handleSave} className="p-8">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={e => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 focus:border-[#1E4538] transition-all outline-none text-sm text-gray-800"
-                    placeholder="e.g. Ancient City"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={formData.description}
-                    onChange={e => setFormData({...formData, description: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 focus:border-[#1E4538] transition-all outline-none resize-none text-sm text-gray-800"
-                    placeholder="Brief description of the category..."
-                  />
-                </div>
-              </div>
-              <div className="mt-8 flex gap-3 justify-end pt-4 border-t border-gray-50">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#1E4538] hover:bg-[#15342a] text-white font-medium shadow-sm transition-colors text-sm"
-                >
-                  {editingCategory ? 'Save Changes' : 'Add Category'}
-                </button>
-              </div>
-            </form>
-          </div>
+      {/* List error (delete failures) */}
+      {listError && (
+        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+          {listError}
         </div>
       )}
+
+      {/* Categories */}
+      <CategoryTable
+        categories={filteredCategories}
+        loading={loading}
+        onEdit={handleOpenModal}
+        onDelete={handleDelete}
+      />
+
+      {/* Add/Edit Modal */}
+      <CategoryModal
+        isOpen={isModalOpen}
+        editingCategory={editingCategory}
+        formData={formData}
+        onChange={setFormData}
+        onSubmit={handleSave}
+        onClose={handleCloseModal}
+        saving={saving}
+        error={modalError}
+      />
     </div>
   );
 };

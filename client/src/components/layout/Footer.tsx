@@ -1,8 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaFacebookF, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatusMessage("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/v1/newsletter/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.message || "Unable to subscribe right now.");
+      }
+
+      setStatusMessage(payload.message || "You are subscribed!");
+      setEmail("");
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <footer
       className="relative overflow-hidden border-t-[3px] border-[#2a4a3a] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] rounded-t-[10px]"
@@ -108,22 +141,30 @@ const Footer: React.FC = () => {
             </p>
 
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubscribe}
               className="flex border border-gold rounded-lg overflow-hidden"
             >
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 bg-transparent outline-none"
+                required
               />
 
               <button
                 type="submit"
-                className="px-4 hover:text-deep-green transition"
+                disabled={isLoading}
+                className="px-4 hover:text-deep-green transition disabled:opacity-60"
               >
-                →
+                {isLoading ? "..." : "→"}
               </button>
             </form>
+
+            {statusMessage && (
+              <p className="text-sm mt-3 text-[#2a4a3a]">{statusMessage}</p>
+            )}
           </div>
         </div>
       </div>

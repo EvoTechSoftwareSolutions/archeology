@@ -1,4 +1,5 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import { Link, useLocation } from "react-router-dom";
 import { 
   FiGrid, 
@@ -12,6 +13,25 @@ import {
 } from "react-icons/fi";
 import { MdAccountBalance, MdBarChart } from "react-icons/md";
 import logo from "../../../assets/Admin/logo2.png";
+=======
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  FiGrid,
+  FiPlusCircle,
+  FiTag,
+  FiImage,
+  FiUsers,
+  FiLogOut,
+  FiChevronLeft,
+  FiX,
+  FiMail,
+  FiMessageSquare,
+  FiStar
+} from "react-icons/fi";
+import { MdAccountBalance, MdBarChart } from "react-icons/md";
+import logo from "../../../assets/Admin/logo2.png";
+import { authService } from "../../../services/auth.service";
+>>>>>>> 0104ec4c5c1151c42b5d1879414deec1a4e3e886
 
 interface SideBarProps {
   isOpen: boolean;
@@ -20,7 +40,13 @@ interface SideBarProps {
 
 const SideBar = ({ isOpen, onClose }: SideBarProps) => {
   const location = useLocation();
+<<<<<<< HEAD
   const [isCollapsed, setIsCollapsed] = useState(false);
+=======
+  const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+>>>>>>> 0104ec4c5c1151c42b5d1879414deec1a4e3e886
 
   const menuSections = [
     {
@@ -43,10 +69,35 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
       items: [
         { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
         { name: "Users", path: "/admin/users", icon: FiUsers },
+<<<<<<< HEAD
         { name: "Logout", path: "/admin/login", icon: FiLogOut },
       ]
     }
   ];
+=======
+        { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
+        { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },
+        { name: "Visitor Reviews", path: "/admin/reviews", icon: FiStar },
+        { name: "Logout", path: "/admin/login", icon: FiLogOut, action: "logout" as const },
+      ]
+    }
+  ];
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await authService.logout();
+    } catch {
+      // Even if the server call fails, still log out locally.
+    } finally {
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("adminUser");
+      setLoggingOut(false);
+      onClose();
+      navigate("/admin/login");
+    }
+  };
+>>>>>>> 0104ec4c5c1151c42b5d1879414deec1a4e3e886
 
   return (
     <aside
@@ -54,6 +105,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
         isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'
       } ${isCollapsed ? 'w-20' : 'w-64'} lg:w-auto lg:min-h-screen`}
     >
+<<<<<<< HEAD
       
       {/* Logo Area */}
       <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-6 mb-2 h-20`}>
@@ -76,6 +128,30 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
         </div>
       </div>
 
+=======
+
+      {/* Logo Area */}
+      <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-6 mb-2 h-20`}>
+        {!isCollapsed && (
+          <img src={logo} alt="Logo" className="h-8 transition-opacity duration-300" />
+        )}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex w-6 h-6 rounded-full border border-white/20 items-center justify-center hover:bg-white/10 transition-colors"
+          >
+            <FiChevronLeft size={14} className={`text-white/70 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+          </button>
+          <button
+            onClick={onClose}
+            className="lg:hidden w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors"
+          >
+            <FiX size={18} />
+          </button>
+        </div>
+      </div>
+
+>>>>>>> 0104ec4c5c1151c42b5d1879414deec1a4e3e886
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
         {menuSections.map((section, idx) => (
@@ -91,6 +167,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
               {section.items.map((item, itemIdx) => {
                 const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname === '/admin/');
                 const Icon = item.icon;
+<<<<<<< HEAD
                 
                 return (
                   <li key={itemIdx}>
@@ -110,6 +187,48 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
                         </span>
                       )}
                     </Link>
+=======
+                const isLogout = "action" in item && item.action === "logout";
+
+                const content = (
+                  <>
+                    <Icon size={18} className={`shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
+                    {!isCollapsed && (
+                      <span className="whitespace-nowrap overflow-hidden transition-all duration-300">
+                        {isLogout && loggingOut ? "Logging out..." : item.name}
+                      </span>
+                    )}
+                  </>
+                );
+
+                const sharedClasses = `flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-4 px-8'} py-3 text-sm font-medium transition-colors border-l-4 w-full text-left ${
+                  isActive
+                    ? "bg-[#1E4538] text-white border-[#D97757]"
+                    : "text-white/70 hover:bg-white/5 hover:text-white border-transparent"
+                } ${isLogout && loggingOut ? "opacity-60 cursor-not-allowed" : ""}`;
+
+                return (
+                  <li key={itemIdx}>
+                    {isLogout ? (
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        disabled={loggingOut}
+                        title={isCollapsed ? item.name : ""}
+                        className={sharedClasses}
+                      >
+                        {content}
+                      </button>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        title={isCollapsed ? item.name : ""}
+                        className={sharedClasses}
+                      >
+                        {content}
+                      </Link>
+                    )}
+>>>>>>> 0104ec4c5c1151c42b5d1879414deec1a4e3e886
                   </li>
                 );
               })}

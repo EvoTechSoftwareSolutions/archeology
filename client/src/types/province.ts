@@ -1,34 +1,33 @@
-export interface HistoricalPlace {
-  name: string;
-  /** Path to a small thumbnail image, e.g. "/images/heritage/icons/temple.svg" */
-  image: string;
-  description: string;
-  /**
-   * Marker position as a 0–1 fraction of the province's bounding box,
-   * e.g. { x: 0.5, y: 0.5 } is the dead centre of the province.
-   * These are approximate — nudge them to taste.
-   */
-  anchorXPct: number;
-  anchorYPct: number;
-}
-
-export interface Bbox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 export interface Province {
-  /** URL-safe slug, e.g. "western" */
-  id: string;
+  id: number;
   name: string;
-  /** SVG path data, in the 0 0 800 600 viewBox of the source map */
-  path: string;
-  /** Bounding box used to crop the isolated province view */
-  bbox: Bbox;
-  /** Centroid, used to place the on-map name label */
-  labelX: number;
-  labelY: number;
-  historicalPlaces: HistoricalPlace[];
+}
+
+export interface District {
+  id: number;
+  name: string;
+  provinceId: number;
+}
+
+// GET /provinces -> list of provinces
+export interface ProvinceListApiResponse {
+  success: boolean;
+  data: Array<{
+    id: number;
+    name: string;
+  }>;
+}
+
+// GET /provinces/:id -> single province with its districts nested
+export interface ProvinceDetailApiResponse {
+  success: boolean;
+  data: {
+    id: number;
+    name: string;
+    districts: Array<{
+      id: number;
+      name: string;
+      provinceId: number;
+    }>;
+  };
 }
