@@ -1,61 +1,51 @@
 export interface HistoricalPlace {
+  id?: number;
 
-  id?:number;
+  name: string;
 
-  name:string;
+  image: string;
 
-  image:string;
+  description: string;
 
-  description:string;
+  latitude?: number;
 
-  latitude?:number;
+  longitude?: number;
 
-  longitude?:number;
+  anchorXPct: number;
 
-  anchorXPct:number;
-
-  anchorYPct:number;
-
+  anchorYPct: number;
 }
-
-
 
 export interface Bbox {
+  x: number;
 
-x:number;
+  y: number;
 
-y:number;
+  width: number;
 
-width:number;
-
-height:number;
-
+  height: number;
 }
 
-
-
 export interface District {
+  id: string;
 
-id:string;
+  dbId?: number;
 
-dbId?:number;
+  name: string;
 
-name:string;
+  localName: string;
 
-localName:string;
+  province: string;
 
-province:string;
+  color: string;
 
-color:string;
+  path: string;
 
-path:string;
+  bbox: Bbox;
 
-bbox:Bbox;
+  labelX: number;
 
-labelX:number;
+  labelY: number;
 
-labelY:number;
-
-historicalPlaces:HistoricalPlace[];
-
+  historicalPlaces: HistoricalPlace[];
 }

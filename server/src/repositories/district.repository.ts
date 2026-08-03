@@ -5,10 +5,9 @@ const prisma = new PrismaClient();
 export const districtRepository = {
   getAll() {
     return prisma.district.findMany({
-      include: {
-        province: true,
-        historicalPlaces: true,
-      },
+        include:{
+            historicalPlaces:true,
+        }
     });
   },
 
