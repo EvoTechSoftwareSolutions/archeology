@@ -62,8 +62,4 @@ class NewsletterController {
   }
 }
 
-<<<<<<< HEAD
 export const newsletterController = new NewsletterController();
-=======
-export const newsletterController = new NewsletterController();
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

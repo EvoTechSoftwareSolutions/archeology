@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
 import { ApiError } from "../utils/ApiError.js";
 
 const prisma = new PrismaClient();
@@ -61,7 +61,7 @@ class UserService {
         }),
 
         ...(data.role && {
-          role: data.role,
+          role: data.role as UserRole,
         }),
 
         ...(data.department && {

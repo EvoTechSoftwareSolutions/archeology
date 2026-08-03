@@ -3,7 +3,6 @@ import * as reviewService from "../services/review.service.js";
 
 export const getReviews = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // If ?all=true is passed (admin), return all reviews; otherwise return active only
     const reviews = req.query.all === "true"
       ? await reviewService.getAllReviews()
       : await reviewService.getActiveReviews();
@@ -16,11 +15,7 @@ export const getReviews = async (req: Request, res: Response, next: NextFunction
 
 export const getReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
-    const id = parseInt(req.params.id);
-=======
     const id = parseInt(String(req.params.id), 10);
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
     const review = await reviewService.getReviewById(id);
     if (!review) {
       return res.status(404).json({ success: false, message: "Review not found" });
@@ -56,11 +51,7 @@ export const createReview = async (req: Request, res: Response, next: NextFuncti
 
 export const updateReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
-    const id = parseInt(req.params.id);
-=======
     const id = parseInt(String(req.params.id), 10);
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
     const { reviewerName, reviewerRole, image, rating, reviewText, isActive } = req.body;
 
     const updated = await reviewService.updateReview(id, {
@@ -80,18 +71,10 @@ export const updateReview = async (req: Request, res: Response, next: NextFuncti
 
 export const deleteReview = async (req: Request, res: Response, next: NextFunction) => {
   try {
-<<<<<<< HEAD
-    const id = parseInt(req.params.id);
-=======
     const id = parseInt(String(req.params.id), 10);
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
     await reviewService.deleteReview(id);
     return res.json({ success: true, message: "Review deleted" });
   } catch (error) {
     next(error);
   }
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

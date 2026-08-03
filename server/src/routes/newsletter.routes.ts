@@ -5,8 +5,7 @@ import {
   subscribeNewsletterSchema,
   updateNewsletterSubscriberSchema,
 } from "../validations/newsletter.validation.js";
-import { authenticate } from "../middleware/auth.middleware.js";
-import { authorize } from "../middleware/role.middleware.js";
+import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
@@ -31,8 +30,4 @@ router.patch(
 );
 router.delete("/subscribers/:id", newsletterController.deleteSubscriber);
 
-<<<<<<< HEAD
 export default router;
-=======
-export default router;
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

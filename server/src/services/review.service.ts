@@ -27,8 +27,4 @@ export const updateReview = (
   }
 ) => reviewRepo.updateReview(id, data);
 
-<<<<<<< HEAD
 export const deleteReview = (id: number) => reviewRepo.deleteReview(id);
-=======
-export const deleteReview = (id: number) => reviewRepo.deleteReview(id);
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

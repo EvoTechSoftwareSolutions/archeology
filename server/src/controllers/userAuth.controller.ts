@@ -28,8 +28,8 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (userExists) {
-       res.status(400).json({ success: false, message: "User already exists" });
-       return;
+      res.status(400).json({ success: false, message: "User already exists" });
+      return;
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -47,21 +47,27 @@ export const register = async (req: Request, res: Response) => {
 
     const token = generateToken(res, user.id, user.role);
 
+    const userInfo = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      department: user.department,
+    };
+
     res.status(201).json({
       success: true,
       token,
       data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        department: user.department,
+        token,
+        user: userInfo,
+        ...userInfo,
       },
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
-       res.status(400).json({ success: false, message: error.issues[0].message });
-       return;
+      res.status(400).json({ success: false, message: error.issues[0].message });
+      return;
     }
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -77,34 +83,40 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user || !user.isActive) {
-       res.status(401).json({ success: false, message: "Invalid credentials or inactive user" });
-       return;
+      res.status(401).json({ success: false, message: "Invalid credentials or inactive user" });
+      return;
     }
 
     const isMatch = await bcrypt.compare(parsedData.password, user.password);
 
     if (!isMatch) {
-       res.status(401).json({ success: false, message: "Invalid credentials" });
-       return;
+      res.status(401).json({ success: false, message: "Invalid credentials" });
+      return;
     }
 
     const token = generateToken(res, user.id, user.role);
+
+    const userInfo = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      department: user.department,
+    };
 
     res.status(200).json({
       success: true,
       token,
       data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        department: user.department,
+        token,
+        user: userInfo,
+        ...userInfo,
       },
     });
   } catch (error: any) {
-     if (error instanceof z.ZodError) {
-       res.status(400).json({ success: false, message: error.issues[0].message });
-       return;
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ success: false, message: error.issues[0].message });
+      return;
     }
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -121,7 +133,6 @@ export const logout = (req: Request, res: Response) => {
 
 export const getMe = async (req: Request, res: Response) => {
   try {
-    // req.user is set by the protect middleware
     res.status(200).json({ success: true, data: req.user });
   } catch (error) {
     console.error(error);
