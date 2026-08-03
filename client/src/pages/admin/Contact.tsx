@@ -28,6 +28,7 @@ const ContactMessages = () => {
   );
 
   const [replyText, setReplyText] = useState("");
+  const [replying, setReplying] = useState(false);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {}, 5000);
@@ -58,11 +59,15 @@ const ContactMessages = () => {
   const handleReply = async (id: number) => {
     if (!replyText.trim()) return;
 
-    await sendReply(id, replyText);
+    setReplying(true);
 
-    setReplyText("");
-
-    alert("Reply sent successfully");
+    try {
+      await sendReply(id, replyText);
+      setReplyText("");
+      alert("Reply sent successfully");
+    } finally {
+      setReplying(false);
+    }
   };
 
   if (loading) {
