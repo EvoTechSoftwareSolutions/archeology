@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import {
-  FiMoreHorizontal,
   FiSearch,
   FiPlus,
   FiEdit2,
-  FiTrash2,
   FiShield,
+  FiToggleLeft,
+  FiToggleRight,
 } from "react-icons/fi";
 import { useUsers } from "../../hooks/useUsers";
 import type { User } from "../../types/user.types";
@@ -21,7 +21,6 @@ const Users: React.FC = () => {
   const { users, loading, error, reload, createUser, updateUser, deleteUser } =
     useUsers();
   const [searchTerm, setSearchTerm] = useState("");
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   // Add / Edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,20 +43,28 @@ const Users: React.FC = () => {
       .toUpperCase();
 
   const handleOpenModal = (user: User | null = null) => {
-    setOpenMenuId(null);
     if (user) {
       setEditingUser(user);
-      const [formData, setFormData] = useState({
+
+      setFormData({
+        name: user.name,
+        email: user.email,
+        password: "",
+        department: user.department || "",
+        role: user.role,
+      });
+    } else {
+      setEditingUser(null);
+
+      setFormData({
         name: "",
         email: "",
         password: "",
         department: "",
-        role: "USER" as User["role"],
+        role: "USER",
       });
-    } else {
-      setEditingUser(null);
-      setFormData({ name: "", email: "", password: "", department: "", role: "ADMIN" });
     }
+
     setIsModalOpen(true);
   };
 
@@ -72,6 +79,8 @@ const Users: React.FC = () => {
     try {
       if (editingUser) {
         await updateUser(editingUser.id, {
+          name: formData.name,
+          department: formData.department,
           role: formData.role,
         });
       } else {
@@ -90,30 +99,16 @@ const Users: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) {
-      return;
-    }
-
+  //for delete a user not exactly delete but make the user inactive
+  const handleToggleStatus = async (user: User) => {
     try {
-      await deleteUser(id);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleToggleStatus = async (id: number) => {
-    const user = users.find((u) => u.id === id);
-
-    if (!user) return;
-
-    try {
-      await updateUser(id, {
-        role: user.role,
+      await updateUser(user.id, {
         isActive: !user.isActive,
       });
-    } catch (err) {
-      console.error(err);
+
+      await reload();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -250,41 +245,34 @@ const Users: React.FC = () => {
                       year: "numeric",
                     })}
                   </td>
-
                   {/* Actions */}
-                  <td className="px-6 py-4 relative">
-                    <button
-                      onClick={() =>
-                        setOpenMenuId(openMenuId === user.id ? null : user.id)
-                      }
-                      className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <FiMoreHorizontal size={18} />
-                    </button>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleOpenModal(user)}
+                        className="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-600 transition"
+                        title="Edit User"
+                      >
+                        <FiEdit2 size={14} />
+                      </button>
 
-                    {openMenuId === user.id && (
-                      <div className="absolute right-6 top-12 w-44 bg-white rounded-xl shadow-lg border border-gray-100 z-50 py-1 overflow-hidden">
-                        <button
-                          onClick={() => handleOpenModal(user)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <FiEdit2 size={14} /> Edit User
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(user.id)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <FiShield size={14} />{" "}
-                          {user.isActive ? "Deactivate" : "Activate"}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                        >
-                          <FiTrash2 size={14} /> Remove User
-                        </button>
-                      </div>
-                    )}
+                      <button
+                        onClick={() => handleToggleStatus(user)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                          user.isActive
+                            ? "bg-green-50 text-green-600 hover:bg-green-100"
+                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                        }`}
+                      >
+                        {user.isActive ? (
+                          <FiToggleRight size={20} />
+                        ) : (
+                          <FiToggleLeft size={20} />
+                        )}
+
+                        {user.isActive ? "Active" : "Inactive"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -175,7 +175,7 @@ const Footer: React.FC = () => {
           {/* Row 1 — copyright left, Login right (both screens) */}
           <div className="flex items-center justify-between mb-1 md:mb-0 md:hidden">
             <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
-            <Link to="/admin/login" className="whitespace-nowrap">Login as Admin</Link>
+            <Link to="/admin/login" className="whitespace-nowrap">Login ass Admin</Link>
           </div>
 
           {/* Row 2 — Design by centred on mobile only */}

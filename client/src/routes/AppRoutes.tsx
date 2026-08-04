@@ -31,6 +31,7 @@ import Categories from "../pages/admin/Categories";
 import Analytics from "../pages/admin/Analytics";
 import Users from "../pages/admin/Users";
 import AddNewPlace from "../pages/admin/AddNewPlace";
+import EditHistoricalPlace from "../pages/admin/EditHistoricalPlace";
 import AdminProfile from "../pages/admin/AdminProfile";
 import AdminSettings from "../pages/admin/AdminSettings";
 import Newsletter from "../pages/admin/Newsletter";
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
           { index: true, element: <Dashboard /> },
           { path: "heritage", element: <HistoricalPlaces /> },
           { path: "add-place", element: <AddNewPlace /> },
+          { path: "edit-place/:id", element: <EditHistoricalPlace /> },
           { path: "media", element: <MediaLibrary /> },
           { path: "categories", element: <Categories /> },
           { path: "analytics", element: <Analytics /> },

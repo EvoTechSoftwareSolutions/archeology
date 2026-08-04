@@ -9,10 +9,10 @@ export const createHistoricalPlace = async (
   next: NextFunction,
 ) => {
   try {
- const files = req.files as {
-  image?: Express.Multer.File[];
-  galleryImages?: Express.Multer.File[];
-};
+    const files = req.files as {
+      image?: Express.Multer.File[];
+      galleryImages?: Express.Multer.File[];
+    };
 
     const placeData = {
       // Text fields from FormData
@@ -92,7 +92,15 @@ export const getHistoricalPlaces = async (
   next: NextFunction,
 ) => {
   try {
-    const places = await historicalPlaceService.getAllPlaces();
+    const places = await historicalPlaceService.getAllPlaces({
+      search: req.query.search as string,
+
+      districtId: req.query.districtId
+        ? Number(req.query.districtId)
+        : undefined,
+
+      statusFlag: req.query.statusFlag as string,
+    });
 
     return res.status(200).json({
       success: true,
@@ -136,13 +144,49 @@ export const updateHistoricalPlace = async (
   try {
     const id = Number(req.params.id);
 
-    const place = await historicalPlaceService.updatePlace(id, req.body);
+    const files = req.files as {
+      image?: Express.Multer.File[];
+      galleryImages?: Express.Multer.File[];
+    };
+
+    const updateData = {
+      name: req.body.name,
+      category: req.body.category,
+      description: req.body.description,
+      century: req.body.century,
+      statusFlag: req.body.statusFlag,
+
+      latitude: Number(req.body.latitude),
+      longitude: Number(req.body.longitude),
+
+      anchorXPct: Number(req.body.anchorXPct),
+      anchorYPct: Number(req.body.anchorYPct),
+
+      provinceId: Number(req.body.provinceId),
+      districtId: Number(req.body.districtId),
+
+      nearbyHotels: req.body.nearbyHotels || null,
+      nearbyHospitals: req.body.nearbyHospitals || null,
+      nearbyRestaurant: req.body.nearbyRestaurant || null,
+      travelTips: req.body.travelTips || null,
+
+      seoTitle: req.body.seoTitle || null,
+      metaDescription: req.body.metaDescription || null,
+      slug: req.body.slug || null,
+      focusKeywords: req.body.focusKeywords || null,
+
+      image: files?.image?.length
+        ? `/uploads/${files.image[0].filename}`
+        : undefined,
+    };
+
+    console.log("UPDATE DATA:", updateData);
+
+    const place = await historicalPlaceService.updatePlace(id, updateData);
 
     return res.status(200).json({
       success: true,
-
       message: "Historical place updated successfully",
-
       data: place,
     });
   } catch (error) {

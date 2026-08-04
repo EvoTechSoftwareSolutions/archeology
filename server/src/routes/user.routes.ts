@@ -2,23 +2,25 @@ import { Router } from "express";
 import {
   getAllUsers,
   updateUser,
-  deleteUser,
+  getUserById,
 } from "../controllers/user.controller.js";
 
 import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// All user management routes require login
+// Login required
 router.use(authenticate);
 
-// Only ADMIN can manage users
+// Admin only
 router.use(authorize("ADMIN"));
 
+// User management
 router.get("/", getAllUsers);
+
+router.get("/:id", getUserById);
 
 router.put("/:id", updateUser);
 
-router.delete("/:id", deleteUser);
 
 export default router;

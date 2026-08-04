@@ -1,23 +1,18 @@
 import { useRef } from "react";
 import { MdCloudUpload, MdClose } from "react-icons/md";
+import FormField from "../common/FormField";
+import {
+  useMediaValidation,
+  type MediaValues,
+} from "../../hooks/validations/useMediaValidation";
 
 interface MediaFormProps {
-  value: {
-    heroImage: File | null;
-    galleryImages: (File | null)[];
-  };
-
+  value: MediaValues;
   onHeroImageChange: (value: File | null) => void;
-  onGalleryImageChange: (
-    index: number,
-    value: File | null
-  ) => void;
-
+  onGalleryImageChange: (index: number, value: File | null) => void;
   onBack: () => void;
   onNext: () => void;
 }
-
-
 
 const MediaForm = ({
   value,
@@ -29,46 +24,83 @@ const MediaForm = ({
   const heroInputRef = useRef<HTMLInputElement | null>(null);
   const galleryInputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-const handleHeroPick = (file?: File | null) => {
-  if (!file) return;
+  const { errors, validateAll, clearFieldError } = useMediaValidation(value);
 
-  onHeroImageChange(file);
-};
+  const handleHeroPick = (file?: File | null) => {
+    if (!file) return;
+    onHeroImageChange(file);
+    clearFieldError("heroImage");
+  };
 
-const handleGalleryPick = (index: number, file?: File |null) => {
-  if (!file) return;
+  const handleRemoveHero = () => {
+    onHeroImageChange(null);
+  };
 
-  onGalleryImageChange(index, file);
-};
+  const handleGalleryPick = (index: number, file?: File | null) => {
+    if (!file) return;
+    onGalleryImageChange(index, file);
+    clearFieldError("galleryImages");
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    onGalleryImageChange(index, null);
+  };
+
+  const handleContinue = () => {
+    if (validateAll()) {
+      onNext();
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col h-full">
-      <h2 className="text-[24px] font-bold font-serif mb-6 text-gray-900 tracking-tight">Media</h2>
+      <h2 className="text-[24px] font-bold font-serif mb-6 text-gray-900 tracking-tight">
+        Media
+      </h2>
 
       <div className="space-y-8 flex-1">
         {/* Hero Image Upload */}
-        <div>
-          <label className="block text-[14px] font-bold text-gray-800 mb-2">Hero Image</label>
+        <FormField
+          label="Hero Image"
+          tooltipText="Upload a featured high-resolution hero cover image."
+          required
+          error={errors.heroImage}
+        >
           <button
             type="button"
             onClick={() => heroInputRef.current?.click()}
-            className="w-full border border-gray-300 border-dashed rounded-lg h-[280px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative"
+            className={`w-full border border-dashed rounded-lg h-[280px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative ${
+              errors.heroImage ? "border-red-500" : "border-gray-300"
+            }`}
           >
             {value.heroImage ? (
               <>
-                <img  src={URL.createObjectURL(value.heroImage)} alt="Hero preview" className="absolute inset-0 h-full w-full object-cover" />
+                <img
+                  src={URL.createObjectURL(value.heroImage)}
+                  alt="Hero preview"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <div className="absolute inset-0 bg-black/30" />
-                <span className="relative z-10 text-[14px] text-white font-semibold">Change hero image</span>
-                <span className="relative z-10 mt-1 text-[11px] text-white/80 uppercase tracking-wide">Click to replace</span>
+                <span className="relative z-10 text-[14px] text-white font-semibold">
+                  Change hero image
+                </span>
+                <span className="relative z-10 mt-1 text-[11px] text-white/80 uppercase tracking-wide">
+                  Click to replace
+                </span>
               </>
             ) : (
               <>
                 <MdCloudUpload className="text-gray-400 mb-2" size={32} />
-                <span className="text-[14px] text-gray-400 font-medium">Upload a featured hero image</span>
-                <span className="text-[11px] text-gray-400 mt-1 uppercase tracking-wide">PNG, JPG up to 10MB</span>
+                <span className="text-[14px] text-gray-400 font-medium">
+                  Upload a featured hero image
+                </span>
+                <span className="text-[11px] text-gray-400 mt-1 uppercase tracking-wide">
+                  PNG, JPG up to 10MB
+                </span>
               </>
             )}
           </button>
+
           <input
             ref={heroInputRef}
             type="file"
@@ -79,44 +111,79 @@ const handleGalleryPick = (index: number, file?: File |null) => {
               event.target.value = "";
             }}
           />
+
           {value.heroImage && (
             <button
               type="button"
-              onClick={() => onHeroImageChange(null)}
+              onClick={handleRemoveHero}
               className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-red-600 hover:text-red-700"
             >
               <MdClose size={16} /> Remove hero image
             </button>
           )}
-        </div>
+        </FormField>
 
         {/* Gallery Uploads */}
-        <div>
-          <label className="block text-[14px] font-bold text-gray-800 mb-2">Gallery</label>
+        <FormField
+          label="Gallery"
+          tooltipText="Upload at least one gallery image."
+          required
+          error={errors.galleryImages}
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((item, index) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => galleryInputRefs.current[index]?.click()}
-                className="border border-gray-300 border-dashed rounded-lg h-[200px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative"
-              >
-                {value.galleryImages[index] ? (
-                  <>
-                    <img src={URL.createObjectURL(value.galleryImages[index])} alt={`Gallery preview ${item}`} className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-black/20" />
-                    <span className="relative z-10 text-[13px] text-white font-semibold">Replace image {item}</span>
-                  </>
-                ) : (
-                  <>
-                    <MdCloudUpload className="text-gray-400 mb-2" size={24} />
-                    <span className="text-[13px] text-gray-400 font-medium">Upload image</span>
-                    <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-wide">PNG, JPG up to 10MB</span>
-                  </>
-                )}
-              </button>
-            ))}
+            {[1, 2, 3, 4, 5, 6].map((item, index) => {
+              const galleryFile = value.galleryImages[index];
+
+              return (
+                <div key={item} className="flex flex-col">
+                  <button
+                    type="button"
+                    onClick={() => galleryInputRefs.current[index]?.click()}
+                    className={`border border-dashed rounded-lg h-[200px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative ${
+                      errors.galleryImages && !value.galleryImages.some(Boolean)
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {galleryFile ? (
+                      <>
+                        <img
+                          src={URL.createObjectURL(galleryFile)}
+                          alt={`Gallery preview ${item}`}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/20" />
+                        <span className="relative z-10 text-[13px] text-white font-semibold">
+                          Replace image {item}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <MdCloudUpload className="text-gray-400 mb-2" size={24} />
+                        <span className="text-[13px] text-gray-400 font-medium">
+                          Upload image
+                        </span>
+                        <span className="text-[10px] text-gray-400 mt-1 uppercase tracking-wide">
+                          PNG, JPG up to 10MB
+                        </span>
+                      </>
+                    )}
+                  </button>
+
+                  {galleryFile && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveGalleryImage(index)}
+                      className="mt-1 inline-flex items-center gap-1 text-[12px] font-medium text-red-600 hover:text-red-700 self-start"
+                    >
+                      <MdClose size={14} /> Remove
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
+
           <div className="hidden">
             {Array.from({ length: 6 }).map((_, index) => (
               <input
@@ -133,12 +200,13 @@ const handleGalleryPick = (index: number, file?: File |null) => {
               />
             ))}
           </div>
-        </div>
+        </FormField>
       </div>
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center pt-8 mt-auto">
         <button
+          type="button"
           onClick={onBack}
           className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-[14px] font-medium transition-colors"
         >
@@ -148,7 +216,8 @@ const handleGalleryPick = (index: number, file?: File |null) => {
           Back
         </button>
         <button
-          onClick={onNext}
+          type="button"
+          onClick={handleContinue}
           className="bg-[#1E604B] text-white px-8 py-2.5 rounded-md text-[14px] font-medium hover:bg-[#144b3a] transition-colors flex items-center gap-2 shadow-sm"
         >
           Continue

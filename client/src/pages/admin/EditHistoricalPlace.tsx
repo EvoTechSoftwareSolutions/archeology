@@ -1,173 +1,444 @@
-import { Link, useParams } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
-import useHistoricalPlaceForm from "../../hooks/useHistoricalPlaceForm";
-import useDistrictMapPicker from "../../hooks/useDistrictMapPicker";
-import AdminDistrictPicker from "../../components/Admin/AdminDistrictPicker";
-import { districtApiIds } from "../../data/districtApiIds";
-import { districts } from "../../data/districts";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MdOutlineSave } from "react-icons/md";
+import AddNewPlaceSidebar from "../../components/admin/AddNewPlaceSidebar";
+import EditBasicInformationForm from "../../components/admin/editForms/EditBasicInformationForm";
+import EditMediaForm from "../../components/admin/editForms/EditMediaForm";
+import EditFacilitiesTravelForm from "../../components/admin/editForms/EditFacilitiesTravelForm";
+import EditSEOForm from "../../components/admin/editForms/EditSEOForm";
+import { slugify } from "../../utils/slugify";
+import {
+  getHistoricalPlaceById,
+  updateHistoricalPlace,
+} from "../../services/historicalPlace.service";
 
-const CATEGORIES = ["Temple", "Fort", "Ancient City", "Statue", "Museum", "Natural Site", "Other"];
-const STATUS_OPTIONS = ["ACTIVE", "INACTIVE", "UNDER_RESTORATION"];
+interface PlaceDraft {
+  name: string;
+  category: string;
+  province: string;
+  district: string;
+  provinceId: number | null;
+  districtId: number | null;
+  era: string;
+  latitude: string;
+  longitude: string;
+  anchorXPct: string;
+  anchorYPct: string;
+  shortDescription: string;
+  historicalStory: string;
+  heroImage: File | string | null;
+  galleryImages: (File | string | null)[];
+  nearbyHotels: string;
+  nearbyHospitals: string;
+  nearbyRestaurant: string;
+  travelTips: string;
+  seoTitle: string;
+  metaDescription: string;
+  slug: string;
+  focusKeywords: string;
+  statusFlag: string;
+}
+
+const initialDraft: PlaceDraft = {
+  name: "",
+  category: "",
+  province: "",
+  district: "",
+  provinceId: null,
+  districtId: null,
+  era: "",
+  latitude: "",
+  longitude: "",
+  anchorXPct: "",
+  anchorYPct: "",
+  shortDescription: "",
+  historicalStory: "",
+  heroImage: null,
+  galleryImages: [null, null, null, null, null, null],
+  nearbyHotels: "",
+  nearbyHospitals: "",
+  nearbyRestaurant: "",
+  travelTips: "",
+  seoTitle: "",
+  metaDescription: "",
+  slug: "",
+  focusKeywords: "",
+  statusFlag: "Published",
+};
 
 const EditHistoricalPlace = () => {
-  const { form, updateField, setLocation, errors, isLoading, isSubmitting, submitError, submit } =
-    useHistoricalPlaceForm(Number(useParams().id));
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
-  const { handleDistrictClick } = useDistrictMapPicker(setLocation);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [draft, setDraft] = useState<PlaceDraft>(initialDraft);
+  const [loading, setLoading] = useState(true);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const selectedDistrictCode =
-    districts.find((d) => districtApiIds[d.id] === form.districtId)?.id ?? null;
+  // Fetch existing place data on mount
+useEffect(() => {
+  const fetchPlace = async () => {
+    if (!id) return;
 
-  const onMapClick = (e: React.MouseEvent<SVGPathElement>, district: (typeof districts)[number]) => {
-    const apiId = districtApiIds[district.id];
-    if (apiId === undefined) {
-      alert(`"${district.name}" isn't linked to a database district yet — add it to districtApiIds.ts first.`);
+    const numericId = Number(id);
+    if (isNaN(numericId)) {
+      setStatusError("Invalid place ID.");
+      setLoading(false);
       return;
     }
-    handleDistrictClick(e, district, apiId);
+
+    try {
+      setLoading(true);
+      const data = await getHistoricalPlaceById(numericId);
+
+      const rawAnchorX = data.anchorXPct ? String(Number(data.anchorXPct) / 100) : "";
+      const rawAnchorY = data.anchorYPct ? String(Number(data.anchorYPct) / 100) : "";
+
+      const descriptionParts = (data.description || "").split("\n\n");
+      const shortDescription = descriptionParts[0] || "";
+      const historicalStory = descriptionParts.slice(1).join("\n\n") || "";
+
+      // 1. FIX: Map gallery images by extracting the `.url` property from objects
+      const gallery: (File | string | null)[] = [null, null, null, null, null, null];
+      if (Array.isArray(data.galleryImages)) {
+        data.galleryImages.forEach((imgObj: { url?: string } | string, idx: number) => {
+          if (idx < 6) {
+            // Handle both object structure { id, url } and standalone string fallback
+            const url = typeof imgObj === "object" && imgObj !== null ? imgObj.url : imgObj;
+            gallery[idx] = url || null;
+          }
+        });
+      }
+
+      setDraft({
+        name: data.name || "",
+        category: data.category?.name || data.category || "",
+        province: data.province?.name || data.province || "",
+        district: data.district?.name || data.district || "",
+        provinceId: data.provinceId ? Number(data.provinceId) : null,
+        districtId: data.districtId ? Number(data.districtId) : null,
+        era: data.century || "",
+        latitude: String(data.latitude || ""),
+        longitude: String(data.longitude || ""),
+        anchorXPct: rawAnchorX,
+        anchorYPct: rawAnchorY,
+        shortDescription,
+        historicalStory,
+        // 2. FIX: Backend sends key "image", not "imageUrl"
+        heroImage: data.image || data.imageUrl || null, 
+        galleryImages: gallery,
+        nearbyHotels: data.nearbyHotels || "",
+        nearbyHospitals: data.nearbyHospitals || "",
+        nearbyRestaurant: data.nearbyRestaurant || "",
+        travelTips: data.travelTips || "",
+        seoTitle: data.seoTitle || "",
+        metaDescription: data.metaDescription || "",
+        slug: data.slug || "",
+        focusKeywords: data.focusKeywords || "",
+        statusFlag: data.statusFlag || "Published",
+      });
+    } catch (err: any) {
+      setStatusError(err?.message || "Failed to load historical place data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (isLoading) {
-    return <div className="py-20 text-center text-gray-400 text-sm">Loading place…</div>;
+  fetchPlace();
+}, [id]);
+
+
+
+  const handleNext = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
+  const handleBack = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+
+  const updateDraftField = <K extends keyof PlaceDraft>(
+    field: K,
+    value: PlaceDraft[K],
+  ) => {
+    setDraft((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleBasicInfoChange = (
+    field:
+      | "name"
+      | "category"
+      | "province"
+      | "district"
+      | "era"
+      | "shortDescription"
+      | "historicalStory",
+    value: string,
+  ) => {
+    updateDraftField(field, value);
+  };
+
+  const handleSeoChange = (
+    field: "seoTitle" | "metaDescription" | "slug" | "focusKeywords",
+    value: string,
+  ) => {
+    updateDraftField(field, value);
+  };
+
+  const handleLocationPick = (
+    latitude: string,
+    longitude: string,
+    anchorXPct: string,
+    anchorYPct: string,
+  ) => {
+    setDraft((current) => ({
+      ...current,
+      latitude,
+      longitude,
+      anchorXPct,
+      anchorYPct,
+    }));
+  };
+
+  const handleUpdate = async () => {
+  if (!id) return;
+  const numericId = Number(id);
+  if (isNaN(numericId)) {
+    setStatusError("Invalid place ID.");
+    return;
+  }
+
+  setSubmitting(true);
+
+    try {
+      if (!draft.provinceId)
+        throw new Error("Select a province before saving.");
+      if (!draft.districtId)
+        throw new Error("Select a district before saving.");
+
+      const formData = new FormData();
+      formData.append("name", draft.name.trim());
+      formData.append("category", draft.category);
+
+      const description = [
+        draft.shortDescription.trim(),
+        draft.historicalStory.trim(),
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+
+      formData.append("description", description);
+      formData.append("century", draft.era.trim() || "Unknown");
+      formData.append("statusFlag", draft.statusFlag);
+      formData.append("latitude", String(draft.latitude));
+      formData.append("longitude", String(draft.longitude));
+
+      // Scale percentage to 0-100 range expected by API
+      if (draft.anchorXPct) {
+        formData.append("anchorXPct", String(Number(draft.anchorXPct) * 100));
+      }
+      if (draft.anchorYPct) {
+        formData.append("anchorYPct", String(Number(draft.anchorYPct) * 100));
+      }
+
+      formData.append("provinceId", String(draft.provinceId));
+      formData.append("districtId", String(draft.districtId));
+
+      if (draft.nearbyHotels.trim())
+        formData.append("nearbyHotels", draft.nearbyHotels.trim());
+      if (draft.nearbyHospitals.trim())
+        formData.append("nearbyHospitals", draft.nearbyHospitals.trim());
+      if (draft.nearbyRestaurant.trim())
+        formData.append("nearbyRestaurant", draft.nearbyRestaurant.trim());
+      if (draft.travelTips.trim())
+        formData.append("travelTips", draft.travelTips.trim());
+      if (draft.seoTitle.trim())
+        formData.append("seoTitle", draft.seoTitle.trim());
+      if (draft.metaDescription.trim())
+        formData.append("metaDescription", draft.metaDescription.trim());
+      formData.append("slug", draft.slug.trim() || slugify(draft.name));
+      if (draft.focusKeywords.trim())
+        formData.append("focusKeywords", draft.focusKeywords.trim());
+
+      // Hero image logic: Upload File or retain existing URL string
+      if (draft.heroImage instanceof File) {
+        formData.append("image", draft.heroImage);
+      } else if (typeof draft.heroImage === "string") {
+        formData.append("existingHeroImage", draft.heroImage);
+      }
+
+      // Gallery image logic: Append new Files & retain existing image URLs
+      const existingGalleryUrls: string[] = [];
+      draft.galleryImages.forEach((img) => {
+        if (img instanceof File) {
+          formData.append("galleryImages", img);
+        } else if (typeof img === "string" && img.trim()) {
+          existingGalleryUrls.push(img);
+        }
+      });
+
+      formData.append(
+        "existingGalleryImages",
+        JSON.stringify(existingGalleryUrls),
+      );
+
+      await updateHistoricalPlace(numericId, formData);
+
+      setStatusMessage("Historical place updated successfully.");
+      setTimeout(() => {
+        navigate("/admin/heritage");
+      }, 1500);
+    } catch (updateError: any) {
+      const message =
+        updateError?.response?.data?.message ||
+        updateError?.message ||
+        "Failed to update the place.";
+      setStatusError(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+        <div className="text-gray-500 font-medium">
+          Loading place information...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="font-['Inter'] pb-10">
-      <div className="text-sm text-gray-500 mb-4">
-        <Link to="/admin" className="hover:text-gray-900">Home</Link> &gt;{" "}
-        <Link to="/admin/historical-places" className="hover:text-gray-900">Historical places</Link> &gt; Add new
-      </div>
+    <div className="w-full max-w-7xl mx-auto flex flex-col pt-4 min-h-[calc(100vh-100px)]">
+      {/* Header & Navigation */}
+      <div className="mb-10">
+        <div className="text-[13px] text-gray-500 mb-4 flex items-center gap-1">
+          <span>Home</span>
+          <span>&gt;</span>
+          <span>Historical places</span>
+          <span>&gt;</span>
+          <span className="text-gray-900 font-medium">Edit Place</span>
+        </div>
 
-      <div className="flex items-center gap-3 mb-8">
-        <Link to="/admin/historical-places" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-          <FiArrowLeft size={18} />
-        </Link>
-        <h1 className="text-3xl font-['Playfair_Display'] font-bold text-gray-900">
-          Edit Historical Place
-        </h1>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-      >
-        {/* Left: fields */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-              placeholder="e.g. Koneswaram Temple"
-            />
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
+            <h1 className="text-[32px] font-bold font-serif text-gray-900 mb-1 tracking-tight">
+              Edit Place
+            </h1>
+            <p className="text-gray-500 text-[14px]">
+              Update details for {draft.name || "this heritage site"}.
+            </p>
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <select
-                value={form.category}
-                onChange={(e) => updateField("category", e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer"
-              >
-                <option value="">Select…</option>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              {errors.category && <p className="text-xs text-red-600 mt-1">{errors.category}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Century</label>
-              <input
-                type="text"
-                value={form.century}
-                onChange={(e) => updateField("century", e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-                placeholder="e.g. 17th Century"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              value={form.description}
-              onChange={(e) => updateField("description", e.target.value)}
-              rows={4}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-              placeholder="A short description of this place's history and significance"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-            <input
-              type="text"
-              value={form.image}
-              onChange={(e) => updateField("image", e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800"
-              placeholder="https://…"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              value={form.statusFlag}
-              onChange={(e) => updateField("statusFlag", e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#275949]/20 focus:border-[#275949] outline-none text-sm text-gray-800 appearance-none cursor-pointer"
-            >
-              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-
-          {submitError && <p className="text-sm text-red-600">{submitError}</p>}
-
-          <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
-            <Link
-              to="/admin/historical-places"
-              className="px-5 py-2.5 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors text-sm"
-            >
-              Cancel
-            </Link>
+          <div className="flex gap-4">
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-[#275949] hover:bg-[#1E4538] text-white font-medium shadow-sm transition-colors text-sm disabled:opacity-50"
+              type="button"
+              onClick={handleUpdate}
+              disabled={submitting}
+              className="flex items-center gap-2 px-8 py-2.5 rounded-md bg-[#1E604B] text-white font-bold text-[14px] hover:bg-[#144b3a] transition-colors shadow-sm disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
             >
-              {isSubmitting ? "Saving…" : "Save Changes"}
+              <MdOutlineSave size={18} />
+              {submitting ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
 
-        {/* Right: location picker */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-          <p className="text-xs text-gray-500 mb-4">
-            Click the exact spot on the district where this place is located.
-          </p>
-
-          <AdminDistrictPicker
-            selectedDistrictCode={selectedDistrictCode}
-            onDistrictClick={onMapClick}
-          />
-          {errors.districtId && <p className="text-xs text-red-600 mt-2">{errors.districtId}</p>}
-
-          <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-gray-600">
-            <div><span className="text-gray-400">District</span><p className="font-semibold">{selectedDistrictCode ?? "—"}</p></div>
-            <div><span className="text-gray-400">Status</span><p className="font-semibold">{form.districtId ? "Set" : "Not set"}</p></div>
-            <div><span className="text-gray-400">Latitude</span><p className="font-semibold">{form.latitude || "—"}</p></div>
-            <div><span className="text-gray-400">Longitude</span><p className="font-semibold">{form.longitude || "—"}</p></div>
-            <div><span className="text-gray-400">anchorXPct</span><p className="font-semibold">{form.anchorXPct}</p></div>
-            <div><span className="text-gray-400">anchorYPct</span><p className="font-semibold">{form.anchorYPct}</p></div>
+        {(statusMessage || statusError) && (
+          <div
+            className={`mt-4 rounded-lg border px-4 py-3 text-[14px] ${
+              statusError
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-green-200 bg-green-50 text-green-700"
+            }`}
+          >
+            {statusError || statusMessage}
           </div>
+        )}
+      </div>
+
+      {/* Main Form Content */}
+      <div className="flex flex-col lg:flex-row gap-8 flex-1 items-start pb-8">
+        <div className="shrink-0 w-full lg:w-[260px] sticky top-4">
+          <AddNewPlaceSidebar currentStep={currentStep} />
         </div>
-      </form>
+
+        <div className="flex-1 w-full min-w-0 flex flex-col h-full">
+          {currentStep === 1 && (
+            <EditBasicInformationForm
+              value={{
+                name: draft.name,
+                category: draft.category,
+                province: draft.province,
+                district: draft.district,
+                era: draft.era,
+                anchorXPct: draft.anchorXPct,
+                anchorYPct: draft.anchorYPct,
+                shortDescription: draft.shortDescription,
+                historicalStory: draft.historicalStory,
+              }}
+              onChange={handleBasicInfoChange}
+              onProvinceIdChange={(id) => updateDraftField("provinceId", id)}
+              onDistrictIdChange={(id) => updateDraftField("districtId", id)}
+              onLocationPick={handleLocationPick}
+              onNext={handleNext}
+              onSave={handleUpdate}
+              submitting={submitting}
+            />
+          )}
+
+          {currentStep === 2 && (
+            <EditMediaForm
+              value={{
+                heroImage: draft.heroImage,
+                galleryImages: draft.galleryImages,
+              }}
+              onHeroImageChange={(file) => updateDraftField("heroImage", file)}
+              onGalleryImageChange={(index, file) => {
+                setDraft((current) => {
+                  const nextGallery = [...current.galleryImages];
+                  nextGallery[index] = file;
+                  return {
+                    ...current,
+                    galleryImages: nextGallery,
+                  };
+                });
+              }}
+              onNext={handleNext}
+              onBack={handleBack}
+              onSave={handleUpdate}
+              submitting={submitting}
+            />
+          )}
+
+          {currentStep === 3 && (
+            <EditFacilitiesTravelForm
+              value={{
+                nearbyHotels: draft.nearbyHotels,
+                nearbyHospitals: draft.nearbyHospitals,
+                nearbyRestaurant: draft.nearbyRestaurant,
+                travelTips: draft.travelTips,
+              }}
+              onChange={updateDraftField}
+              onNext={handleNext}
+              onBack={handleBack}
+              onSave={handleUpdate}
+              submitting={submitting}
+            />
+          )}
+
+          {currentStep === 4 && (
+            <EditSEOForm
+              value={{
+                seoTitle: draft.seoTitle,
+                metaDescription: draft.metaDescription,
+                slug: draft.slug,
+                focusKeywords: draft.focusKeywords,
+              }}
+              onChange={handleSeoChange}
+              onSave={handleUpdate}
+              onBack={handleBack}
+              submitting={submitting}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

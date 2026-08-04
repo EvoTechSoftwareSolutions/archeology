@@ -49,20 +49,53 @@ export interface HistoricalPlaceRecord {
 
 //for API responses fetch
 export interface ApiHistoricalPlace {
- id:number;
- name:string;
- description:string;
- image:string;
- latitude:number;
- longitude:number;
- anchorXPct:number;
- anchorYPct:number;
- districtId:number;
+  id:number;
 
- district:{
-   id:number;
-   name:string;
- }
+  name:string;
+  description:string;
+
+  image?: string;
+  imageUrl?: string;
+
+  century:string;
+  statusFlag:string;
+
+  latitude:number;
+  longitude:number;
+
+  anchorXPct:number;
+  anchorYPct:number;
+
+  provinceId:number;
+  districtId:number;
+
+  province?:{
+    id:number;
+    name:string;
+  };
+
+  district:{
+    id:number;
+    name:string;
+    provinceId?:number;
+  };
+
+  category?:{
+    id:number;
+    name:string;
+  } | string;
+
+  galleryImages?:GalleryImage[];
+
+  nearbyHotels?:string;
+  nearbyHospitals?:string;
+  nearbyRestaurant?:string;
+  travelTips?:string;
+
+  seoTitle?:string;
+  metaDescription?:string;
+  slug?:string;
+  focusKeywords?:string;
 }
 
 export interface GalleryImage {
