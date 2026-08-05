@@ -37,17 +37,28 @@ class ContactService {
 
   private async sendAdminEmail(message: ContactMessageInput) {
     if (!this.transporter) {
-      console.warn("SMTP is not configured. Contact notification email was skipped.");
+      console.warn(
+        "SMTP is not configured. Contact notification email was skipped.",
+      );
       return;
     }
 
-    const from = process.env.SMTP_FROM || process.env.SMTP_USER || "contact@heritagesrilanka.com";
+    const from =
+      process.env.SMTP_FROM ||
+      process.env.SMTP_USER ||
+      "contact@heritagesrilanka.com";
     const adminEmails = await this.contactRepository.findAdminEmails();
-    const fallbackEmail = process.env.CONTACT_TO_EMAIL || process.env.SMTP_USER || process.env.ADMIN_EMAIL;
-    const to = adminEmails.map((admin) => admin.email).join(",") || fallbackEmail;
+    const fallbackEmail =
+      process.env.CONTACT_TO_EMAIL ||
+      process.env.SMTP_USER ||
+      process.env.ADMIN_EMAIL;
+    const to =
+      adminEmails.map((admin) => admin.email).join(",") || fallbackEmail;
 
     if (!to) {
-      console.warn("No contact recipient email is configured. Contact notification email was skipped.");
+      console.warn(
+        "No contact recipient email is configured. Contact notification email was skipped.",
+      );
       return;
     }
 
@@ -102,13 +113,21 @@ class ContactService {
   }
 
   async updateMessageStatus(id: number, status: string) {
+    const allowed = ["unread", "read", "replied"];
+
+    if (!allowed.includes(status)) {
+      throw new ApiError(400, "Invalid status");
+    }
+
     const message = await this.contactRepository.findById(id);
 
     if (!message) {
       throw new ApiError(404, "Contact message not found");
     }
 
-    return this.contactRepository.update(id, { status });
+    return this.contactRepository.update(id, {
+      status,
+    });
   }
 
   async deleteMessage(id: number) {
@@ -133,6 +152,40 @@ class ContactService {
     ]);
 
     return { total, unread };
+  }
+
+  async replyMessage(id: number, replyText: string) {
+    const message = await this.contactRepository.findById(id);
+
+    if (!message) {
+      throw new ApiError(404, "Message not found");
+    }
+
+    if (!this.transporter) {
+      throw new ApiError(500, "SMTP not configured");
+    }
+
+    await this.transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+
+      to: message.email,
+
+      subject: `Re: ${message.subject || "Contact Message"}`,
+
+      text: `Hello ${message.name},
+
+Admin reply:
+
+${replyText}
+
+Original message:
+
+${message.message}`,
+    });
+
+    return this.contactRepository.update(id, {
+      status: "replied",
+    });
   }
 }
 

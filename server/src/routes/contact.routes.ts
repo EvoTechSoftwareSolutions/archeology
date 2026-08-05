@@ -8,42 +8,25 @@ import {
   replyMessage,
 } from "../controllers/contact.controller.js";
 
-import {
-  authenticate,
-  authorize,
-} from "../middleware/auth.middleware.js";
-
+import { authenticate, authorize } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-
 router.post("/", createMessage);
-
 
 // Admin routes
 router.use(authenticate);
 
 router.use(authorize("ADMIN"));
 
-
 router.get("/messages", getMessages);
 
 router.get("/stats", getStats);
 
-router.patch(
-  "/messages/:id",
-  updateMessageStatus
-);
+router.put("/messages/:id", updateMessageStatus);
 
-router.delete(
-  "/messages/:id",
-  deleteMessage
-);
+router.delete("/messages/:id", deleteMessage);
 
-router.post(
-  "/messages/:id/reply",
-  replyMessage
-);
-
+router.post("/messages/:id/reply", replyMessage);
 
 export default router;

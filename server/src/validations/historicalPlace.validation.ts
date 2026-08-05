@@ -26,42 +26,35 @@ export const createHistoricalPlaceSchema = z.object({
     .string()
     .min(1, "Status is required"),
 
+latitude: z.coerce.number({
+  error: "Latitude must be a number",
+}),
 
-  latitude: z.coerce.number({
-      invalid_type_error: "Latitude must be a number",
-      required_error: "Latitude is required",
-    }),
+longitude: z.coerce.number({
+  error: "Longitude must be a number",
+}),
 
-  longitude: z.coerce.number({
-      invalid_type_error: "Longitude must be a number",
-      required_error: "Longitude is required",
-    }),
+anchorXPct: z.coerce.number({
+  error: "Anchor X percentage must be a number",
+}),
 
-  anchorXPct: z.coerce.number({
-      invalid_type_error: "Anchor X percentage must be a number",
-      required_error: "Anchor X percentage is required",
-    }),
+anchorYPct: z.coerce.number({
+  error: "Anchor Y percentage must be a number",
+}),
 
-  anchorYPct: z.coerce.number({
-      invalid_type_error: "Anchor Y percentage must be a number",
-      required_error: "Anchor Y percentage is required",
-    }),
 
-  // REQUIRED
-  provinceId: z.coerce.number({
-      invalid_type_error: "Province ID must be a number",
-      required_error: "Province ID is required",
-    })
-    .int()
-    .positive(),
+provinceId: z.coerce.number({
+  error: "Province ID must be a number",
+})
+.int()
+.positive(),
 
-  // REQUIRED
-  districtId: z.coerce.number({
-      invalid_type_error: "District ID must be a number",
-      required_error: "District ID is required",
-    })
-    .int()
-    .positive(),
+
+districtId: z.coerce.number({
+  error: "District ID must be a number",
+})
+.int()
+.positive(),
 
 });
 

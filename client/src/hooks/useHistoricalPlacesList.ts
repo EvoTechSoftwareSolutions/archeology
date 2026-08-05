@@ -104,6 +104,7 @@ export default function useHistoricalPlacesList() {
     exportToCsv(items, "historical-places.csv");
   }, [items]);
 
+  
   return {
     items,
     total,

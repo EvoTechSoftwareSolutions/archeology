@@ -14,7 +14,7 @@ export const historicalPlaceApi = {
   },
 
   update(id: number | string, data: any) {
-    return api.patch(`/historicalPlace/${id}`, data);
+    return api.put(`/historicalPlace/${id}`, data);
   },
 
   delete(id: number | string) {

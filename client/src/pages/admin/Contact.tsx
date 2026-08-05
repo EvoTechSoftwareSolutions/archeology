@@ -1,24 +1,26 @@
-import { useEffect, useState } from "react";
-import { MdDelete, MdCheckCircle } from "react-icons/md";
+import { useState } from "react";
+import { MdDelete } from "react-icons/md";
 import { useContactMessages } from "../../hooks/useContactMessages";
+import type { ContactMessage } from "../../types/contact.types";
 
-interface ContactMessage {
-  id: number;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: string;
-  createdAt: string;
-}
+const statusBadgeClass = (status: ContactMessage["status"]) => {
+  switch (status) {
+    case "unread":
+      return "bg-orange-100 text-orange-800";
+    case "read":
+      return "bg-blue-100 text-blue-800";
+    case "replied":
+      return "bg-green-100 text-green-800";
+  }
+};
 
-const ContactMessages = () => {
+const Contact = () => {
   const {
     messages,
     stats,
     loading,
     error,
-    markResolved,
+    markAsRead,
     deleteMessage,
     sendReply,
   } = useContactMessages();
@@ -26,45 +28,44 @@ const ContactMessages = () => {
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(
     null,
   );
-
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
 
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {}, 5000);
+const openMessage = async (msg: ContactMessage) => {
+  setSelectedMessage(msg);
 
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      window.clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
-
-  const handleMarkResolved = (id: number) => {
-    markResolved(id);
-  };
+  if (msg.status === "unread") {
+    try {
+      await markAsRead(msg.id);
+      setSelectedMessage((prev) =>
+        prev && prev.id === msg.id ? { ...prev, status: "read" } : prev,
+      );
+    } catch (err) {
+      console.error("Failed to mark message as read:", err);
+    }
+  }
+};
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Delete this message?")) {
-      deleteMessage(id);
-    }
+    if (!window.confirm("Delete this message?")) return;
+    void deleteMessage(id);
+    if (selectedMessage?.id === id) setSelectedMessage(null);
   };
 
   const handleReply = async (id: number) => {
     if (!replyText.trim()) return;
 
     setReplying(true);
-
     try {
       await sendReply(id, replyText);
       setReplyText("");
       alert("Reply sent successfully");
+      // Keep the panel's local copy of selectedMessage in sync so the
+      // "replied" badge and hidden reply form reflect immediately,
+      // without waiting for the next full reload to re-select it.
+      setSelectedMessage((prev) =>
+        prev && prev.id === id ? { ...prev, status: "replied" } : prev,
+      );
     } finally {
       setReplying(false);
     }
@@ -97,9 +98,9 @@ const ContactMessages = () => {
             <h3 className="text-2xl font-bold text-blue-600">{stats.read}</h3>
           </div>
           <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <p className="text-gray-600 text-xs mb-1">Resolved</p>
+            <p className="text-gray-600 text-xs mb-1">Replied</p>
             <h3 className="text-2xl font-bold text-green-600">
-              {stats.resolved}
+              {stats.replied}
             </h3>
           </div>
         </div>
@@ -138,7 +139,7 @@ const ContactMessages = () => {
                       <tr
                         key={msg.id}
                         className="hover:bg-gray-50 cursor-pointer"
-                        onClick={() => setSelectedMessage(msg)}
+                        onClick={() => openMessage(msg)}
                       >
                         <td className="px-6 py-4 text-sm text-gray-900">
                           {msg.name}
@@ -148,13 +149,7 @@ const ContactMessages = () => {
                         </td>
                         <td className="px-6 py-4 text-sm">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              msg.status === "unread"
-                                ? "bg-orange-100 text-orange-800"
-                                : msg.status === "read"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-green-100 text-green-800"
-                            }`}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadgeClass(msg.status)}`}
                           >
                             {msg.status}
                           </span>
@@ -235,45 +230,34 @@ const ContactMessages = () => {
               <div>
                 <p className="text-xs text-gray-600 mb-2">Status</p>
                 <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                    selectedMessage.status === "unread"
-                      ? "bg-orange-100 text-orange-800"
-                      : selectedMessage.status === "read"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-green-100 text-green-800"
-                  }`}
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${statusBadgeClass(selectedMessage.status)}`}
                 >
                   {selectedMessage.status}
                 </span>
               </div>
 
-              {selectedMessage.status !== "archived" && (
-                <>
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-600 mb-2">Send Reply</p>
-                    <textarea
-                      className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-[#275949] focus:outline-none"
-                      rows={4}
-                      placeholder="Type your reply here..."
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                    ></textarea>
-                    <button
-                      onClick={() => handleReply(selectedMessage.id)}
-                      disabled={replying || !replyText.trim()}
-                      className="w-full mt-2 bg-[#275949] hover:bg-[#1f473a] disabled:bg-gray-400 text-white px-4 py-2 rounded font-medium"
-                    >
-                      {replying ? "Sending..." : "Send Reply"}
-                    </button>
-                  </div>
-
+              {selectedMessage.status === "replied" ? (
+                <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded p-3">
+                  A reply has already been sent for this message.
+                </p>
+              ) : (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-600 mb-2">Send Reply</p>
+                  <textarea
+                    className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-[#275949] focus:outline-none"
+                    rows={4}
+                    placeholder="Type your reply here..."
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                  ></textarea>
                   <button
-                    onClick={() => handleMarkResolved(selectedMessage.id)}
-                    className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center justify-center gap-2 font-medium"
+                    onClick={() => handleReply(selectedMessage.id)}
+                    disabled={replying || !replyText.trim()}
+                    className="w-full mt-2 bg-[#275949] hover:bg-[#1f473a] disabled:bg-gray-400 text-white px-4 py-2 rounded font-medium"
                   >
-                    <MdCheckCircle /> Mark as Resolved
+                    {replying ? "Sending..." : "Send Reply"}
                   </button>
-                </>
+                </div>
               )}
 
               <button
@@ -290,4 +274,4 @@ const ContactMessages = () => {
   );
 };
 
-export default ContactMessages;
+export default Contact;

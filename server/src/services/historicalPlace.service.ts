@@ -12,9 +12,14 @@ export const historicalPlaceService = {
     return historicalPlaceRepository.create(data);
   },
 
-  async getAllPlaces() {
-    return historicalPlaceRepository.getAll();
-  },
+
+getAllPlaces(params?: {
+  search?: string;
+  districtId?: number;
+  statusFlag?: string;
+}) {
+  return historicalPlaceRepository.getAll(params);
+},
 
   async getPlaceById(id: number) {
     const place = await historicalPlaceRepository.getById(id);
