@@ -106,3 +106,24 @@ export const replyMessage = async (
     next(error);
   }
 };
+export const markContactAsRead = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    const message = await contactService.markAsRead(id);
+
+    return res.status(200).json({
+      success: true,
+
+      message: "Message marked as read",
+
+      data: message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

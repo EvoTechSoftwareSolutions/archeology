@@ -4,6 +4,7 @@ import {
   getMessages,
   getStats,
   updateMessageStatus,
+  markContactAsRead,
   deleteMessage,
   replyMessage,
 } from "../controllers/contact.controller.js";
@@ -24,6 +25,7 @@ router.get("/messages", getMessages);
 router.get("/stats", getStats);
 
 router.put("/messages/:id", updateMessageStatus);
+router.put("/:id/read", markContactAsRead);
 
 router.delete("/messages/:id", deleteMessage);
 

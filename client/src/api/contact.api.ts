@@ -14,8 +14,10 @@ export const contactApi = {
   },
 
   updateStatus(id: number, status: "unread" | "read" | "replied") {
-    return api.patch(`/contact/messages/${id}`, { status });
+    return api.put(`/contact/messages/${id}`, { status });
   },
+
+
 
   deleteMessage(id: number) {
     return api.delete(`/contact/messages/${id}`);
