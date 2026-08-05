@@ -171,16 +171,11 @@ const Footer: React.FC = () => {
 
       {/* Bottom */}
       <div className="relative z-10 bg-white border-t py-4 px-6 md:px-10">
-        <div className="max-w-[1200px] mx-auto text-[10px] md:text-xs">
-          {/* Row 1 — copyright left, design text right (mobile only) */}
-          <div className="flex items-center justify-between mb-1 md:mb-0 md:hidden">
+        <div className="max-w-[1200px] mx-auto text-[9px] md:text-xs">
+          {/* Mobile — copyright and design on one horizontal line */}
+          <div className="flex items-center justify-between gap-2 mb-1 md:mb-0 md:hidden flex-nowrap text-[8px]">
             <span className="whitespace-nowrap">© 2026 HeritageSriLanka</span>
-            <Link to="/admin/login" className="whitespace-nowrap">Login ass Admin</Link>
-          </div>
-
-          {/* Row 2 — Design by centered on mobile only */}
-          <div className="text-center md:hidden">
-            <span className="whitespace-nowrap">Design by Evon Technology Software Solution (PVT) Ltd</span>
+            <span className="flex-1 text-right min-w-0 truncate">Design by Evon Technology Software Solution (PVT) Ltd</span>
           </div>
 
           {/* Desktop — copyright left, design text right */}
