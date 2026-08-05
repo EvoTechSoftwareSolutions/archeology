@@ -1,43 +1,65 @@
-import useDistrictMap from "../../hooks/useDistrictMap";
-import SriLankaDistrictMap from "./SriLankaDistrictMap";
+import { useMemo, useState } from "react";
+import { provinces } from "../../data/provinces";
+import type { District } from "../../types/district";
+import SriLankaProvinceMap from "./SriLankaProvinceMap";
 import DistrictDetailPanel from "./DistrictDetailPanel";
 
 const DistrictHeritageExplorer = () => {
-  const {
-    districts,
-    selectedId,
-    selectedDistrict,
-    hoveredId,
-    setHoveredId,
-    selectDistrict,
-    closeDetail,
-    error,
-  } = useDistrictMap();
+  const [hoveredProvinceId, setHoveredProvinceId] = useState<string | null>(null);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
+  const [hoveredDistrictId, setHoveredDistrictId] = useState<string | null>(null);
+
+  const allDistricts: District[] = useMemo(
+    () => provinces.flatMap((p) => p.districts ?? []),
+    [],
+  );
+
+  const selectedDistrict = useMemo(
+    () => allDistricts.find((d) => String(d.id) === selectedDistrictId) ?? null,
+    [allDistricts, selectedDistrictId],
+  );
+
+  // The province that owns the currently selected district stays "pinned"
+  // open/highlighted even after the mouse leaves it.
+  const pinnedProvinceId = useMemo(() => {
+    if (!selectedDistrict) return null;
+    const found = provinces.find((p) => p.name === selectedDistrict.province);
+    return found ? String(found.id) : null;
+  }, [selectedDistrict]);
+
+  // What the map should visually treat as "active" right now: whatever's
+  // under the mouse wins, otherwise fall back to the pinned selection.
+  const activeProvinceId = hoveredProvinceId ?? pinnedProvinceId;
+
+  const closeDetail = () => {
+    setSelectedDistrictId(null);
+    setHoveredDistrictId(null);
+  };
 
   return (
     <div className="relative mx-auto flex w-full max-w-7xl items-center overflow-hidden px-4 py-10">
-      {error && (
-        <div className="absolute top-0 left-0 right-0 mx-auto mb-4 max-w-4xl rounded-xl bg-red-100 px-4 py-2 text-center text-sm text-red-700 shadow-sm">
-          {error}
-        </div>
-      )}
-      {/* Full map: bigger, w-full at rest, shrinks to the left 2/3 once a district is picked */}
       <div
         className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
           selectedDistrict ? "w-3/5" : "w-full"
         }`}
       >
-        <SriLankaDistrictMap
-          districts={districts}
-          selectedId={selectedId}
-          hoveredId={hoveredId}
-          onSelect={selectDistrict}
-          onHoverStart={setHoveredId}
-          onHoverEnd={() => setHoveredId(null)}
+        <SriLankaProvinceMap
+          provinces={provinces}
+          activeProvinceId={activeProvinceId}
+          selectedDistrictId={selectedDistrictId}
+          hoveredDistrictId={hoveredDistrictId}
+          onProvinceHoverStart={(id) => setHoveredProvinceId(String(id))}
+          onProvinceHoverEnd={() => setHoveredProvinceId(null)}
+          onDistrictSelect={(id) =>
+            setSelectedDistrictId((prev) =>
+              prev === String(id) ? null : String(id),
+            )
+          }
+          onDistrictHoverStart={(id) => setHoveredDistrictId(String(id))}
+          onDistrictHoverEnd={() => setHoveredDistrictId(null)}
         />
       </div>
 
-      {/* Detail panel: smaller, slides in from the right once a district is picked */}
       <DistrictDetailPanel district={selectedDistrict} onClose={closeDetail} />
     </div>
   );

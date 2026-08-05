@@ -1,3 +1,5 @@
+import type { District } from "./district"; 
+
 export interface ProvinceHistoricalPlace {
   id?: number;
   name: string;
@@ -10,21 +12,15 @@ export interface ProvinceHistoricalPlace {
 export interface Province {
   id: string | number;
   name: string;
+  regionCode:string;
   path?: string;
   bbox?: { x: number; y: number; width: number; height: number };
   labelX?: number;
   labelY?: number;
   historicalPlaces?: ProvinceHistoricalPlace[];
+  districts?: District[];
 }
 
-
-export interface District {
-  id: number;
-  name: string;
-  provinceId: number;
-}
-
-// GET /provinces -> list of provinces
 export interface ProvinceListApiResponse {
   success: boolean;
   data: Array<{
@@ -33,7 +29,6 @@ export interface ProvinceListApiResponse {
   }>;
 }
 
-// GET /provinces/:id -> single province with its districts nested
 export interface ProvinceDetailApiResponse {
   success: boolean;
   data: {

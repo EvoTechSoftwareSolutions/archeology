@@ -27,25 +27,16 @@ export interface Bbox {
 }
 
 export interface District {
-  id: string;
-
+  id: string | number;
   dbId?: number;
-
   name: string;
-
-  localName: string;
-
-  province: string;
-
-  color: string;
-
-  path: string;
-
-  bbox: Bbox;
-
-  labelX: number;
-
-  labelY: number;
-
-  historicalPlaces: HistoricalPlace[];
+  location?: string;
+  provinceId?: number;
+  province?: string | number; 
+  color?: string;            
+  path?: string;
+  bbox?: Bbox;
+  labelX?: number;
+  labelY?: number;
+  historicalPlaces?: HistoricalPlace[];
 }
