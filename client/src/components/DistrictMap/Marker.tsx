@@ -1,25 +1,31 @@
+import { forwardRef } from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-export default function Marker({left,top,onClick}){
-
-return(
-
-<button
-className="absolute -translate-x-1/2 -translate-y-full"
-style={{
-left:`${left}%`,
-top:`${top}%`
-}}
-onClick={onClick}
->
-
-<FaMapMarkerAlt
-size={26}
-className="text-red-600 animate-bounce"
-/>
-
-</button>
-
-)
-
+interface Props {
+  leftPct: number;
+  topPct: number;
+  onClick: () => void;
 }
+
+const PlaceMarker = forwardRef<HTMLButtonElement, Props>(
+  ({ leftPct, topPct, onClick }, ref) => {
+    return (
+      <button
+        ref={ref}
+        type="button"
+        className="absolute -translate-x-1/2 -translate-y-full"
+        style={{ left: `${leftPct}%`, top: `${topPct}%` }}
+        onClick={onClick}
+        aria-label="View heritage place"
+      >
+        <FaMapMarkerAlt
+          className="text-red-600 drop-shadow animate-bounce"
+          style={{ width: "clamp(18px, 4vw, 26px)", height: "clamp(18px, 4vw, 26px)" }}
+        />
+      </button>
+    );
+  },
+);
+
+PlaceMarker.displayName = "PlaceMarker";
+export default PlaceMarker;

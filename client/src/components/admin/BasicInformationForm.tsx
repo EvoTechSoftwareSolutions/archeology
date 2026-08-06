@@ -101,12 +101,12 @@ const BasicInformationForm = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 h-full flex flex-col">
-      <h2 className="text-[24px] font-bold font-serif mb-6 text-gray-900 tracking-tight">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8 h-full flex flex-col w-full min-w-0">
+      <h2 className="text-[20px] sm:text-[22px] lg:text-[24px] font-bold font-serif mb-4 sm:mb-6 text-gray-900 tracking-tight">
         Basic Information
       </h2>
 
-      <div className="space-y-6">
+      <div className="space-y-5 sm:space-y-6">
         {/* Place Name */}
         <FormField
           label="Place Name"
@@ -119,7 +119,7 @@ const BasicInformationForm = ({
             placeholder="e.g. Sigiriya Rock Fortress"
             value={value.name}
             onChange={(event) => handleChange("name", event.target.value)}
-            className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 ${
+            className={`w-full min-w-0 border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 ${
               errors.name
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-[#1E604B] focus:border-[#1E604B]"
@@ -134,12 +134,12 @@ const BasicInformationForm = ({
           required
           error={errors.category}
         >
-          <div className="relative">
+          <div className="relative w-full min-w-0">
             <select
               value={value.category}
               onChange={(event) => handleChange("category", event.target.value)}
               disabled={categoriesLoading}
-              className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
+              className={`w-full min-w-0 border rounded-lg p-3 pr-9 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
                 errors.category
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-[#1E604B]"
@@ -155,7 +155,7 @@ const BasicInformationForm = ({
               ))}
             </select>
             <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
               </svg>
             </div>
@@ -163,19 +163,19 @@ const BasicInformationForm = ({
         </FormField>
 
         {/* Province / District / Era */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <FormField
             label="Province"
             tooltipText="Choose the administrative province where the location is situated."
             required
             error={errors.province}
           >
-            <div className="relative">
+            <div className="relative w-full min-w-0">
               <select
                 value={value.province}
                 onChange={(event) => handleProvinceChange(event.target.value)}
                 disabled={provincesLoading}
-                className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
+                className={`w-full min-w-0 border rounded-lg p-3 pr-9 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
                   errors.province
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#1E604B]"
@@ -191,12 +191,12 @@ const BasicInformationForm = ({
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
             </div>
-            {provincesError && <p className="text-[12px] text-red-600 mt-1">{provincesError}</p>}
+            {provincesError && <p className="text-[12px] text-red-600 mt-1 break-words">{provincesError}</p>}
           </FormField>
 
           <FormField
@@ -205,12 +205,12 @@ const BasicInformationForm = ({
             required
             error={errors.district}
           >
-            <div className="relative">
+            <div className="relative w-full min-w-0">
               <select
                 value={value.district}
                 onChange={(event) => handleDistrictChange(event.target.value)}
                 disabled={value.province ? districtsLoading : true}
-                className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
+                className={`w-full min-w-0 border rounded-lg p-3 pr-9 text-[14px] text-gray-700 focus:outline-none focus:ring-1 bg-white appearance-none disabled:opacity-60 ${
                   errors.district
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#1E604B]"
@@ -230,13 +230,13 @@ const BasicInformationForm = ({
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
             </div>
             {value.province && districtsError && (
-              <p className="text-[12px] text-red-600 mt-1">{districtsError}</p>
+              <p className="text-[12px] text-red-600 mt-1 break-words">{districtsError}</p>
             )}
           </FormField>
 
@@ -251,7 +251,7 @@ const BasicInformationForm = ({
               placeholder="e.g. Anuradhapura"
               value={value.era}
               onChange={(event) => handleChange("era", event.target.value)}
-              className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 ${
+              className={`w-full min-w-0 border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 ${
                 errors.era
                   ? "border-red-500 focus:ring-red-500"
                   : "border-gray-300 focus:ring-[#1E604B] focus:border-[#1E604B]"
@@ -261,7 +261,7 @@ const BasicInformationForm = ({
         </div>
 
         {/* Map Picker Field */}
-        <div>
+        <div className="w-full min-w-0">
           <LocationMapPicker
             selectedDistrictName={value.district}
             anchorXPct={value.anchorXPct}
@@ -269,7 +269,7 @@ const BasicInformationForm = ({
             onLocationPick={handleLocationPickWithValidation}
           />
           {errors.map && (
-            <p className="text-[12px] text-red-600 font-medium mt-1.5">{errors.map}</p>
+            <p className="text-[12px] text-red-600 font-medium mt-1.5 break-words">{errors.map}</p>
           )}
         </div>
 
@@ -285,7 +285,7 @@ const BasicInformationForm = ({
             rows={4}
             value={value.shortDescription}
             onChange={(event) => handleChange("shortDescription", event.target.value)}
-            className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 resize-none ${
+            className={`w-full min-w-0 border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 resize-none ${
               errors.shortDescription
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-[#1E604B] focus:border-[#1E604B]"
@@ -305,7 +305,7 @@ const BasicInformationForm = ({
             rows={4}
             value={value.historicalStory}
             onChange={(event) => handleChange("historicalStory", event.target.value)}
-            className={`w-full border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 resize-none ${
+            className={`w-full min-w-0 border rounded-lg p-3 text-[14px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 resize-none ${
               errors.historicalStory
                 ? "border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:ring-[#1E604B] focus:border-[#1E604B]"
@@ -314,11 +314,11 @@ const BasicInformationForm = ({
         </FormField>
 
         {/* Action Button */}
-        <div className="flex justify-end pt-4 mt-auto">
+        <div className="flex justify-center sm:justify-end pt-4 mt-auto">
           <button
             type="button"
             onClick={handleContinue}
-            className="bg-[#1E604B] text-white px-8 py-2.5 rounded-md text-[14px] font-medium hover:bg-[#144b3a] transition-colors flex items-center gap-2 shadow-sm"
+            className="w-full sm:w-auto bg-[#1E604B] text-white px-8 py-2.5 rounded-md text-[14px] font-medium hover:bg-[#144b3a] transition-colors flex items-center justify-center gap-2 shadow-sm"
           >
             Continue
             <MdArrowRightAlt size={20} />

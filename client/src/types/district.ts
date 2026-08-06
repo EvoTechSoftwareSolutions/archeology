@@ -1,9 +1,11 @@
 export interface HistoricalPlace {
-  id?: number;
+  id?: number | string;
 
   name: string;
 
   image: string;
+
+ century?: string;
 
   description: string;
 
