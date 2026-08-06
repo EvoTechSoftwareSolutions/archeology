@@ -65,7 +65,7 @@ const Contact = () => {
     try {
       await sendReply(id, replyText);
       setReplyText("");
-      alert("Reply sent successfully");
+      window.alert("Reply sent successfully");
       // Keep the panel's local copy of selectedMessage in sync so the
       // "replied" badge and hidden reply form reflect immediately,
       // without waiting for the next full reload to re-select it.

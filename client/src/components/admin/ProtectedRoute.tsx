@@ -4,7 +4,7 @@ const ProtectedRoute = () => {
   const location = useLocation();
   const token = localStorage.getItem("adminToken");
 
-  if (!token) {
+  if (!token || token === "undefined" || token === "null") {
     // Send the attempted URL along so login can redirect back after success, if desired.
     return <Navigate to="/admin/login" replace state={{ from: location }} />;
   }
