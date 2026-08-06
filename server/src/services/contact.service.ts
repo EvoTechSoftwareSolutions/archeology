@@ -130,6 +130,18 @@ class ContactService {
     });
   }
 
+  async markAsRead(id: number) {
+    const message = await this.contactRepository.findById(id);
+
+    if (!message) {
+      throw new ApiError(404, "Contact message not found");
+    }
+
+    return this.contactRepository.update(id, {
+      status: "read",
+    });
+  }
+  
   async deleteMessage(id: number) {
     const message = await this.contactRepository.findById(id);
 

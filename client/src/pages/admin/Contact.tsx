@@ -31,20 +31,26 @@ const Contact = () => {
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
 
-const openMessage = async (msg: ContactMessage) => {
-  setSelectedMessage(msg);
+  const openMessage = async (msg: ContactMessage) => {
+    setSelectedMessage(msg);
 
-  if (msg.status === "unread") {
-    try {
-      await markAsRead(msg.id);
-      setSelectedMessage((prev) =>
-        prev && prev.id === msg.id ? { ...prev, status: "read" } : prev,
-      );
-    } catch (err) {
-      console.error("Failed to mark message as read:", err);
+    if (msg.status === "unread") {
+      try {
+        await markAsRead(msg.id);
+
+        setSelectedMessage((prev) =>
+          prev && prev.id === msg.id
+            ? {
+                ...prev,
+                status: "read",
+              }
+            : prev,
+        );
+      } catch (error) {
+        console.error("Failed to mark read", error);
+      }
     }
-  }
-};
+  };
 
   const handleDelete = (id: number) => {
     if (!window.confirm("Delete this message?")) return;
@@ -91,16 +97,6 @@ const openMessage = async (msg: ContactMessage) => {
             <p className="text-gray-600 text-xs mb-1">Unread</p>
             <h3 className="text-2xl font-bold text-orange-600">
               {stats.unread}
-            </h3>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <p className="text-gray-600 text-xs mb-1">Read</p>
-            <h3 className="text-2xl font-bold text-blue-600">{stats.read}</h3>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
-            <p className="text-gray-600 text-xs mb-1">Replied</p>
-            <h3 className="text-2xl font-bold text-green-600">
-              {stats.replied}
             </h3>
           </div>
         </div>
@@ -190,7 +186,13 @@ const openMessage = async (msg: ContactMessage) => {
                 Message Detail
               </h2>
               <button
-                onClick={() => setSelectedMessage(null)}
+                onClick={async () => {
+                  if (selectedMessage && selectedMessage.status === "unread") {
+                    await markAsRead(selectedMessage.id);
+                  }
+
+                  setSelectedMessage(null);
+                }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 ✕

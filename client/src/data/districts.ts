@@ -4,7 +4,6 @@ export const districts: District[] = [
   {
     id: "8",
     name: "Trincomalee",
-    localName: "Trikuṇāmalaya",
     province: "Eastern",
     color: "#D36868",
     path:
@@ -17,7 +16,6 @@ export const districts: District[] = [
   {
     id: "4",
     name: "Mullaitivu",
-    localName: "Mulativ",
     province: "Northern",
     color: "#A57E43",
     path:
@@ -30,7 +28,6 @@ export const districts: District[] = [
   {
     id: "1",
     name: "Jaffna",
-    localName: "Yāpanaya",
     province: "Northern",
     color: "#A57E43",
     path:
@@ -43,7 +40,6 @@ export const districts: District[] = [
   {
     id: "2",
     name: "Kilinochchi",
-    localName: "Kilinŏchchi",
     province: "Northern",
     color: "#A57E43",
     path:
@@ -56,7 +52,6 @@ export const districts: District[] = [
   {
     id: "3",
     name: "Mannar",
-    localName: "Mannārama",
     province: "Northern",
     color: "#A57E43",
     path:
@@ -69,7 +64,6 @@ export const districts: District[] = [
   {
     id: "12",
     name: "Puttalam",
-    localName: "Puttalama",
     province: "North Western",
     color: "#BE68D3",
     path:
@@ -82,7 +76,6 @@ export const districts: District[] = [
   {
     id: "21",
     name: "Gampaha",
-    localName: "Gampaha",
     province: "Western",
     color: "#A4D368",
     path:
@@ -95,7 +88,6 @@ export const districts: District[] = [
   {
     id: "20",
     name: "Colombo",
-    localName: "Kŏḷamba",
     province: "Western",
     color: "#A4D368",
     path:
@@ -108,8 +100,7 @@ export const districts: District[] = [
   {
     id: "22",
     name: "Kalutara",
-    localName: "Kaḷutara",
-    province: "A4D368",
+    province: "western",
     color: "#71D368",
     path:
       "M298.8 771.7l0.4-0.6 0.1-0.1-0.1-2.9-0.7-3-1.4-4.3 0.3-3.9 10.6 6.7 6.7-2.5 2.7-0.7 2.5-1.1 8.9-7.6 2.6-0.3 2.5 1.1 3.6-1.8 2.8-3.3 1.5 0.3 1.2 0.7 3 6.9 4.5 1.2-1.5-6.7 7.5-3.2 6.7 1.6 0.8 4.7 4 10.7-0.3 3.7 1.4 4.4 2.3 4.6 7 6.8 1.4 6.8 2.5 2.4 3.2 1.2 5.2 4.7 3.3 6.4-3.5 1.4 1.3 3.9 9.7 13.7 8.3 14.5-8.2 1.9-8 5-4.3 1.9 0 4.9 1.7 5.1-0.4 4.6-3.6-2.8-3.6-3.5-6.8-5.2-7 0.6-6.3 3.5-9.9-1.9-3.9-2.6-3.7-3.2-4.6-2-4.2-0.9-8.4-3.9-1.2-2-1.7-1.6-2.3 0.9-1.5 1-1.4-1.2-1.2-1.7-1.6-0.4-1-4-0.5-0.4-1-0.6-1-0.9-0.6-1.2 0.2-1.4 1.1-0.3 1.2 0.1 0.6 0-1.8-12.2-0.1-1-4.8-12.3-11.2-28.7z",
@@ -121,7 +112,6 @@ export const districts: District[] = [
   {
     id: "23",
     name: "Galle",
-    localName: "Gālla",
     province: "Southern",
     color: "#68D379",
     path:
@@ -134,7 +124,6 @@ export const districts: District[] = [
   {
     id: "25",
     name: "Matara",
-    localName: "Mātara",
     province: "Southern",
     color: "#68D379",
     path:
@@ -147,7 +136,6 @@ export const districts: District[] = [
   {
     id: "24",
     name: "Hambantota",
-    localName: "Hambantŏṭa",
     province: "Southern",
     color: "#68D379",
     path:
@@ -160,7 +148,6 @@ export const districts: District[] = [
   {
     id: "6",
     name: "Ampara",
-    localName: "Ampāra",
     province: "Eastern",
     color: "#D36868",
     path:
@@ -173,7 +160,6 @@ export const districts: District[] = [
   {
     id: "7",
     name: "Batticaloa",
-    localName: "Maḍakalapuva",
     province: "Eastern",
     color: "#D36868",
     path:
@@ -186,7 +172,6 @@ export const districts: District[] = [
   {
     id: "19",
     name: "Ratnapura",
-    localName: "Ratnapura",
     province: "Sabaragamuwa",
     color: "#6879D3",
     path:
@@ -199,7 +184,6 @@ export const districts: District[] = [
   {
     id: "17",
     name: "Monaragala",
-    localName: "Mŏṇarāgala",
     province: "Uva",
     color: "#6893D3",
     path:
@@ -212,7 +196,6 @@ export const districts: District[] = [
   {
     id: "18",
     name: "Kegalle",
-    localName: "Kægalla",
     province: "Sabaragamuwa",
     color: "#6879D3",
     path:
@@ -225,7 +208,6 @@ export const districts: District[] = [
   {
     id: "16",
     name: "Badulla",
-    localName: "Badulla",
     province: "Uva",
     color: "#6893D3",
     path:
@@ -238,7 +220,6 @@ export const districts: District[] = [
   {
     id: "14",
     name: "Matale",
-    localName: "Mātale",
     province: "Central",
     color: "#D36882",
     path:
@@ -251,7 +232,6 @@ export const districts: District[] = [
   {
     id: "10",
     name: "Polonnaruwa",
-    localName: "Pŏḷŏnnaruva",
     province: "North Central",
     color: "#D368CF",
     path:
@@ -264,7 +244,6 @@ export const districts: District[] = [
   {
     id: "11",
     name: "Kurunegala",
-    localName: "Kuruṇægala",
     province: "North Western",
     color: "#BE68D3",
     path:
@@ -277,7 +256,6 @@ export const districts: District[] = [
   {
     id: "9",
     name: "Anuradhapura",
-    localName: "Anurādhapura",
     province: "North Central",
     color: "#D368CF",
     path:
@@ -290,7 +268,6 @@ export const districts: District[] = [
   {
     id: "15",
     name: "Nuwara Eliya",
-    localName: "Nuvara Ĕliya",
     province: "Central",
     color: "#D36882",
     path:
@@ -303,7 +280,6 @@ export const districts: District[] = [
   {
     id: "5",
     name: "Vavuniya",
-    localName: "Vavuniyāva",
     province: "Northern",
     color: "#A57E43",
     path:
@@ -316,7 +292,6 @@ export const districts: District[] = [
   {
     id: "13",
     name: "Kandy",
-    localName: "Mahanuvara",
     province: "Central",
     color: "#D36882",
     path:

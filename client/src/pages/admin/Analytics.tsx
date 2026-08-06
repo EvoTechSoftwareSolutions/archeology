@@ -1,40 +1,30 @@
-import React, { useState } from 'react';
-import { MdAccountBalance } from 'react-icons/md';
-import { FiGlobe, FiImage, FiUsers } from 'react-icons/fi';
+import React, { useState } from "react";
+import { useAnalytics } from "../../hooks/useAnalytics";
+import { MdAccountBalance } from "react-icons/md";
+import { FiGlobe, FiImage, FiUsers } from "react-icons/fi";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const COLOR_LOCALS = "#1E4538";
+const COLOR_FOREIGNERS = "#C9A84C";
 
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+// Visitor trend line chart
 
-const localsData   = [10000, 12000, 14000, 15000, 17000, 18500, 19000, 20500, 22000, 23000, 24000, 25000];
-const foreignsData = [1000,  2000,  3500,  5000,  7000,  9000,  11000, 12500, 14000, 15500, 16500, 17000];
+interface LineChartProps {
+  months: string[];
+  localsData: number[];
+  foreignsData: number[];
+}
 
-const provinces = [
-  { name: 'Central',      locals: 420, foreigners: 340 },
-  { name: 'North Central',locals: 510, foreigners: 480 },
-  { name: 'Southern',     locals: 380, foreigners: 290 },
-  { name: 'Western',      locals: 310, foreigners: 260 },
-  { name: 'Uva',          locals: 280, foreigners: 200 },
-  { name: 'Sabaragamuwa', locals: 350, foreigners: 400 },
-  { name: 'North Western',locals: 460, foreigners: 150 },
-  { name: 'Eastern',      locals: 200, foreigners: 110 },
-  { name: 'Northern',     locals: 430, foreigners: 160 },
-];
-
-const mostSearched = [
-  { name: 'Sigiriya',          count: 8420 },
-  { name: 'Temple of the Tooth', count: 6210 },
-  { name: 'Galle Fort',        count: 5140 },
-  { name: 'Anuradhapura',      count: 4380 },
-  { name: 'Ella',              count: 3960 },
-];
-const maxSearch = mostSearched[0].count;
-
-// ─── Visitor Line Chart ────────────────────────────────────────────────────────
-
-const LineChart: React.FC = () => {
-  const W = 860, H = 200;
-  const padL = 48, padR = 20, padT = 16, padB = 28;
+const LineChart: React.FC<LineChartProps> = ({
+  months,
+  localsData,
+  foreignsData,
+}) => {
+  const W = 860;
+  const H = 200;
+  const padL = 48;
+  const padR = 20;
+  const padT = 16;
+  const padB = 28;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
@@ -45,65 +35,126 @@ const LineChart: React.FC = () => {
   const toY = (v: number) => padT + chartH - (v / maxVal) * chartH;
 
   const polyline = (data: number[]) =>
-    data.map((v, i) => `${toX(i)},${toY(v)}`).join(' ');
+    data.map((v, i) => `${toX(i)},${toY(v)}`).join(" ");
 
   const area = (data: number[]) =>
     `M${toX(0)},${toY(data[0])} ` +
-    data.slice(1).map((v, i) => `L${toX(i + 1)},${toY(v)}`).join(' ') +
+    data
+      .slice(1)
+      .map((v, i) => `L${toX(i + 1)},${toY(v)}`)
+      .join(" ") +
     ` L${toX(data.length - 1)},${padT + chartH} L${toX(0)},${padT + chartH} Z`;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
       <defs>
         <linearGradient id="localsGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1E4538" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#1E4538" stopOpacity="0" />
+          <stop offset="0%" stopColor={COLOR_LOCALS} stopOpacity="0.15" />
+          <stop offset="100%" stopColor={COLOR_LOCALS} stopOpacity="0" />
         </linearGradient>
         <linearGradient id="foreignsGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#C9A84C" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="#C9A84C" stopOpacity="0" />
+          <stop offset="0%" stopColor={COLOR_FOREIGNERS} stopOpacity="0.12" />
+          <stop offset="100%" stopColor={COLOR_FOREIGNERS} stopOpacity="0" />
         </linearGradient>
       </defs>
 
-      {/* Y-axis grid lines & labels */}
-      {yTicks.map(tick => {
+      {yTicks.map((tick) => {
         const y = toY(tick);
-        const label = tick === 0 ? '0k' : tick === 30000 ? '30k' : `${tick / 1000}k`;
+        const label = tick === 0 ? "0k" : `${tick / 1000}k`;
         return (
           <g key={tick}>
-            <line x1={padL} x2={W - padR} y1={y} y2={y} stroke="#e5e7eb" strokeWidth="1" strokeDasharray="4 4" />
-            <text x={padL - 6} y={y + 4} textAnchor="end" fontSize="9" fill="#9ca3af">{label}</text>
+            <line
+              x1={padL}
+              x2={W - padR}
+              y1={y}
+              y2={y}
+              stroke="#e5e7eb"
+              strokeWidth="1"
+              strokeDasharray="4 4"
+            />
+            <text
+              x={padL - 6}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="9"
+              fill="#9ca3af"
+            >
+              {label}
+            </text>
           </g>
         );
       })}
 
-      {/* Area fills */}
-      <path d={area(localsData)}  fill="url(#localsGrad)" />
+      <path d={area(localsData)} fill="url(#localsGrad)" />
       <path d={area(foreignsData)} fill="url(#foreignsGrad)" />
 
-      {/* Lines */}
-      <polyline points={polyline(localsData)}   fill="none" stroke="#1E4538" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-      <polyline points={polyline(foreignsData)} fill="none" stroke="#C9A84C" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      <polyline
+        points={polyline(localsData)}
+        fill="none"
+        stroke={COLOR_LOCALS}
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <polyline
+        points={polyline(foreignsData)}
+        fill="none"
+        stroke={COLOR_FOREIGNERS}
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
 
-      {/* X-axis labels */}
       {months.map((m, i) => (
-        <text key={m} x={toX(i)} y={H - 4} textAnchor="middle" fontSize="9" fill="#9ca3af">{m}</text>
+        <text
+          key={m}
+          x={toX(i)}
+          y={H - 4}
+          textAnchor="middle"
+          fontSize="9"
+          fill="#9ca3af"
+        >
+          {m}
+        </text>
       ))}
     </svg>
   );
 };
 
-// ─── Provincial Bar Chart ─────────────────────────────────────────────────────
+// Provincial distribution bar chart
 
-const BarChart: React.FC = () => {
+interface Province {
+  province: string;
+  locals: number;
+  foreigners: number;
+}
+
+interface BarChartProps {
+  provinces: Province[];
+}
+
+const BarChart: React.FC<BarChartProps> = ({ provinces }) => {
   const [hovered, setHovered] = useState<number | null>(null);
 
-  const W = 860, H = 200;
-  const padL = 20, padR = 20, padT = 16, padB = 36;
+  if (provinces.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[200px] text-sm text-gray-400">
+        No provincial data yet
+      </div>
+    );
+  }
+
+  const W = 860;
+  const H = 200;
+  const padL = 20;
+  const padR = 20;
+  const padT = 16;
+  const padB = 36;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
-  const maxVal = Math.max(...provinces.flatMap(p => [p.locals, p.foreigners])) * 1.2;
+  const maxVal =
+    Math.max(...provinces.flatMap((p) => [p.locals, p.foreigners])) * 1.2;
   const groupW = chartW / provinces.length;
   const barW = Math.max(groupW * 0.28, 18);
   const gap = 4;
@@ -122,45 +173,83 @@ const BarChart: React.FC = () => {
 
         return (
           <g
-            key={prov.name}
+            key={prov.province}
             onMouseEnter={() => setHovered(i)}
             onMouseLeave={() => setHovered(null)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: "pointer" }}
           >
-            {/* Locals bar */}
             <rect
-              x={x1} y={padT + chartH - h1}
-              width={barW} height={h1}
+              x={x1}
+              y={padT + chartH - h1}
+              width={barW}
+              height={h1}
               rx={3}
-              fill={isHov ? '#16382c' : '#1E4538'}
-              style={{ transition: 'fill 0.15s' }}
+              fill={isHov ? "#16382c" : COLOR_LOCALS}
+              style={{ transition: "fill 0.15s" }}
             />
-            {/* Foreigners bar */}
             <rect
-              x={x2} y={padT + chartH - h2}
-              width={barW} height={h2}
+              x={x2}
+              y={padT + chartH - h2}
+              width={barW}
+              height={h2}
               rx={3}
-              fill={isHov ? '#b8922e' : '#C9A84C'}
-              style={{ transition: 'fill 0.15s' }}
+              fill={isHov ? "#b8922e" : COLOR_FOREIGNERS}
+              style={{ transition: "fill 0.15s" }}
             />
 
-            {/* Tooltip */}
             {isHov && (
               <g>
-                <rect x={cx - 44} y={padT} width={88} height={40} rx={6} fill="#1a1a1a" opacity={0.85} />
-                <text x={cx} y={padT + 14} textAnchor="middle" fontSize="9" fill="#fff" fontWeight="600">{prov.name}</text>
-                <text x={cx} y={padT + 26} textAnchor="middle" fontSize="8" fill="#6ee7b7">L: {prov.locals.toLocaleString()}</text>
-                <text x={cx} y={padT + 36} textAnchor="middle" fontSize="8" fill="#fcd34d">F: {prov.foreigners.toLocaleString()}</text>
+                <rect
+                  x={cx - 44}
+                  y={padT}
+                  width={88}
+                  height={40}
+                  rx={6}
+                  fill="#1a1a1a"
+                  opacity={0.85}
+                />
+                <text
+                  x={cx}
+                  y={padT + 14}
+                  textAnchor="middle"
+                  fontSize="9"
+                  fill="#fff"
+                  fontWeight="600"
+                >
+                  {prov.province}
+                </text>
+                <text
+                  x={cx}
+                  y={padT + 26}
+                  textAnchor="middle"
+                  fontSize="8"
+                  fill="#6ee7b7"
+                >
+                  L: {prov.locals.toLocaleString()}
+                </text>
+                <text
+                  x={cx}
+                  y={padT + 36}
+                  textAnchor="middle"
+                  fontSize="8"
+                  fill="#fcd34d"
+                >
+                  F: {prov.foreigners.toLocaleString()}
+                </text>
               </g>
             )}
 
-            {/* X label */}
-            {prov.name.split(' ').map((word, wi) => (
+            {prov.province.split(" ").map((word, wi) => (
               <text
                 key={wi}
-                x={cx} y={padT + chartH + 12 + wi * 10}
-                textAnchor="middle" fontSize="9" fill="#9ca3af"
-              >{word}</text>
+                x={cx}
+                y={padT + chartH + 12 + wi * 10}
+                textAnchor="middle"
+                fontSize="9"
+                fill="#9ca3af"
+              >
+                {word}
+              </text>
             ))}
           </g>
         );
@@ -169,85 +258,137 @@ const BarChart: React.FC = () => {
   );
 };
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
+// Stat card
 
-interface StatCardProps { icon: React.ReactNode; value: string; label: string; }
+interface StatCardProps {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+}
+
 const StatCard: React.FC<StatCardProps> = ({ icon, value, label }) => (
   <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
     <div className="text-[#1E4538] text-2xl">{icon}</div>
     <div>
-      <p className="text-4xl font-bold font-serif text-[#1a1a1a] tracking-tight">{value}</p>
+      <p className="text-4xl font-bold font-serif text-[#1a1a1a] tracking-tight">
+        {value}
+      </p>
       <p className="text-sm text-gray-500 mt-1">{label}</p>
     </div>
   </div>
 );
 
-// ─── Analytics Page ───────────────────────────────────────────────────────────
+// Legend used above both charts
+
+const ChartLegend: React.FC = () => (
+  <div className="flex items-center gap-4 text-xs text-gray-500">
+    <span className="flex items-center gap-1.5">
+      <span className="w-3 h-3 rounded-full bg-[#1E4538] inline-block" />
+      Locals
+    </span>
+    <span className="flex items-center gap-1.5">
+      <span className="w-3 h-3 rounded-full bg-[#C9A84C] inline-block" />
+      Foreigners
+    </span>
+  </div>
+);
+
+// Analytics page
 
 const Analytics: React.FC = () => {
+  const { analytics, loading, error } = useAnalytics();
+
+  if (loading) {
+    return <p className="text-gray-500 text-sm">Loading...</p>;
+  }
+
+  if (error || !analytics) {
+    return <p className="text-red-500 text-sm">{error ?? "Something went wrong."}</p>;
+  }
+
+  const { months, locals: localsData, foreigners: foreignsData } =
+    analytics.visitorAnalytics;
+  const { provinceDistribution: provinces, mostSearched } = analytics;
+  const maxSearch = Math.max(...mostSearched.map((x) => x.count));
+
   return (
     <div className="w-full font-['Inter'] pb-12">
-
-      {/* Breadcrumb + Header */}
+      {/* Header */}
       <div className="mb-8">
         <p className="text-sm text-gray-400 mb-2">Home &gt; Analytics</p>
-        <h1 className="text-4xl font-bold font-serif text-[#2a2a2a] mb-1 tracking-tight">Analytics</h1>
-        <p className="text-gray-500 text-sm">Traffic, engagement and content performance.</p>
+        <h1 className="text-4xl font-bold font-serif text-[#2a2a2a] mb-1 tracking-tight">
+          Analytics
+        </h1>
+        <p className="text-gray-500 text-sm">
+          Traffic, engagement and content performance.
+        </p>
       </div>
 
-      {/* Stat Cards */}
+      {/* Stat cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-        <StatCard icon={<MdAccountBalance />} value="176" label="Historical Places" />
-        <StatCard icon={<FiGlobe />}          value="08"  label="UNESCO Sites" />
-        <StatCard icon={<FiImage />}          value="9,640" label="Images" />
-        <StatCard icon={<FiUsers />}          value="22,400" label="Monthly Visitors" />
+        <StatCard
+          icon={<MdAccountBalance />}
+          value={analytics.stats.historicalPlaces.toString()}
+          label="Historical Places"
+        />
+        <StatCard
+          icon={<FiGlobe />}
+          value={analytics.stats.unescoSites.toString().padStart(2, "0")}
+          label="UNESCO Sites"
+        />
+        <StatCard
+          icon={<FiImage />}
+          value={analytics.stats.images.toLocaleString()}
+          label="Images"
+        />
+        <StatCard
+          icon={<FiUsers />}
+          value={analytics.stats.monthlyVisitors.toLocaleString()}
+          label="Monthly Visitors"
+        />
       </div>
 
-      {/* Line Chart Card */}
+      {/* Visitor trend */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-xl font-bold font-serif text-[#2a2a2a]">Visitor Analytics</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Visitors over the last 7 months</p>
+            <h2 className="text-xl font-bold font-serif text-[#2a2a2a]">
+              Visitor Analytics
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Visitors over the last {months.length} months
+            </p>
           </div>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#1E4538] inline-block" />
-              Locals
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#C9A84C] inline-block" />
-              Foreigners
-            </span>
-          </div>
+          <ChartLegend />
         </div>
-        <LineChart />
+        <LineChart
+          months={months}
+          localsData={localsData}
+          foreignsData={foreignsData}
+        />
       </div>
 
-      {/* Bar Chart Card */}
+      {/* Provincial distribution */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-xl font-bold font-serif text-[#2a2a2a]">Provincial Distribution</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Visitor breakdown by province — hover for details</p>
+            <h2 className="text-xl font-bold font-serif text-[#2a2a2a]">
+              Provincial Distribution
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Visitor breakdown by province — hover for details
+            </p>
           </div>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#1E4538] inline-block" />
-              Locals
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#C9A84C] inline-block" />
-              Foreigners
-            </span>
-          </div>
+          <ChartLegend />
         </div>
-        <BarChart />
+        <BarChart provinces={provinces} />
       </div>
 
-      {/* Most Searched */}
+      {/* Most searched */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-xl font-bold font-serif text-[#2a2a2a] mb-6">Most Searched</h2>
+        <h2 className="text-xl font-bold font-serif text-[#2a2a2a] mb-6">
+          Most Searched
+        </h2>
         <div className="space-y-5">
           {mostSearched.map((item, i) => {
             const pct = (item.count / maxSearch) * 100;
