@@ -1,4 +1,5 @@
 import { useEffect, useState, type ComponentType, type SVGProps } from 'react';
+import useHistoricalPlace from "../../hooks/useHistoricalPlace";
 import { useParams, Link } from 'react-router-dom';
 import {
   FiArrowLeft,
@@ -34,6 +35,29 @@ import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import galleFort from '../../assets/places-gallefort.png';
 
+/* ------------------------------------------------------------------ */
+/* Types — matched to the ACTUAL API response shape                   */
+/* ------------------------------------------------------------------ */
+
+interface Province {
+  id: number;
+  name: string;
+  regionCode?: string;
+}
+
+interface District {
+  id: number;
+  name: string;
+  provinceId?: number;
+}
+
+interface GalleryImage {
+  id: number;
+  url: string;
+  position: number;
+  historicalPlaceId?: number;
+}
+
 interface HistoricalPlace {
   id: number;
   name: string;
@@ -44,14 +68,20 @@ interface HistoricalPlace {
   statusFlag: string;
   latitude: number;
   longitude: number;
-    district: {
-    name: string;
-    province: {
-      name: string;
-    };
-  };
-  galleryImages?: { url: string }[];
-  extendedDetails?: any;
+  anchorXPct?: number;
+  anchorYPct?: number;
+  province: Province;
+  district: District;
+  galleryImages?: GalleryImage[];
+  // Flat fields actually returned by the API (NOT nested in extendedDetails)
+  nearbyHotels?: string | null;
+  nearbyHospitals?: string | null;
+  nearbyRestaurant?: string | null;
+  travelTips?: string | null;
+  seoTitle?: string | null;
+  metaDescription?: string | null;
+  slug?: string | null;
+  focusKeywords?: string | null;
 }
 
 interface ContactDetail {
@@ -111,9 +141,14 @@ interface HeritagePlaceDetailsProps {
 
 const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const { id } = useParams<{ id: string }>();
-  const [place, setPlace] = useState<HistoricalPlace | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const placeId = Number(id);
+
+  const {
+    place,
+    loading,
+    error
+  } = useHistoricalPlace(placeId);
+
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<ReviewItem[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
@@ -126,13 +161,21 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
     : '/api/v1';
 
-  const resolveReviewImage = (image: string | null | undefined) => {
-    if (!image) return avatarImg;
+  /**
+   * Resolves any image reference (relative upload path, absolute URL,
+   * data URI, or blob) into something an <img> tag can actually load.
+   * Used for both review avatars and place/gallery images since the
+   * API returns plain relative paths like "/uploads/xxx.jpg".
+   */
+  const resolveImageUrl = (image: string | null | undefined, fallback: string) => {
+    if (!image) return fallback;
     if (/^(https?:)?\/\//i.test(image) || image.startsWith('data:') || image.startsWith('blob:')) {
       return image;
     }
     return `${API_BASE}${image.startsWith('/') ? image : `/${image}`}`;
   };
+
+  const resolveReviewImage = (image: string | null | undefined) => resolveImageUrl(image, avatarImg);
 
   const fallbackPlace: HistoricalPlace = {
     id: 0,
@@ -144,38 +187,10 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     statusFlag: 'Active',
     latitude: 0,
     longitude: 0,
-    district: {
-      name: props.province || 'Central Province',
-      province: { name: props.province || 'Sri Lanka' },
-    },
+    province: { id: 0, name: props.province || 'Sri Lanka' },
+    district: { id: 0, name: props.province || 'Central Province' },
+    galleryImages: [],
   };
-
-  useEffect(() => {
-    const fetchPlace = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/v1/historicalPlace/${id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch historical place');
-        }
-        const data = await response.json();
-        setPlace(data.data);
-      } catch (err) {
-        console.error(err);
-        setError('Unable to load place details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      void fetchPlace();
-    } else if (props.title) {
-      setPlace(fallbackPlace);
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, [id, props.title, API_BASE]);
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -239,17 +254,31 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     );
   }
 
+  // `place` from the hook is treated as `HistoricalPlace`; fall back to defaults for any missing piece.
+  const resolvedPlace: HistoricalPlace = { ...fallbackPlace, ...place };
+
   type Slide = { id: string; image: string; subtitle: string; title: string };
 
-  const highlightCards: Slide[] = (props.slides?.map((slide: { id?: number; image: string; subtitle: string; title?: string; desc?: string }) => ({
+  // Resolve the main place image + any gallery images to full, loadable URLs.
+  const resolvedHeroImage = resolveImageUrl(resolvedPlace.image, sigiriya);
+  const resolvedGalleryImages = (resolvedPlace.galleryImages || [])
+    .slice()
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map((img) => ({ ...img, url: resolveImageUrl(img.url, sigiriya) }));
+
+  const highlightCards: Slide[] = (props.slides?.map((slide) => ({
     id: `highlight-${slide.id ?? slide.subtitle ?? slide.image}`,
     image: slide.image,
-    title: slide.title || props.title || place.name,
+    title: slide.title || props.title || resolvedPlace.name,
     subtitle: slide.subtitle,
   })) || [
-    { id: 'highlight-main', image: place.image, title: place.name, subtitle: place.category },
-    { id: 'highlight-sigiriya', image: sigiriya, title: place.name, subtitle: 'Historical Landmark' },
-    { id: 'highlight-ruwanweliseya', image: ruwanweliseya, title: place.name, subtitle: 'Ancient Monument' }
+    { id: 'highlight-main', image: resolvedHeroImage, title: resolvedPlace.name, subtitle: resolvedPlace.category },
+    ...resolvedGalleryImages.slice(0, 2).map((img, idx) => ({
+      id: `highlight-gallery-${img.id}`,
+      image: img.url,
+      title: resolvedPlace.name,
+      subtitle: idx === 0 ? 'Gallery Highlight' : 'Ancient Monument',
+    })),
   ]) as Slide[];
 
   const allSlides: Slide[] = highlightCards;
@@ -275,63 +304,45 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     setActiveCard(allSlides[nextIndex]);
   };
 
-  const mainHeroImage = props.slides?.[0]?.image || place.image || sigiriya;
-  const mapQuery = place.extendedDetails?.mapQuery?.trim();
+  const mainHeroImage = props.slides?.[0]?.image || resolvedHeroImage;
+  const mapQuery = props.mapQuery?.trim();
   const destinationQuery = mapQuery
     ? mapQuery
-    : typeof place.latitude === 'number' && typeof place.longitude === 'number'
-      ? `${place.latitude},${place.longitude}`
-      : `${props.title || place.name}, Sri Lanka`;
+    : typeof resolvedPlace.latitude === 'number' && typeof resolvedPlace.longitude === 'number' && resolvedPlace.latitude !== 0
+      ? `${resolvedPlace.latitude},${resolvedPlace.longitude}`
+      : `${props.title || resolvedPlace.name}, Sri Lanka`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=Colombo,+Sri+Lanka&destination=${encodeURIComponent(destinationQuery)}&travelmode=${routeMode}`;
   const routeInfo = routeMode === 'driving'
-    ? { distance: place.extendedDetails?.distanceFromColombo || props.distance || '170 KM', time: place.extendedDetails?.travelTime || props.drivingTime || '4 HR 10 MIN' }
-    : { distance: place.extendedDetails?.distanceFromColombo || props.distance || '170 KM', time: place.extendedDetails?.travelTime || props.walkingTime || '35 HR' };
+    ? { distance: props.distance || '170 KM', time: props.drivingTime || '4 HR 10 MIN' }
+    : { distance: props.distance || '170 KM', time: props.walkingTime || '35 HR' };
 
   const storyLines: string[] = props.story?.length
     ? props.story
-    : place.description
-    ? place.description.split('\n\n').filter(Boolean)
+    : resolvedPlace.description
+    ? resolvedPlace.description.split('\n\n').filter(Boolean)
     : [
         'This heritage site has played an important role in Sri Lanka’s history and culture, reflecting both religious devotion and architectural skill.',
         'Visitors can explore well-preserved archaeological remains, structural ruins, and surrounding sanctuaries that highlight ancient engineering mastery.'
       ];
 
-  const timelineItems = (place.extendedDetails?.timeline?.length
-    ? place.extendedDetails.timeline
-    : props.timeline?.length
+  const timelineItems = (props.timeline?.length
     ? props.timeline
     : [
-        { year: place.century || '5th Century', title: 'ANCIENT FOUNDATION', text: `${place.name} was established during the historic periods.` },
+        { year: resolvedPlace.century || '5th Century', title: 'ANCIENT FOUNDATION', text: `${resolvedPlace.name} was established during the historic periods.` },
         { year: '1687', title: 'PRESERVED BY KINGDOMS', text: 'Royal patrons contributed to the site expansion and ongoing rituals.' },
         { year: '1982', title: 'UNESCO INSCRIPTION', text: 'Sri Lanka’s heritage sites were recognized for their global value.' },
         { year: '1998', title: 'RESTORATION', text: 'Careful archaeological efforts helped preserve key architectural structures.' },
         { year: 'TODAY', title: 'CULTURAL LANDMARK', text: 'Maintained as an active sanctuary and preserved heritage monument.' },
       ]) as { year: string; title: string; text: string }[];
 
-  const contactDetails: ContactDetail[] = place.extendedDetails
-    ? [
-        ...(place.extendedDetails.contactAddress ? [{ label: 'Address', value: place.extendedDetails.contactAddress }] : []),
-        ...(place.extendedDetails.adminPhone ? [{ label: 'Administration Division', value: place.extendedDetails.adminPhone }] : []),
-        ...(place.extendedDetails.emergencyPhone ? [{ label: 'Emergency Contact', value: place.extendedDetails.emergencyPhone }] : []),
-        ...(place.extendedDetails.websiteUrl ? [{ label: 'Official Website', value: place.extendedDetails.websiteUrl }] : []),
-        ...(place.extendedDetails.email ? [{ label: 'Inquiries Email', value: place.extendedDetails.email }] : []),
-      ].length > 0
-      ? [
-          ...(place.extendedDetails.contactAddress ? [{ label: 'Address', value: place.extendedDetails.contactAddress }] : []),
-          ...(place.extendedDetails.adminPhone ? [{ label: 'Administration Division', value: place.extendedDetails.adminPhone }] : []),
-          ...(place.extendedDetails.emergencyPhone ? [{ label: 'Emergency Contact', value: place.extendedDetails.emergencyPhone }] : []),
-          ...(place.extendedDetails.websiteUrl ? [{ label: 'Official Website', value: place.extendedDetails.websiteUrl }] : []),
-          ...(place.extendedDetails.email ? [{ label: 'Inquiries Email', value: place.extendedDetails.email }] : []),
-        ]
-      : props.contactDetails?.length
-      ? props.contactDetails
-      : [
-          { label: 'Address', value: `${place.name}, ${place.district?.name || 'Central Province'}, Sri Lanka` },
-        ]
-    : props.contactDetails?.length
+  // District & province come back as SIBLING objects on the place, not nested.
+  const districtName = resolvedPlace.district?.name || 'Central Province';
+  const provinceName = resolvedPlace.province?.name || 'Sri Lanka';
+
+  const contactDetails: ContactDetail[] = props.contactDetails?.length
     ? props.contactDetails
     : [
-        { label: 'Address', value: `${place.name}, ${place.district?.name || 'Central Province'}, Sri Lanka` },
+        { label: 'Address', value: `${resolvedPlace.name}, ${districtName}, ${provinceName}, Sri Lanka` },
         { label: 'Administration Division', value: '+94 11 269 2840 (for prior appointments)' },
         { label: 'Emergency Contact', value: '+94 70 156 4347' },
         { label: 'Official Website', value: 'www.heritage.gov.lk' },
@@ -348,6 +359,27 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' }
       ];
 
+  // Essentials built ONLY from fields the API actually returns for this place.
+  const essentials: EssentialItem[] = (() => {
+    const items: EssentialItem[] = [];
+    if (resolvedPlace.nearbyRestaurant) items.push({ icon: FiCoffee, title: 'Restaurants', subtitle: resolvedPlace.nearbyRestaurant });
+    if (resolvedPlace.nearbyHotels) items.push({ icon: FiHome, title: 'Hotels', subtitle: resolvedPlace.nearbyHotels });
+    if (resolvedPlace.nearbyHospitals) items.push({ icon: FiPlus, title: 'Hospitals', subtitle: resolvedPlace.nearbyHospitals });
+
+    return items.length > 0
+      ? items
+      : props.essentials || [
+          { icon: FiCoffee, title: 'Restaurants', subtitle: 'Local Cafes & Dining' },
+          { icon: FiHome, title: 'Hotels', subtitle: 'Heritage Rest Houses' },
+          { icon: FiDroplet, title: 'Fuel Stations', subtitle: 'National Fuel Stations' },
+          { icon: FiPlus, title: 'Hospitals', subtitle: 'District General Hospital' },
+          { icon: FiWind, title: 'Washrooms', subtitle: 'Visitor Center Facilities' },
+          { icon: FiTruck, title: 'Bus Stops', subtitle: 'Central Bus Stand' },
+          { icon: FiMapPin, title: 'Parking', subtitle: 'Public Visitor Parking' },
+          { icon: FiMap, title: 'Railway', subtitle: 'Main Railway Station' },
+        ];
+  })();
+
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
       {/* Hero Section */}
@@ -359,10 +391,10 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
 
         <div className="relative z-10 max-w-[760px] pt-8 md:pt-12 pl-1 md:pl-2">
           <h1 className="font-serif text-white text-[34px] md:text-[58px] font-bold leading-[1.1] mb-2 uppercase tracking-wide drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
-            {props.title || place.name}
+            {props.title || resolvedPlace.name}
           </h1>
           <h2 className="font-serif text-white text-[16px] md:text-[20px] font-bold tracking-wide uppercase mb-5 opacity-95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
-            {props.storyLabel || place.category}
+            {props.storyLabel || resolvedPlace.category}
           </h2>
 
           <p className="text-white font-sans font-medium text-[0.95rem] md:text-[1rem] leading-[1.55] max-w-[640px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
@@ -390,6 +422,30 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
           ))}
         </div>
       </section>
+
+      {/* Gallery Images (from API galleryImages[]) */}
+      {resolvedGalleryImages.length > 0 && (
+        <section className="max-w-[1400px] mx-auto px-5 md:px-8 pb-10 md:pb-12 relative z-20">
+          <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">GALLERY</p>
+          <h3 className="font-serif text-[2rem] font-bold text-[#1f2937] mb-6">Photo Gallery</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {resolvedGalleryImages.map((img) => (
+              <button
+                key={img.id}
+                type="button"
+                onClick={() => openCard({ image: img.url, title: resolvedPlace.name, subtitle: `Gallery Image ${img.position}` })}
+                className="relative group overflow-hidden aspect-square bg-black rounded-[8px]"
+              >
+                <img
+                  src={img.url}
+                  alt={`${resolvedPlace.name} gallery ${img.position}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Lightbox Modal */}
       {activeCard && (
@@ -493,13 +549,13 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
               </p>
 
               <div className="flex items-center text-[#C66846] font-bold text-[0.85rem] mb-8 gap-2">
-                <FiUsers size={16} /> {place.extendedDetails?.crowd || props.crowd || 'Moderate Crowd'}
+                <FiUsers size={16} /> {props.crowd || 'Moderate Crowd'}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-8 gap-x-2 mb-10 pb-8 border-b border-[#E2DED5]">
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiMapPin className="text-[#1C5F46]" /> Distance</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.distance || routeInfo.distance}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{routeInfo.distance}</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiClock className="text-[#1C5F46]" /> Travel Time</div>
@@ -507,46 +563,25 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Recommended Departure</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{place.extendedDetails?.recommendedDeparture || props.bestTime || '6:30 AM'}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.bestTime || '6:30 AM'}</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1"><FiSun className="text-[#1C5F46]" /> Weather</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{place.extendedDetails?.weather || props.weather || 'SUNNY'}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.weather || 'SUNNY'}</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Temperature</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{place.extendedDetails?.temperature || props.temperature || '28°C'}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.temperature || '28°C'}</div>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 text-[#6b7280] text-[0.85rem] mb-1">Best Photography</div>
-                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{place.extendedDetails?.bestPhotographyTime || props.photographyTime || '5:30 PM'}</div>
+                  <div className="font-serif font-bold text-[1.1rem] text-[#1f2937]">{props.photographyTime || '5:30 PM'}</div>
                 </div>
               </div>
 
               <h4 className="font-bold text-[#1f2937] text-[1.1rem] mb-6">Nearby essentials</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
-                {(() => {
-                  const items: EssentialItem[] = [];
-                  if (place.extendedDetails?.nearbyRestaurant) items.push({ icon: FiCoffee, title: "Restaurants", subtitle: place.extendedDetails.nearbyRestaurant });
-                  if (place.extendedDetails?.nearbyHotels) items.push({ icon: FiHome, title: "Hotels", subtitle: place.extendedDetails.nearbyHotels });
-                  if (place.extendedDetails?.fuelStations) items.push({ icon: FiDroplet, title: "Fuel Stations", subtitle: place.extendedDetails.fuelStations });
-                  if (place.extendedDetails?.nearbyHospitals) items.push({ icon: FiPlus, title: "Hospitals", subtitle: place.extendedDetails.nearbyHospitals });
-                  if (place.extendedDetails?.washrooms) items.push({ icon: FiWind, title: "Washrooms", subtitle: place.extendedDetails.washrooms });
-                  if (place.extendedDetails?.busStops) items.push({ icon: FiTruck, title: "Bus Stops", subtitle: place.extendedDetails.busStops });
-                  if (place.extendedDetails?.parking) items.push({ icon: FiMapPin, title: "Parking", subtitle: place.extendedDetails.parking });
-                  if (place.extendedDetails?.railway) items.push({ icon: FiMap, title: "Railway", subtitle: place.extendedDetails.railway });
-
-                  return items.length > 0 ? items : (props.essentials || [
-                    { icon: FiCoffee, title: "Restaurants", subtitle: "Local Cafes & Dining" },
-                    { icon: FiHome, title: "Hotels", subtitle: "Heritage Rest Houses" },
-                    { icon: FiDroplet, title: "Fuel Stations", subtitle: "National Fuel Stations" },
-                    { icon: FiPlus, title: "Hospitals", subtitle: "District General Hospital" },
-                    { icon: FiWind, title: "Washrooms", subtitle: "Visitor Center Facilities" },
-                    { icon: FiTruck, title: "Bus Stops", subtitle: "Central Bus Stand" },
-                    { icon: FiMapPin, title: "Parking", subtitle: "Public Visitor Parking" },
-                    { icon: FiMap, title: "Railway", subtitle: "Main Railway Station" }
-                  ]);
-                })().map((item: EssentialItem, idx: number) => (
+                {essentials.map((item: EssentialItem, idx: number) => (
                   <div key={idx} className="flex flex-col border border-[#E2DED5] rounded-[16px] p-3 transition-colors hover:border-[#1C5F46]/30 cursor-pointer">
                     <div className="flex items-center gap-2 font-bold text-[0.85rem] text-[#1f2937] mb-1">
                       {item.icon ? <item.icon className="text-[#1C5F46]" /> : <FiMapPin className="text-[#1C5F46]" />}
@@ -557,10 +592,17 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
                 ))}
               </div>
 
+              {resolvedPlace.travelTips && (
+                <div className="mb-8 p-4 rounded-[16px] bg-[#F4F9F7] border border-[#1C5F46]/20">
+                  <h5 className="font-bold text-[#1C5F46] text-[0.9rem] mb-1">Travel Tips</h5>
+                  <p className="text-[#4b5563] text-[0.85rem]">{resolvedPlace.travelTips}</p>
+                </div>
+              )}
+
               <EmergencyContactsCard
                 contacts={[
-                  { label: 'Police Emergency', value: place.extendedDetails?.policeEmergency || '119' },
-                  { label: 'Ambulance / Suwaseriya', value: place.extendedDetails?.ambulanceEmergency || '1990' },
+                  { label: 'Police Emergency', value: '119' },
+                  { label: 'Ambulance / Suwaseriya', value: '1990' },
                 ]}
               />
 
@@ -578,7 +620,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
 
         <div className="relative z-10 mb-12">
           <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">
-            {(props.title || place.name).toUpperCase()}
+            {(props.title || resolvedPlace.name).toUpperCase()}
           </p>
           <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937]">Opening Hours & Contact Details</h3>
         </div>
@@ -588,7 +630,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
           <div>
             <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full md:w-max pr-6 md:pr-16">
               <h4 className="font-bold text-[1.2rem] text-[#1f2937] mb-1">Opening Hours</h4>
-              <p className="text-[#6b7280] text-[0.95rem]">{place.extendedDetails?.openingHours || props.openingHours || 'Open Daily from 6.00AM to 6.00PM'}</p>
+              <p className="text-[#6b7280] text-[0.95rem]">{props.openingHours || 'Open Daily from 6.00AM to 6.00PM'}</p>
             </div>
 
             <p className="text-[#4b5563] text-[0.95rem] mb-8 font-sans leading-relaxed">
@@ -596,11 +638,11 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
             </p>
 
             <div className="relative pl-8 border-l-[3px] border-[#E2DED5] space-y-8 mb-10 ml-8">
-              {(place.extendedDetails?.rituals?.length ? place.extendedDetails.rituals : [
+              {[
                 { timeWindow: '6:00 AM – 8:30 AM', title: 'Early Morning' },
                 { timeWindow: '10:00 AM – 1:00 PM', title: 'Mid-Day' },
                 { timeWindow: '3:30 PM – 6:00 PM', title: 'Late Afternoon' }
-              ]).map((ritual: any, idx: number) => (
+              ].map((ritual, idx: number) => (
                 <div key={idx} className="relative">
                   <div className={`absolute -left-[41px] top-1.5 w-[18px] h-[18px] rounded-full border-[4px] border-[#F8F6F1] ${idx % 3 === 0 ? 'bg-[#C89B3C]' : idx % 3 === 1 ? 'bg-[#1C5F46]' : 'bg-[#C66846]'}`}></div>
                   <h5 className="font-bold text-[#1f2937] text-[1.05rem] mb-0.5">{ritual.title}</h5>
@@ -610,7 +652,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
             </div>
 
             <p className="text-[#4b5563] text-[0.95rem] font-sans leading-relaxed pr-10">
-              {place.extendedDetails?.specialNotes || props.visitNote || 'Special guided historical tours and light show displays are held during peak holiday seasons.'}
+              {props.visitNote || 'Special guided historical tours and light show displays are held during peak holiday seasons.'}
             </p>
           </div>
 
@@ -648,12 +690,12 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         <div className="bg-white rounded-[24px] p-6 shadow-sm border border-gray-100 flex flex-col items-start min-h-[400px] relative overflow-hidden text-left">
           <div className="absolute inset-0 z-0 bg-[#F4F9F7]">
             <iframe
-              title={`${place.name} Map`}
+              title={`${resolvedPlace.name} Map`}
               src={mapQuery
                 ? mapQuery.startsWith('http')
                   ? mapQuery
                   : `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`
-                : `https://maps.google.com/maps?q=${encodeURIComponent(`${place.latitude},${place.longitude}`)}&output=embed`}
+                : `https://maps.google.com/maps?q=${encodeURIComponent(`${resolvedPlace.latitude},${resolvedPlace.longitude}`)}&output=embed`}
               className="w-full h-full border-0"
               loading="lazy"
               allowFullScreen
@@ -714,21 +756,21 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
               <FiInfo className="text-[#1C5F46] mt-1 shrink-0" size={24} />
               <div>
                 <h5 className="font-bold text-[#1f2937] mb-1">Dress Code</h5>
-                <p className="text-[#6b7280] text-[0.9rem]">{place.extendedDetails?.dressCode || 'Visitors are requested clothing should cover shoulders, arms, and knees when visiting sacred zones.'}</p>
+                <p className="text-[#6b7280] text-[0.9rem]">Visitors are requested clothing should cover shoulders, arms, and knees when visiting sacred zones.</p>
               </div>
             </div>
             <div className="p-6 border-b border-gray-100 flex gap-4 items-start">
               <FiCamera className="text-[#1C5F46] mt-1 shrink-0" size={24} />
               <div>
                 <h5 className="font-bold text-[#1f2937] mb-1">Photography rules</h5>
-                <p className="text-[#6b7280] text-[0.9rem]">{place.extendedDetails?.photographyRules || 'Photography allowed except inside designated inner sanctums or during sacred rituals.'}</p>
+                <p className="text-[#6b7280] text-[0.9rem]">Photography allowed except inside designated inner sanctums or during sacred rituals.</p>
               </div>
             </div>
             <div className="p-6 flex gap-4 items-start">
               <FiCheckCircle className="text-[#1C5F46] mt-1 shrink-0" size={24} />
               <div>
                 <h5 className="font-bold text-[#1f2937] mb-1">Accessibility</h5>
-                <p className="text-[#6b7280] text-[0.9rem]">{place.extendedDetails?.accessibility || 'Ground-level monument grounds and walkways offer accessible routes.'}</p>
+                <p className="text-[#6b7280] text-[0.9rem]">Ground-level monument grounds and walkways offer accessible routes.</p>
               </div>
             </div>
           </div>
@@ -738,7 +780,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
             <div className="bg-[#F4F9F7] border border-[#1C5F46] rounded-[24px] p-6 flex-1">
               <h5 className="font-bold text-[#1C5F46] mb-4 flex items-center gap-2"><FiCheckCircle /> Do's</h5>
               <ul className="space-y-3">
-                {(place.extendedDetails?.dos?.length ? place.extendedDetails.dos : props.dos || [
+                {(props.dos || [
                   "Attend early morning hours for quiet surroundings",
                   "Visit nearby site museums to understand history",
                   "Shoes must be removed at designated counters before entry"
@@ -751,7 +793,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
             <div className="bg-[#FFF6F5] border border-[#C66846] rounded-[24px] p-6 flex-1">
               <h5 className="font-bold text-[#C66846] mb-4 flex items-center gap-2"><FiXCircle /> Don'ts</h5>
               <ul className="space-y-3">
-                {(place.extendedDetails?.donts?.length ? place.extendedDetails.donts : props.donts || [
+                {(props.donts || [
                   "Do not wear shorts or sleeveless tops inside sacred grounds",
                   "Do not pose with backs turned directly towards sacred statues"
                 ]).map((item: string, idx: number) => (
