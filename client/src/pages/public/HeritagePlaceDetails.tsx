@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fi';
 import { FiX as FiCloseIcon } from 'react-icons/fi';
 import EmergencyContactsCard from '../../components/EmergencyContactsCard';
+import type { GalleryImage } from '../../types/historicalPlace.types';
 import avatarImg from '../../assets/avatar.png';
 import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
@@ -49,13 +50,6 @@ interface District {
   id: number;
   name: string;
   provinceId?: number;
-}
-
-interface GalleryImage {
-  id: number;
-  url: string;
-  position: number;
-  historicalPlaceId?: number;
 }
 
 interface HistoricalPlace {
@@ -152,7 +146,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<ReviewItem[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
-  const [activeCard, setActiveCard] = useState<{ image: string; title: string; subtitle: string } | null>(null);
+  const [activeCard, setActiveCard] = useState<{ image: string; title: string; subtitle?: string } | null>(null);
 
   const visibleReviewCards = reviewCards.slice(0, 3);
 
@@ -257,7 +251,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   // `place` from the hook is treated as `HistoricalPlace`; fall back to defaults for any missing piece.
   const resolvedPlace: HistoricalPlace = { ...fallbackPlace, ...place };
 
-  type Slide = { id: string; image: string; subtitle: string; title: string };
+  type Slide = { id: string; image: string; title: string; subtitle?: string };
 
   // Resolve the main place image + any gallery images to full, loadable URLs.
   const resolvedHeroImage = resolveImageUrl(resolvedPlace.image, sigiriya);
@@ -273,11 +267,11 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     subtitle: slide.subtitle,
   })) || [
     { id: 'highlight-main', image: resolvedHeroImage, title: resolvedPlace.name, subtitle: resolvedPlace.category },
-    ...resolvedGalleryImages.slice(0, 2).map((img, idx) => ({
-      id: `highlight-gallery-${img.id}`,
+    ...resolvedGalleryImages.map((img, idx) => ({
+      id: `highlight-gallery-${img.id ?? idx}`,
       image: img.url,
       title: resolvedPlace.name,
-      subtitle: idx === 0 ? 'Gallery Highlight' : 'Ancient Monument',
+      subtitle: resolvedPlace.category,
     })),
   ]) as Slide[];
 
@@ -413,39 +407,13 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
               onClick={() => openCard(card)}
               className="relative group overflow-hidden aspect-[16/9] bg-black rounded-[2px] text-left"
             >
-              <img src={card.image} alt={card.subtitle} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/25 to-transparent flex flex-col justify-end p-4 md:p-5">
-                <span className="text-white font-serif text-[0.95rem] md:text-[1.15rem] font-bold uppercase tracking-[0.5px] truncate mb-0.5">{card.title}</span>
-                <span className="text-white/90 font-sans text-[0.7rem] md:text-[0.9rem] truncate">{card.subtitle}</span>
-              </div>
+              <img src={card.image} alt={card.title || card.subtitle || 'Highlight image'} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/25 to-transparent" />
             </button>
           ))}
         </div>
       </section>
 
-      {/* Gallery Images (from API galleryImages[]) */}
-      {resolvedGalleryImages.length > 0 && (
-        <section className="max-w-[1400px] mx-auto px-5 md:px-8 pb-10 md:pb-12 relative z-20">
-          <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">GALLERY</p>
-          <h3 className="font-serif text-[2rem] font-bold text-[#1f2937] mb-6">Photo Gallery</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {resolvedGalleryImages.map((img) => (
-              <button
-                key={img.id}
-                type="button"
-                onClick={() => openCard({ image: img.url, title: resolvedPlace.name, subtitle: `Gallery Image ${img.position}` })}
-                className="relative group overflow-hidden aspect-square bg-black rounded-[8px]"
-              >
-                <img
-                  src={img.url}
-                  alt={`${resolvedPlace.name} gallery ${img.position}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Lightbox Modal */}
       {activeCard && (
@@ -493,7 +461,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
             </div>
             <div className="space-y-2 bg-[#111827] px-6 py-5 text-white md:px-8">
               <p className="text-xs font-bold uppercase tracking-[3px] text-[#C89B3C]">{activeCard.title}</p>
-              <h3 className="font-serif text-2xl font-bold uppercase tracking-wide">{activeCard.subtitle}</h3>
+              <h3 className="font-serif text-2xl font-bold uppercase tracking-wide">{activeCard.subtitle || activeCard.title}</h3>
             </div>
           </div>
         </div>
