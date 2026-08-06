@@ -19,16 +19,12 @@ const DistrictHeritageExplorer = () => {
     [allDistricts, selectedDistrictId],
   );
 
-  // The province that owns the currently selected district stays "pinned"
-  // open/highlighted even after the mouse leaves it.
   const pinnedProvinceId = useMemo(() => {
     if (!selectedDistrict) return null;
     const found = provinces.find((p) => p.name === selectedDistrict.province);
     return found ? String(found.id) : null;
   }, [selectedDistrict]);
 
-  // What the map should visually treat as "active" right now: whatever's
-  // under the mouse wins, otherwise fall back to the pinned selection.
   const activeProvinceId = hoveredProvinceId ?? pinnedProvinceId;
 
   const closeDetail = () => {
@@ -37,10 +33,12 @@ const DistrictHeritageExplorer = () => {
   };
 
   return (
-    <div className="relative mx-auto flex w-full max-w-7xl items-center overflow-hidden px-4 py-10">
+    <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center gap-6 px-4 py-10 lg:flex-row lg:items-center lg:gap-4">
+      {/* Map column — full width until lg, then shrinks to make room
+          for the detail panel once a district is selected */}
       <div
-        className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
-          selectedDistrict ? "w-3/5" : "w-full"
+        className={`flex w-full flex-shrink-0 justify-center transition-all duration-500 ease-out ${
+          selectedDistrict ? "lg:w-3/5" : "lg:w-full"
         }`}
       >
         <SriLankaProvinceMap
@@ -60,7 +58,13 @@ const DistrictHeritageExplorer = () => {
         />
       </div>
 
-      <DistrictDetailPanel district={selectedDistrict} onClose={closeDetail} />
+      {/* Detail panel — only takes up layout space once something is
+          selected, so it never reserves empty space on mobile */}
+      {selectedDistrict && (
+        <div className="w-full lg:w-2/5">
+          <DistrictDetailPanel district={selectedDistrict} onClose={closeDetail} />
+        </div>
+      )}
     </div>
   );
 };
