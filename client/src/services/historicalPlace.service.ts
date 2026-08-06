@@ -5,6 +5,7 @@ import type {
   HistoricalPlaceListParams,
   HistoricalPlaceInput,
   Paginated,
+  HistoricalPlaceDetails
 } from "../types/historicalPlace.types";
 
 const BASE = "/historicalPlace";
@@ -88,4 +89,10 @@ export async function deleteHistoricalPlace(id: number) {
 
 export async function deleteHistoricalPlaces(ids: number[]) {
   await Promise.all(ids.map((id) => deleteHistoricalPlace(id)));
+}
+
+export async function getHistoricalPlace(id: number) {
+  const response = await api.get(`/historicalPlace/${id}`);
+
+  return response.data.data as HistoricalPlaceDetails;
 }

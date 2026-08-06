@@ -120,6 +120,68 @@ export type HistoricalPlaceInput = Omit<
 
 
 
+export interface HistoricalPlaceDetails {
+  id: number;
 
+  name: string;
+
+  category: string;
+
+  description: string;
+
+  image: string;
+
+  century: string;
+
+  statusFlag: string;
+
+  latitude: number;
+
+  longitude: number;
+
+  anchorXPct: number;
+
+  anchorYPct: number;
+
+  provinceId: number;
+
+  districtId: number;
+
+  nearbyHotels?: string | null;
+
+  nearbyHospitals?: string | null;
+
+  nearbyRestaurant?: string | null;
+
+  travelTips?: string | null;
+
+  seoTitle?: string | null;
+
+  metaDescription?: string | null;
+
+  slug?: string | null;
+
+  focusKeywords?: string | null;
+
+  province: {
+    id: number;
+    name: string;
+    regionCode: string;
+  };
+
+  district: {
+    id: number;
+    name: string;
+    provinceId: number;
+  };
+
+  galleryImages: GalleryImage[];
+
+  siteMonograph: any[];
+
+  createdAt: string;
+
+  updatedAt: string;
+}
 
 
