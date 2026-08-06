@@ -34,9 +34,11 @@ const LocationMapPicker = ({ selectedDistrictName, anchorXPct, anchorYPct, onLoc
 
   if (!district) {
     return (
-      <div className="w-full">
-        <label className="block text-[14px] font-bold text-gray-800 mb-2">Pin Location</label>
-        <div className="h-[320px] flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-400">
+      <div className="w-full min-w-0">
+        <label className="block text-[13px] sm:text-[14px] font-bold text-gray-800 mb-2">
+          Pin Location
+        </label>
+        <div className="h-[220px] sm:h-[280px] lg:h-[320px] flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-[13px] sm:text-sm text-gray-400 text-center px-4">
           Select a district above to place the marker
         </div>
       </div>
@@ -72,18 +74,21 @@ const LocationMapPicker = ({ selectedDistrictName, anchorXPct, anchorYPct, onLoc
   };
 
   return (
-    <div className="w-full">
-      <label className="block text-[14px] font-bold text-gray-800 mb-2">
+    <div className="w-full min-w-0">
+      <label className="block text-[13px] sm:text-[14px] font-bold text-gray-800 mb-2 break-words">
         Pin Location — {district.name} District
       </label>
-      <p className="text-[12px] text-gray-400 mb-2">Click the exact spot on the map below.</p>
+      <p className="text-[11px] sm:text-[12px] text-gray-400 mb-2">
+        Click the exact spot on the map below.
+      </p>
 
       <svg
         viewBox={viewBox}
         onClick={handleClick}
-        className="h-[320px] w-full max-w-md cursor-crosshair rounded-lg border border-gray-300 bg-gray-50"
+        className="h-[220px] sm:h-[280px] lg:h-[320px] w-full max-w-full cursor-crosshair rounded-lg border border-gray-300 bg-gray-50 touch-manipulation"
         role="img"
         aria-label={`Click a location within ${district.name} District`}
+        preserveAspectRatio="xMidYMid meet"
       >
         <path
           d={district.path}

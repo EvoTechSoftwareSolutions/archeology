@@ -182,7 +182,7 @@ const AddNewPlace = () => {
       ]
         .filter(Boolean)
         .join("\n\n");
-      
+
       formData.append("description", description);
       formData.append("century", draft.era.trim() || "Unknown");
       formData.append("statusFlag", "Published");
@@ -232,9 +232,9 @@ const AddNewPlace = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto flex flex-col pt-4 min-h-[calc(100vh-100px)]">
-      <div className="mb-10">
-        <div className="text-[13px] text-gray-500 mb-4 flex items-center gap-1">
+    <div className="w-full max-w-7xl mx-auto flex flex-col px-3 sm:px-4 lg:px-0 pt-4 min-h-[calc(100vh-100px)]">
+      <div className="mb-6 sm:mb-8 lg:mb-10">
+        <div className="text-[12px] sm:text-[13px] text-gray-500 mb-3 sm:mb-4 flex flex-wrap items-center gap-1">
           <span>Home</span>
           <span>&gt;</span>
           <span>Historical places</span>
@@ -243,19 +243,19 @@ const AddNewPlace = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-[32px] font-bold font-serif text-gray-900 mb-1 tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold font-serif text-gray-900 mb-1 tracking-tight break-words">
               Add New Place
             </h1>
-            <p className="text-gray-500 text-[14px]">
+            <p className="text-gray-500 text-[13px] sm:text-[14px]">
               Create a new heritage site listing.
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleSaveDraft}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-md border border-gray-900 text-gray-900 bg-white hover:bg-gray-50 font-bold text-[14px] transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-md border border-gray-900 text-gray-900 bg-white hover:bg-gray-50 font-bold text-[14px] transition-colors whitespace-nowrap"
             >
               Save Draft
               <MdOutlineFileDownload size={18} />
@@ -264,7 +264,7 @@ const AddNewPlace = () => {
               type="button"
               onClick={handlePublish}
               disabled={submitting}
-              className="px-8 py-2.5 rounded-md bg-[#1E604B] text-white font-bold text-[14px] hover:bg-[#144b3a] transition-colors shadow-sm disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full sm:w-auto px-8 py-2.5 rounded-md bg-[#1E604B] text-white font-bold text-[14px] hover:bg-[#144b3a] transition-colors shadow-sm disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap"
             >
               Publish
             </button>
@@ -272,7 +272,7 @@ const AddNewPlace = () => {
         </div>
         {(statusMessage || statusError) && (
           <div
-            className={`mt-4 rounded-lg border px-4 py-3 text-[14px] ${
+            className={`mt-4 rounded-lg border px-4 py-3 text-[14px] break-words ${
               statusError
                 ? "border-red-200 bg-red-50 text-red-700"
                 : "border-green-200 bg-green-50 text-green-700"
@@ -283,8 +283,8 @@ const AddNewPlace = () => {
         )}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 flex-1 items-start pb-8">
-        <div className="shrink-0 w-full lg:w-[260px] sticky top-4">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 flex-1 items-start pb-8">
+        <div className="shrink-0 w-full lg:w-[260px] lg:sticky lg:top-4">
           <AddNewPlaceSidebar currentStep={currentStep} />
         </div>
 

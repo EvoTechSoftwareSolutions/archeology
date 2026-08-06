@@ -25,11 +25,13 @@ const SriLankaProvinceMap = ({
   onDistrictHoverEnd,
 }: Props) => {
   return (
-    <div className="flex w-full justify-center">
+    // aspect-square + a max-width keeps the map's proportions correct at
+    // any viewport instead of fighting a fixed pixel height
+    <div className="mx-auto w-full max-w-[560px] sm:max-w-[620px] lg:max-w-[700px]">
       <svg
         viewBox="0 0 1000 1000"
         preserveAspectRatio="xMidYMid meet"
-        className="h-[650px] w-auto max-w-full overflow-visible drop-shadow-[0_12px_24px_rgba(0,0,0,0.15)]"
+        className="aspect-square h-auto w-full overflow-visible drop-shadow-[0_12px_24px_rgba(0,0,0,0.15)]"
         role="group"
         aria-label="Provinces and districts of Sri Lanka"
       >
