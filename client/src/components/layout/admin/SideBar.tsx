@@ -46,7 +46,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
     {
       title: "Administration",
       items: [
-        { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
+        // { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
         { name: "Users", path: "/admin/users", icon: FiUsers },
         { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
         { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },

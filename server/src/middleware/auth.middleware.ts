@@ -71,6 +71,7 @@ export async function authenticate(
         role: true,
         department: true,
         isActive: true,
+        createdAt:true
       },
 
     });
