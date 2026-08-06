@@ -82,8 +82,19 @@ body {
 
 .review-carousel-track {
   width: max-content;
-  animation: review-scroll 18s linear infinite;
   will-change: transform;
+}
+
+@media (max-width: 1024px) {
+  .review-carousel-track {
+    animation: review-scroll 18s linear infinite;
+  }
+}
+
+@media (min-width: 1025px) {
+  .review-carousel-track {
+    animation: none;
+  }
 }
 
 .review-carousel-track:hover {

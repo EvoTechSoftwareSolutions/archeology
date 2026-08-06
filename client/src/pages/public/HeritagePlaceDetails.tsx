@@ -69,6 +69,7 @@ interface ReviewItem {
   role: string;
   review: string;
   image?: string | null;
+  rating?: number;
 }
 
 interface HeritagePlaceDetailsProps {
@@ -106,6 +107,13 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
+  const [reviewCards, setReviewCards] = useState<ReviewItem[]>([]);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const visibleReviewCards = reviewCards.slice(0, 3);
+
+  const API = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/api/v1`
+    : '/api/v1';
 
   const fallbackPlace: HistoricalPlace = {
     id: 0,
@@ -147,6 +155,41 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       setLoading(false);
     }
   }, [id, props.title]);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        setReviewError(null);
+        const res = await fetch(`${API}/reviews`, { credentials: 'include' });
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json?.message || 'Failed to load reviews.');
+        }
+
+        const activeReviews = (json.data ?? [])
+          .filter((review: any) => review?.isActive !== false)
+          .map((review: any) => ({
+            name: review.reviewerName || 'Guest Reviewer',
+            role: review.reviewerRole || 'Visitor',
+            review: review.reviewText || '',
+            image: review.image || null,
+            rating: Number(review.rating) || 5,
+          }));
+
+        setReviewCards(activeReviews);
+        if (activeReviews.length === 0) {
+          setReviewError('No active reviews were returned by the API.');
+        }
+      } catch (error) {
+        console.error('HeritagePlaceDetails loadReviews error:', error);
+        setReviewCards([]);
+        setReviewError('Unable to load visitor reviews.');
+      }
+    };
+
+    void loadReviews();
+  }, [API]);
 
   if (loading) {
     return (
@@ -559,32 +602,39 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold uppercase tracking-[2px] mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="overflow-hidden rounded-[24px]">
+        <div className="overflow-hidden rounded-[24px] flex justify-center">
           <div className="review-carousel-track flex gap-6 pb-4 text-left">
-            {([
-              { name: 'Dr. Himali Perera', role: 'Researcher', review: 'Impeccably documented. A vital reference for my fieldwork.', image: avatarImg },
-              { name: 'Saman Wickrama', role: 'Historian', review: 'A beautiful site with rich cultural layers and impressive preservation.', image: avatarImg },
-              { name: 'Nadeesha Fernando', role: 'Traveler', review: 'Excellent walkthrough and a calm place to connect with history.', image: avatarImg },
-            ] as ReviewItem[]).map((item, index) => (
-              <div key={`${item.name}-${index}`} className="review-card rounded-[24px] border border-gray-100 bg-white p-8 shadow-sm min-w-[280px] md:min-w-[320px]">
-                <div className="mb-4 flex items-center gap-4">
-                  <img
-                    src={item.image || avatarImg}
-                    alt={item.name}
-                    className="h-12 w-12 rounded-full object-cover bg-gray-200"
-                    onError={(event) => {
-                      event.currentTarget.src = avatarImg;
-                    }}
-                  />
-                  <div>
-                    <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
-                    <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>
+            {visibleReviewCards.length > 0 ? (
+              visibleReviewCards.map((item, index) => (
+                <div key={`${item.name}-${index}`} className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]">
+                  <div className="mb-4 flex items-center gap-4">
+                    <img
+                      src={item.image || avatarImg}
+                      alt={item.name}
+                      className="h-12 w-12 rounded-full object-cover bg-gray-200"
+                      onError={(event) => {
+                        event.currentTarget.src = avatarImg;
+                      }}
+                    />
+                    <div>
+                      <h5 className="text-[1rem] font-bold text-[#1f2937]">{item.name}</h5>
+                      <p className="text-[0.75rem] text-[#6b7280]">{item.role}</p>
+                    </div>
                   </div>
+                  <div className="mb-4 flex gap-1 text-[#C89B3C] text-[0.8rem]">
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <span key={starIndex}>{starIndex < (item.rating ?? 5) ? '★' : '☆'}</span>
+                    ))}
+                  </div>
+                  <p className="text-[0.95rem] leading-relaxed text-[#4b5563]">"{item.review}"</p>
                 </div>
-                <div className="mb-4 text-[#C89B3C] text-[0.8rem]">★★★★★</div>
-                <p className="text-[0.95rem] leading-relaxed text-[#4b5563]">"{item.review}"</p>
+              ))
+            ) : (
+              <div className="w-full bg-white rounded-[24px] p-10 shadow-sm border border-gray-100">
+                <p className="text-[#6b7280] mb-2">No reviews are available at the moment. Please check back later.</p>
+                {reviewError && <p className="text-[#b91c1c] text-[0.95rem]">{reviewError}</p>}
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

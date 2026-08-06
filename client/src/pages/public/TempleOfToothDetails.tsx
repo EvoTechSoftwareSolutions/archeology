@@ -60,6 +60,7 @@ const TempleOfToothDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number; }[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const visibleReviewCards = reviewCards.slice(0, 3);
   const [activeCard, setActiveCard] = useState<typeof templeCards[number] | null>(null);
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -576,10 +577,10 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="overflow-hidden rounded-[24px]">
+        <div className="overflow-hidden rounded-[24px] flex justify-center">
           <div className="review-carousel-track flex gap-6 text-left pb-4">
-            {reviewCards.length > 0 ? (
-              reviewCards.map((item, index) => (
+            {visibleReviewCards.length > 0 ? (
+              visibleReviewCards.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
                   className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"
