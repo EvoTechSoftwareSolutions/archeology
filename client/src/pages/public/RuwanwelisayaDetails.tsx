@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import EmergencyContactsCard from '../../components/EmergencyContactsCard';
 import {
   FiClock,
   FiMapPin,
@@ -26,6 +27,7 @@ import {
 import avatarImg from '../../assets/avatar.png';
 import mandalaImg from '../../assets/image 36.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import rs1 from '../../assets/rs1.jpg';
 import rs2 from '../../assets/rs2.jpg';
 import galleFort from '../../assets/places-gallefort.png';
@@ -348,9 +350,9 @@ const RuwanwelisayaDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
           <div>
-            <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full md:w-max pr-6 md:pr-16">
+            <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full max-w-[520px] pr-6 md:pr-16">
               <h4 className="font-bold text-[1.2rem] text-[#1f2937] mb-1">Opening Hours</h4>
-              <p className="text-[#6b7280] text-[0.95rem]">Open Daily. The sacred precinct is generally accessible throughout the day.</p>
+              <p className="text-[#6b7280] text-[0.95rem] break-words">Open daily. The sacred precinct is accessible throughout the day.</p>
             </div>
 
             <p className="text-[#4b5563] text-[0.95rem] mb-8 font-sans leading-relaxed">
@@ -558,8 +560,9 @@ const RuwanwelisayaDetails = () => {
           {[
             { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
             { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
-            { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
             { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
           ].map((place, idx) => (
             <Link key={idx} to={place.route} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
               <div className="h-[150px] md:h-[120px] overflow-hidden relative">

@@ -32,6 +32,7 @@ import buddhaImg from '../../assets/image 35.png';
 import mandalaImg from '../../assets/image 36.png';
 import sigiriya from '../../assets/places-sigiriya.png';
 import galViharaya from '../../assets/galvihara.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import galleFort from '../../assets/places-gallefort.png';
@@ -348,10 +349,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     : [
         { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
         { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
-        { img: galViharaya, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
-        { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
-        { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' }
-      ];
+          { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
 
   // Essentials built ONLY from fields the API actually returns for this place.
   const essentials: EssentialItem[] = (() => {

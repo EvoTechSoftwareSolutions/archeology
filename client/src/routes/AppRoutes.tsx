@@ -6,6 +6,7 @@ import {
 import MainLayout from "../layout/MainLayout";
 import AdminLayout from "../layout/AdminLayout";
 import ProtectedRoute from "../components/admin/ProtectedRoute";
+import ErrorPage from "../components/ErrorPage";
 
 // Public Pages
 import Home from "../pages/public/Home";
@@ -45,6 +46,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
       { path: "temple-of-the-tooth", element: <TempleOfToothDetails /> },
