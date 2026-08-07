@@ -3,6 +3,7 @@ import useNotificationsSocket from "../../../hooks/useNotificationsSocket";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser, FiX } from "react-icons/fi";
 import { authService } from "../../../services/auth.service";
+import { useSearchContext } from "../../../contexts/SearchContext";
 import type { LoginUser } from "../../../types/auth.types";
 
 interface HeaderProps {
@@ -27,6 +28,7 @@ const getInitials = (name?: string) => {
 
 const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
+  const { searchTerm, setSearchTerm } = useSearchContext();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationsState, setNotificationsState] = useState<Array<{title:string; subtitle?:string; time?:string; id?:any}>>([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -116,6 +118,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             </div>
             <input
               type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search places, users..."
               className="w-full min-w-0 pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"
             />
@@ -241,6 +245,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             </div>
             <input
               type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               autoFocus
               placeholder="Search places, users..."
               className="w-full min-w-0 pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"
