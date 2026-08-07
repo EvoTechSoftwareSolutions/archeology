@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import type { Category, CategoryFormData } from "../../types/category.types";
+import { useSearchContext } from "../../contexts/SearchContext";
 import { useCategories } from "../../hooks/useCategories";
 import CategoryTable from "../../components/admin/categories/CategoryTable";
 import CategoryModal from "../../components/admin/categories/CategoryModal";
@@ -10,7 +11,7 @@ const EMPTY_FORM: CategoryFormData = { name: "", description: "" };
 const Categories = () => {
   const { categories, loading, reload, create, update, remove } = useCategories();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, setSearchTerm } = useSearchContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);

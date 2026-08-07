@@ -18,7 +18,7 @@ router.post("/", createMessage);
 // Admin routes
 router.use(authenticate);
 
-router.use(authorize("ADMIN"));
+router.use(authorize("ADMIN", "SUPERADMIN"));
 
 router.get("/messages", getMessages);
 

@@ -32,7 +32,7 @@ router.get("/:id", getProvinceById);
 router.post(
   "/",
   authenticate,
-  authorize("ADMIN"),
+  authorize("ADMIN", "SUPERADMIN"),
   validate(createProvinceSchema),
   createProvince,
 );
@@ -41,12 +41,17 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("admin"),
+  authorize("ADMIN", "SUPERADMIN"),
   validate(updateProvinceSchema),
   updateProvince,
 );
 
 // Delete province
-router.delete("/:id", authenticate, authorize("admin"), deleteProvince);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN", "SUPERADMIN"),
+  deleteProvince,
+);
 
 export default router;

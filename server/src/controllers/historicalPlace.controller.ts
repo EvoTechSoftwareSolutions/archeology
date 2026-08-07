@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
 import { historicalPlaceService } from "../services/historicalPlace.service.js";
+import { getIO } from "../socket.js";
 
 // CREATE HISTORICAL PLACE
 export const createHistoricalPlace = async (
@@ -72,6 +73,20 @@ export const createHistoricalPlace = async (
     };
 
     const place = await historicalPlaceService.createPlace(placeData);
+
+    // Emit a real-time notification to admins when a new place is added
+    try {
+      const io = getIO();
+      io.to("role:ADMIN").emit("notification:new", {
+        id: place.id,
+        title: "New place added",
+        subtitle: place.name,
+        createdAt: place.createdAt,
+      });
+    } catch (err) {
+      // socket not initialized or error - ignore
+      console.warn("Socket emit failed", err);
+    }
 
     return res.status(201).json({
       success: true,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FiSearch,
   FiChevronDown,
@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import sigiriya from "../../assets/Admin/LoginImage.png";
 import { districts as staticDistricts } from "../../data/districts";
 import useHistoricalPlacesList from "../../hooks/useHistoricalPlacesList";
+import { useSearchContext } from "../../contexts/SearchContext";
 import {
   createHistoricalPlace,
   updateHistoricalPlace,
@@ -42,6 +43,12 @@ const HistoricalPlaces = () => {
     removeSelected,
     exportCsv,
   } = useHistoricalPlacesList();
+
+  const { searchTerm, setSearchTerm } = useSearchContext();
+
+  useEffect(() => {
+    setSearch(searchTerm);
+  }, [searchTerm, setSearch]);
 
   // Modal
   useState<HistoricalPlaceRecord | null>(null);
@@ -187,8 +194,8 @@ const HistoricalPlaces = () => {
             </div>
             <input
               type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search places, districts..."
               className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#275949] focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter']"
             />

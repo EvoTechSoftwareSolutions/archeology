@@ -33,7 +33,7 @@ router.get("/:id", getDistrictById);
 router.post(
   "/",
   authenticate,
-  authorize("ADMIN"),
+  authorize("ADMIN", "SUPERADMIN"),
   validate(createDistrictSchema),
   createDistrict,
 );
@@ -42,12 +42,17 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize("ADMIN"),
+  authorize("ADMIN", "SUPERADMIN"),
   validate(updateDistrictSchema),
   updateDistrict,
 );
 
 // Delete district
-router.delete("/:id", authenticate, authorize("ADMIN"), deleteDistrict);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN", "SUPERADMIN"),
+  deleteDistrict,
+);
 
 export default router;
