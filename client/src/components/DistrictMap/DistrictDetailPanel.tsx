@@ -8,43 +8,40 @@ interface Props {
 }
 
 const DistrictDetailPanel = ({ district, onClose }: Props) => {
-  const { places, isLoading, error } = useDistrictHeritage(district?.id ?? null);
+  const districtId = district?.id != null ? String(district.id) : null;
+  const { places, isLoading, error } = useDistrictHeritage(districtId);
+
+  if (!district) return null;
 
   return (
     <div
-      className={`flex w-[400px] flex-shrink-0 flex-col items-center gap-3 px-2 transition-all duration-500 ease-out ${
-        district
-          ? "translate-x-0 opacity-100"
-          : "pointer-events-none translate-x-10 opacity-0"
-      }`}
+      className="flex w-full flex-col items-center gap-3 px-2
+        animate-[panelIn_0.4s_ease-out]
+        lg:max-w-[400px]"
     >
-      {district && (
-        <>
-          <div className="flex w-full items-center justify-between">
-            <h2 className="font-serif text-2xl text-[#3B2F1E]">
-              {district.name} District
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-sm font-medium text-[#8A7550] hover:text-[#C1483F]"
-            >
-              ✕ Close
-            </button>
-          </div>
+      <div className="flex w-full items-center justify-between">
+        <h2 className="font-serif text-base text-[#3B2F1E] sm:text-xl lg:text-2xl">
+          {district.name} District
+        </h2>
+        <button
+          onClick={onClose}
+          className="text-xs font-medium text-[#8A7550] hover:text-[#C1483F] sm:text-sm"
+        >
+          ✕ Close
+        </button>
+      </div>
 
-          {isLoading && (
-            <p className="text-sm text-[#8A7550]">Loading heritage places…</p>
-          )}
-          {error && <p className="text-sm text-[#C1483F]">{error}</p>}
-          {!isLoading && !error && places.length === 0 && (
-            <p className="text-sm text-[#8A7550]">
-              No heritage places added for this district yet.
-            </p>
-          )}
-
-          <District3DView district={district} historicalPlaces={places} />
-        </>
+      {isLoading && (
+        <p className="text-xs text-[#8A7550] sm:text-sm">Loading heritage places…</p>
       )}
+      {error && <p className="text-xs text-[#C1483F] sm:text-sm">{error}</p>}
+      {!isLoading && !error && places.length === 0 && (
+        <p className="text-xs text-[#8A7550] sm:text-sm">
+          No heritage places added for this district yet.
+        </p>
+      )}
+
+      <District3DView district={district} historicalPlaces={places} />
     </div>
   );
 };

@@ -12,7 +12,7 @@ interface CategoryTableProps {
 const CategoryTable: React.FC<CategoryTableProps> = ({ categories, loading, onEdit, onDelete }) => {
   if (loading) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-10 text-center text-gray-500">
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 sm:p-10 text-center text-sm sm:text-base text-gray-500">
         Loading categories...
       </div>
     );
@@ -20,14 +20,14 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories, loading, onEd
 
   if (categories.length === 0) {
     return (
-      <div className="col-span-full py-16 text-center text-gray-500 bg-white rounded-2xl border border-gray-100 border-dashed">
+      <div className="col-span-full py-12 sm:py-16 px-4 text-center text-sm sm:text-base text-gray-500 bg-white rounded-2xl border border-gray-100 border-dashed">
         No categories found matching your search.
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 relative z-10 pb-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 relative z-10 pb-10">
       {categories.map((category) => (
         <CategoryCard
           key={category.id}

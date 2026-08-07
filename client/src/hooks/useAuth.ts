@@ -18,7 +18,7 @@ export function useAuth() {
 
       const user = response.data.data.user;
 
-      if (user.role !== "ADMIN") {
+      if (user.role !== "ADMIN" && user.role !== "SUPERADMIN") {
         throw new Error("Only Admin can login");
       }
 

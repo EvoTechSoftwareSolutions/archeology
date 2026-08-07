@@ -82,8 +82,19 @@ body {
 
 .review-carousel-track {
   width: max-content;
-  animation: review-scroll 18s linear infinite;
   will-change: transform;
+}
+
+@media (max-width: 1024px) {
+  .review-carousel-track {
+    animation: review-scroll 18s linear infinite;
+  }
+}
+
+@media (min-width: 1025px) {
+  .review-carousel-track {
+    animation: none;
+  }
 }
 
 .review-carousel-track:hover {
@@ -98,4 +109,57 @@ body {
   .review-card {
     flex-basis: 320px;
   }
+}
+
+
+/* Elegant Sidebar Scrollbar */
+.sidebar-scroll {
+  scrollbar-width: thin;               /* Firefox */
+  scrollbar-color: rgba(255,255,255,0.25) transparent;
+  scroll-behavior: smooth;
+}
+
+/* Chrome, Edge, Safari */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background 0.3s ease;
+}
+
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.38);
+  background-clip: content-box;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.55);
+  background-clip: content-box;
+}
+
+.sidebar-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+
+/* for map component */
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

@@ -12,7 +12,7 @@ const router = Router();
 
 router.get("/", getCategories);
 router.post("/", validate(createCategorySchema), createCategory);
-router.patch("/:id", validate(updateCategorySchema), updateCategory);
+router.put("/:id", validate(updateCategorySchema), updateCategory);
 router.delete("/:id", deleteCategory);
 
 <<<<<<< HEAD

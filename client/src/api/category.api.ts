@@ -10,7 +10,7 @@ export const categoryApi = {
   },
 
   update: (id: number, data: any) => {
-    return api.patch(`/categories/${id}`, data);
+    return api.put(`/categories/${id}`, data);
   },
 
   delete: (id: number) => {

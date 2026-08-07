@@ -41,13 +41,12 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
         { name: "Historical Places", path: "/admin/heritage", icon: MdAccountBalance },
         { name: "Add New places", path: "/admin/add-place", icon: FiPlusCircle },
         { name: "Categories", path: "/admin/categories", icon: FiTag },
-        { name: "Media Library", path: "/admin/media", icon: FiImage },
       ]
     },
     {
       title: "Administration",
       items: [
-        { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
+        // { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
         { name: "Users", path: "/admin/users", icon: FiUsers },
         { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
         { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },
@@ -101,7 +100,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden pb-4">
+    <nav className="flex-1 overflow-y-auto overflow-x-hidden pb-4 sidebar-scroll">
         {menuSections.map((section, idx) => (
           <div key={idx} className="mb-6">
             {!isCollapsed ? (

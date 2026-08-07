@@ -5,14 +5,14 @@ export async function getMapDistricts() {
   const districtShapes = [...districts];
 
   const res = await historicalPlaceApi.getAll();
-
-  const places = res.data.data.items;
+  const payload = res.data?.data;
+  const places = Array.isArray(payload) ? payload : payload?.items ?? [];
 
   for (const district of districtShapes) {
     district.historicalPlaces = places
       .filter(
         (p: any) =>
-          p.district.name.toLowerCase() === district.name.toLowerCase()
+          (p.district?.name ?? "").toLowerCase() === district.name.toLowerCase()
       )
       .map((p: any) => ({
         id: p.id,

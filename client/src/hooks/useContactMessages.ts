@@ -1,89 +1,116 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { contactService } from "../services/contact.service";
-
 import type { ContactMessage, ContactStats } from "../types/contact.types";
+
+const EMPTY_STATS: ContactStats = { total: 0, unread: 0, read: 0, replied: 0 };
+const POLL_INTERVAL_MS = 5000;
 
 export function useContactMessages() {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
-
-  const [stats, setStats] = useState<ContactStats>({
-    total: 0,
-    unread: 0,
-    read: 0,
-    resolved: 0,
-  });
-
+  const [stats, setStats] = useState<ContactStats>(EMPTY_STATS);
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState("");
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
+  const lastUnreadRef = useRef<number>(0);
 
+  // Silent refetch: updates data in the background without triggering loading spinners
+  const refreshAll = async () => {
+    try {
+      setError("");
       const [statsData, messagesData] = await Promise.all([
         contactService.getStats(),
-
         contactService.getMessages(),
       ]);
 
       setStats(statsData);
-
       setMessages(messagesData);
-    } catch (error: any) {
-      setError(error.message);
+      lastUnreadRef.current = statsData.unread;
+    } catch (err: any) {
+      setError(err?.message ?? "Failed to refresh contact messages");
+    }
+  };
+
+  // Full load: used ONLY on initial page mount
+  const loadAll = async () => {
+    try {
+      setLoading(true);
+      await refreshAll();
     } finally {
       setLoading(false);
     }
   };
 
-  const createMessage = async (data: any) => {
-    await contactService.createMessage(data);
+  const pollForNewMessages = async () => {
+    try {
+      const statsData = await contactService.getStats();
+      setStats(statsData);
+
+      if (statsData.unread !== lastUnreadRef.current) {
+        lastUnreadRef.current = statsData.unread;
+        const messagesData = await contactService.getMessages();
+        setMessages(messagesData);
+      }
+    } catch (err: any) {
+      setError(err?.message ?? "Failed to check for new messages");
+    }
   };
 
-  const markResolved = async (id: number) => {
-    await contactService.updateStatus(id, "archived");
+  const markAsRead = async (id: number) => {
+    // 1. Optimistic update (UI updates instantly without waiting for network)
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, status: "read" } : msg))
+    );
+    setStats((prev) => ({
+      ...prev,
+      unread: Math.max(0, prev.unread - 1),
+      read: prev.read + 1,
+    }));
 
-    await loadData();
+    // 2. Call API & silently sync
+    await contactService.updateStatus(id, "read");
+    await refreshAll();
+  };
+
+  const markAsReplied = async (id: number) => {
+    await contactService.updateStatus(id, "replied");
+    await refreshAll();
   };
 
   const deleteMessage = async (id: number) => {
-    await contactService.deleteMessage(id);
+    // 1. Optimistic remove
+    setMessages((prev) => prev.filter((msg) => msg.id !== id));
 
-    await loadData();
+    // 2. Call API & silently sync
+    await contactService.deleteMessage(id);
+    await refreshAll();
   };
 
   const sendReply = async (id: number, text: string) => {
-    await contactService.reply(id, text);
+    // 1. Optimistic update
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, status: "replied" } : msg))
+    );
 
-    await loadData();
+    // 2. Call API & silently sync
+    await contactService.reply(id, text);
+    await refreshAll();
   };
 
   useEffect(() => {
-    loadData();
-
-    const timer = setInterval(loadData, 5000);
-
+    loadAll();
+    const timer = setInterval(pollForNewMessages, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, []);
 
   return {
     messages,
-
     stats,
-
     loading,
-
     error,
-
-    reload: loadData,
-
-    createMessage,
-
-    markResolved,
-
+    reload: refreshAll,
+    markAsRead,
+    markAsReplied,
     deleteMessage,
-
     sendReply,
   };
 }

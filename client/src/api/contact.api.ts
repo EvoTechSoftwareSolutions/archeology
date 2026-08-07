@@ -1,7 +1,7 @@
 import api from "../lib/axios";
 
 export const contactApi = {
-  create(data: any) {
+  create(data: import("../types/contact.types").CreateContactPayload) {
     return api.post("/contact", data);
   },
 
@@ -13,19 +13,17 @@ export const contactApi = {
     return api.get("/contact/stats");
   },
 
-  updateStatus(id: number, status: string) {
-    return api.patch(`/contact/messages/${id}`, {
-      status,
-    });
+  updateStatus(id: number, status: "unread" | "read" | "replied") {
+    return api.put(`/contact/messages/${id}`, { status });
   },
+
+
 
   deleteMessage(id: number) {
     return api.delete(`/contact/messages/${id}`);
   },
 
   reply(id: number, text: string) {
-    return api.post(`/contact/messages/${id}/reply`, {
-      replyText: text,
-    });
+    return api.post(`/contact/messages/${id}/reply`, { replyText: text });
   },
 };

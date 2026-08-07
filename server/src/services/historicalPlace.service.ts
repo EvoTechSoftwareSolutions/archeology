@@ -12,12 +12,26 @@ export const historicalPlaceService = {
     return historicalPlaceRepository.create(data);
   },
 
-  async getAllPlaces() {
-    return historicalPlaceRepository.getAll();
-  },
 
-  async getPlaceById(id: number) {
-    const place = await historicalPlaceRepository.getById(id);
+getAllPlaces(params?: {
+  search?: string;
+  districtId?: number;
+  statusFlag?: string;
+}) {
+  return historicalPlaceRepository.getAll(params);
+},
+
+  async getPlaceById(idOrSlug: number | string) {
+    let place = null;
+    const numericId = Number(idOrSlug);
+
+    if (!isNaN(numericId) && numericId > 0) {
+      place = await historicalPlaceRepository.getById(numericId);
+    }
+
+    if (!place && typeof idOrSlug === "string") {
+      place = await historicalPlaceRepository.getBySlugOrName(idOrSlug);
+    }
 
     if (!place) {
       throw new ApiError(404, "Historical place not found");

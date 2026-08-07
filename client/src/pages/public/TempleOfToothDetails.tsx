@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import EmergencyContactsCard from '../../components/EmergencyContactsCard';
 import { FiClock, FiMapPin, FiPhone, FiCheck, FiInfo, FiUsers, FiSun, FiCoffee, FiHome, FiDroplet, FiPlus, FiWind, FiTruck, FiMap, FiCamera, FiNavigation, FiXCircle, FiCheckCircle, FiX } from 'react-icons/fi';
 import avatarImg from '../../assets/avatar.png';
 import buddhaImg from '../../assets/image 35.png';
@@ -60,6 +61,7 @@ const TempleOfToothDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number; }[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const visibleReviewCards = reviewCards.slice(0, 3);
   const [activeCard, setActiveCard] = useState<typeof templeCards[number] | null>(null);
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -85,6 +87,19 @@ const TempleOfToothDetails = () => {
 
   const closeCard = () => {
     setActiveCard(null);
+  };
+
+  const navigateCard = (direction: 'prev' | 'next') => {
+    if (!activeCard) return;
+
+    const currentIndex = templeCards.findIndex((card) => card.subtitle === activeCard.subtitle && card.image === activeCard.image);
+    if (currentIndex === -1) return;
+
+    const nextIndex = direction === 'next'
+      ? (currentIndex + 1) % templeCards.length
+      : (currentIndex - 1 + templeCards.length) % templeCards.length;
+
+    setActiveCard(templeCards[nextIndex]);
   };
 
   useEffect(() => {
@@ -192,11 +207,33 @@ const TempleOfToothDetails = () => {
             >
               <FiX size={20} />
             </button>
-            <div className="flex items-start justify-center bg-black p-4 md:p-6">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigateCard('prev');
+              }}
+              className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white transition hover:bg-black/75"
+              aria-label="Previous image"
+            >
+              <FiChevronLeft size={22} />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigateCard('next');
+              }}
+              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white transition hover:bg-black/75"
+              aria-label="Next image"
+            >
+              <FiChevronRight size={22} />
+            </button>
+            <div className="flex h-[70vh] min-h-[420px] items-center justify-center overflow-hidden bg-black p-4 md:h-[78vh] md:min-h-[520px] md:p-6">
               <img
                 src={activeCard.image}
                 alt={activeCard.subtitle}
-                className="max-h-[70vh] w-auto max-w-full object-contain object-top md:max-h-[78vh]"
+                className="h-full w-full max-w-full object-contain object-center"
               />
             </div>
             <div className="space-y-2 bg-[#111827] px-6 py-5 text-white md:px-8">
@@ -331,19 +368,12 @@ const TempleOfToothDetails = () => {
                 ))}
               </div>
 
-              <div className="bg-[#F8F6F1] rounded-[16px] p-4 flex flex-col xl:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-[#1f2937] font-bold text-[0.9rem] whitespace-nowrap">
-                  <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
-                </div>
-                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
-                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
-                    Police Emergency <span className="ml-1 text-[#1f2937]">119</span>
-                  </span>
-                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
-                    Ambulance / Suwaseriya <span className="ml-1 text-[#1f2937]">1990</span>
-                  </span>
-                </div>
-              </div>
+              <EmergencyContactsCard
+                contacts={[
+                  { label: 'Police Emergency', value: '119' },
+                  { label: 'Ambulance / Suwaseriya', value: '1990' },
+                ]}
+              />
 
             </div>
           </div>
@@ -548,10 +578,10 @@ const TempleOfToothDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="overflow-hidden rounded-[24px]">
+        <div className="overflow-hidden rounded-[24px] flex justify-center">
           <div className="review-carousel-track flex gap-6 text-left pb-4">
-            {reviewCards.length > 0 ? (
-              reviewCards.map((item, index) => (
+            {visibleReviewCards.length > 0 ? (
+              visibleReviewCards.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
                   className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"

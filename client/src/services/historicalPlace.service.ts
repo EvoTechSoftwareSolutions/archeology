@@ -1,9 +1,11 @@
 import api from "../lib/axios";
+
 import type {
-  HistoricalPlaceInput,
-  HistoricalPlaceListParams,
   HistoricalPlaceRecord,
+  HistoricalPlaceListParams,
+  HistoricalPlaceInput,
   Paginated,
+  HistoricalPlaceDetails
 } from "../types/historicalPlace.types";
 
 const BASE = "/historicalPlace";
@@ -11,60 +13,86 @@ const BASE = "/historicalPlace";
 export async function getHistoricalPlaces(
   params: HistoricalPlaceListParams = {},
 ): Promise<Paginated<HistoricalPlaceRecord>> {
-  const { data } = await api.get(BASE, { params });
-  const payload = data.data ?? data;
+  const response = await api.get(BASE, {
+    params,
+  });
 
-  // Handle either a plain array or an already-paginated { items, total, ... }
-  // shape — adjust here once you confirm exactly what your endpoint returns.
+  const payload = response.data.data ?? response.data;
+
+  // Backend returns array
   if (Array.isArray(payload)) {
+    const page = params.page ?? 1;
+    const pageSize = params.pageSize ?? 7;
+
+    const startIndex = (page - 1) * pageSize;
+
     return {
-      items: payload,
+      items: payload.slice(startIndex, startIndex + pageSize),
+
       total: payload.length,
-      page: params.page ?? 1,
-      pageSize: params.pageSize ?? payload.length,
+
+      page,
+
+      pageSize,
     };
   }
-  return payload;
+
+  // Backend already returns pagination
+  return {
+    items: payload.items ?? [],
+
+    total: payload.total ?? 0,
+
+    page: payload.page ?? params.page ?? 1,
+
+    pageSize: payload.pageSize ?? params.pageSize ?? 7,
+  };
 }
 
-export async function getHistoricalPlaceById(
-  id: number,
-): Promise<HistoricalPlaceRecord> {
-  const { data } = await api.get(`${BASE}/${id}`);
-  return data.data ?? data;
+export async function getHistoricalPlaceById(id: number | string) {
+  const response = await api.get(`${BASE}/${id}`);
+
+  return response.data.data ?? response.data;
 }
 
-export async function createHistoricalPlace(
-    formData: FormData
-) {
-    const { data } = await api.post(
-        "/historicalPlace",
-        formData,
-        {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
+export async function createHistoricalPlace(data: FormData | object) {
+  const response = await api.post(
+    BASE,
+    data,
+    data instanceof FormData
+      ? {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-    );
+      : undefined,
+  );
 
-    return data.data;
+  return response.data.data;
 }
 
-
-export async function updateHistoricalPlace(
+export const updateHistoricalPlace = async (
   id: number,
-  payload: Partial<HistoricalPlaceInput>,
-): Promise<HistoricalPlaceRecord> {
-  const { data } = await api.put(`${BASE}/${id}`, payload);
-  return data.data ?? data;
-}
+  data: Partial<HistoricalPlaceInput> | FormData
+) => {
+  const response = await api.put(`/historicalPlace/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
 
-export async function deleteHistoricalPlace(id: number): Promise<void> {
+export async function deleteHistoricalPlace(id: number) {
   await api.delete(`${BASE}/${id}`);
 }
 
-export async function deleteHistoricalPlaces(ids: number[]): Promise<void> {
-  // If your API has a dedicated bulk-delete route, swap this for a single
-  // request to it instead — this fallback just fires deletes in parallel.
+export async function deleteHistoricalPlaces(ids: number[]) {
   await Promise.all(ids.map((id) => deleteHistoricalPlace(id)));
+}
+
+export async function getHistoricalPlace(id: number | string) {
+  const response = await api.get(`/historicalPlace/${id}`);
+
+  return response.data.data as HistoricalPlaceDetails;
 }

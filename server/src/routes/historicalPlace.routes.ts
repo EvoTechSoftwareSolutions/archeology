@@ -31,19 +31,34 @@ router.post(
       maxCount: 10,
     },
   ]),
-  createHistoricalPlace
+  validate(createHistoricalPlaceSchema),
+  createHistoricalPlace,
 );
 
+// GET ALL HISTORICAL PLACES
 router.get("/", getHistoricalPlaces);
 
+// GET SINGLE HISTORICAL PLACE
 router.get("/:id", getHistoricalPlaceById);
 
-router.patch(
+// UPDATE HISTORICAL PLACE
+router.put(
   "/:id",
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1,
+    },
+    {
+      name: "galleryImages",
+      maxCount: 10,
+    },
+  ]),
   validate(updateHistoricalPlaceSchema),
   updateHistoricalPlace,
 );
 
+// DELETE HISTORICAL PLACE
 router.delete("/:id", deleteHistoricalPlace);
 
 export default router;

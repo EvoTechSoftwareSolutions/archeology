@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import EmergencyContactsCard from '../../components/EmergencyContactsCard';
 import {
   FiClock,
   FiMapPin,
@@ -20,10 +21,13 @@ import {
   FiXCircle,
   FiCheckCircle,
   FiX,
+  FiChevronLeft,
+  FiChevronRight,
 } from 'react-icons/fi';
 import avatarImg from '../../assets/avatar.png';
 import mandalaImg from '../../assets/image 36.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import rs1 from '../../assets/rs1.jpg';
 import rs2 from '../../assets/rs2.jpg';
 import galleFort from '../../assets/places-gallefort.png';
@@ -55,6 +59,7 @@ const RuwanwelisayaDetails = () => {
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [reviewCards, setReviewCards] = useState<{ name: string; role: string; review: string; image: string | null; rating: number }[]>([]);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const visibleReviewCards = reviewCards.slice(0, 3);
   const [activeCard, setActiveCard] = useState<(typeof templeCards)[number] | null>(null);
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -70,6 +75,19 @@ const RuwanwelisayaDetails = () => {
 
   const openCard = (card: (typeof templeCards)[number]) => setActiveCard(card);
   const closeCard = () => setActiveCard(null);
+
+  const navigateCard = (direction: 'prev' | 'next') => {
+    if (!activeCard) return;
+
+    const currentIndex = templeCards.findIndex((card) => card.subtitle === activeCard.subtitle && card.image === activeCard.image);
+    if (currentIndex === -1) return;
+
+    const nextIndex = direction === 'next'
+      ? (currentIndex + 1) % templeCards.length
+      : (currentIndex - 1 + templeCards.length) % templeCards.length;
+
+    setActiveCard(templeCards[nextIndex]);
+  };
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -160,11 +178,33 @@ const RuwanwelisayaDetails = () => {
             >
               <FiX size={20} />
             </button>
-            <div className="flex items-center justify-center bg-black p-3 md:p-5">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigateCard('prev');
+              }}
+              className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white transition hover:bg-black/75"
+              aria-label="Previous image"
+            >
+              <FiChevronLeft size={22} />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                navigateCard('next');
+              }}
+              className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/55 p-3 text-white transition hover:bg-black/75"
+              aria-label="Next image"
+            >
+              <FiChevronRight size={22} />
+            </button>
+            <div className="flex h-[72vh] min-h-[420px] items-center justify-center overflow-hidden bg-black p-3 md:h-[78vh] md:min-h-[520px] md:p-5">
               <img
                 src={activeCard.image}
                 alt={activeCard.subtitle}
-                className="max-h-[74vh] w-full max-w-[900px] object-cover object-center rounded-[18px] md:max-h-[78vh]"
+                className="h-full w-full max-w-[900px] object-contain object-center rounded-[18px]"
               />
             </div>
             <div className="space-y-2 bg-[#111827] px-6 py-5 text-white md:px-8">
@@ -287,19 +327,12 @@ const RuwanwelisayaDetails = () => {
                 ))}
               </div>
 
-              <div className="bg-[#F8F6F1] rounded-[16px] p-4 flex flex-col xl:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-[#1f2937] font-bold text-[0.9rem] whitespace-nowrap">
-                  <FiPhone className="text-[#C66846]" size={18} /> Emergency contacts
-                </div>
-                <div className="flex w-full flex-wrap justify-center gap-2 xl:justify-end">
-                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
-                    Police Emergency <span className="ml-1 text-[#1f2937]">119</span>
-                  </span>
-                  <span className="bg-white rounded-full px-4 py-1.5 text-[0.75rem] font-bold shadow-sm whitespace-nowrap text-[#1f2937]">
-                    Ambulance / Suwaseriya <span className="ml-1 text-[#1f2937]">1990</span>
-                  </span>
-                </div>
-              </div>
+              <EmergencyContactsCard
+                contacts={[
+                  { label: 'Police Emergency', value: '119' },
+                  { label: 'Ambulance / Suwaseriya', value: '1990' },
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -317,9 +350,9 @@ const RuwanwelisayaDetails = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
           <div>
-            <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full md:w-max pr-6 md:pr-16">
+            <div className="bg-white rounded-[16px] p-6 shadow-sm border border-gray-100 mb-8 w-full max-w-[520px] pr-6 md:pr-16">
               <h4 className="font-bold text-[1.2rem] text-[#1f2937] mb-1">Opening Hours</h4>
-              <p className="text-[#6b7280] text-[0.95rem]">Open Daily. The sacred precinct is generally accessible throughout the day.</p>
+              <p className="text-[#6b7280] text-[0.95rem] break-words">Open daily. The sacred precinct is accessible throughout the day.</p>
             </div>
 
             <p className="text-[#4b5563] text-[0.95rem] mb-8 font-sans leading-relaxed">
@@ -479,10 +512,10 @@ const RuwanwelisayaDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">COMMUNITY</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Visitors Reviews</h3>
 
-        <div className="overflow-hidden rounded-[24px]">
+        <div className="overflow-hidden rounded-[24px] flex justify-center">
           <div className="review-carousel-track flex gap-6 pb-4 text-left">
-            {reviewCards.length > 0 ? (
-              reviewCards.map((item, index) => (
+            {visibleReviewCards.length > 0 ? (
+              visibleReviewCards.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
                   className="review-card bg-white rounded-[24px] p-8 shadow-sm border border-gray-100 shrink-0 w-[280px] sm:w-[320px] md:w-[320px]"
@@ -527,8 +560,9 @@ const RuwanwelisayaDetails = () => {
           {[
             { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
             { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
-            { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
             { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
           ].map((place, idx) => (
             <Link key={idx} to={place.route} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">
               <div className="h-[150px] md:h-[120px] overflow-hidden relative">

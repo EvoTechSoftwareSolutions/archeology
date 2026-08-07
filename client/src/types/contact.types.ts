@@ -4,18 +4,16 @@ export interface ContactMessage {
   email: string;
   subject: string;
   message: string;
-  status: "unread" | "read" | "archived";
+  status: "unread" | "read" | "replied";
   createdAt: string;
 }
-
 
 export interface ContactStats {
   total: number;
   unread: number;
   read: number;
-  resolved: number;
+  replied: number;
 }
-
 
 export interface CreateContactPayload {
   name: string;

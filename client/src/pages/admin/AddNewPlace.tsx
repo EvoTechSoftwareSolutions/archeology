@@ -27,7 +27,38 @@ interface PlaceDraft {
   nearbyHotels: string;
   nearbyHospitals: string;
   nearbyRestaurant: string;
+  nearbyFuel: string;
+  nearbyWashrooms: string;
+  nearbyBusStops: string;
+  nearbyParking: string;
+  nearbyRailway: string;
+  emergencyPolice: string;
+  emergencyAmbulance: string;
+  crowd: string;
+  distance: string;
+  drivingTime: string;
+  walkingTime: string;
+  recommendedDeparture: string;
+  weather: string;
+  temperature: string;
+  photographyTime: string;
+  openingHours: string;
+  earlyMorningSlot: string;
+  midDaySlot: string;
+  lateAfternoonSlot: string;
+  visitNote: string;
+  contactAddress: string;
+  contactAdminPhone: string;
+  contactEmergencyPhone: string;
+  contactWebsite: string;
+  contactEmail: string;
   travelTips: string;
+  dressCode: string;
+  photographyRules: string;
+  accessibility: string;
+  dosText: string;
+  dontsText: string;
+  timelineJson: string;
   seoTitle: string;
   metaDescription: string;
   slug: string;
@@ -56,7 +87,38 @@ const initialDraft: PlaceDraft = {
   nearbyHotels: "",
   nearbyHospitals: "",
   nearbyRestaurant: "",
+  nearbyFuel: "",
+  nearbyWashrooms: "",
+  nearbyBusStops: "",
+  nearbyParking: "",
+  nearbyRailway: "",
+  emergencyPolice: "",
+  emergencyAmbulance: "",
+  crowd: "",
+  distance: "",
+  drivingTime: "",
+  walkingTime: "",
+  recommendedDeparture: "",
+  weather: "",
+  temperature: "",
+  photographyTime: "",
+  openingHours: "",
+  earlyMorningSlot: "",
+  midDaySlot: "",
+  lateAfternoonSlot: "",
+  visitNote: "",
+  contactAddress: "",
+  contactAdminPhone: "",
+  contactEmergencyPhone: "",
+  contactWebsite: "",
+  contactEmail: "",
   travelTips: "",
+  dressCode: "",
+  photographyRules: "",
+  accessibility: "",
+  dosText: "",
+  dontsText: "",
+  timelineJson: "",
   seoTitle: "",
   metaDescription: "",
   slug: "",
@@ -182,7 +244,7 @@ const AddNewPlace = () => {
       ]
         .filter(Boolean)
         .join("\n\n");
-      
+
       formData.append("description", description);
       formData.append("century", draft.era.trim() || "Unknown");
       formData.append("statusFlag", "Published");
@@ -198,7 +260,52 @@ const AddNewPlace = () => {
       if (draft.nearbyHotels.trim()) formData.append("nearbyHotels", draft.nearbyHotels.trim());
       if (draft.nearbyHospitals.trim()) formData.append("nearbyHospitals", draft.nearbyHospitals.trim());
       if (draft.nearbyRestaurant.trim()) formData.append("nearbyRestaurant", draft.nearbyRestaurant.trim());
+      if (draft.nearbyFuel.trim()) formData.append("nearbyFuel", draft.nearbyFuel.trim());
+      if (draft.nearbyWashrooms.trim()) formData.append("nearbyWashrooms", draft.nearbyWashrooms.trim());
+      if (draft.nearbyBusStops.trim()) formData.append("nearbyBusStops", draft.nearbyBusStops.trim());
+      if (draft.nearbyParking.trim()) formData.append("nearbyParking", draft.nearbyParking.trim());
+      if (draft.nearbyRailway.trim()) formData.append("nearbyRailway", draft.nearbyRailway.trim());
+
+      if (draft.emergencyPolice.trim()) formData.append("emergencyPolice", draft.emergencyPolice.trim());
+      if (draft.emergencyAmbulance.trim()) formData.append("emergencyAmbulance", draft.emergencyAmbulance.trim());
+
+      if (draft.crowd.trim()) formData.append("crowd", draft.crowd.trim());
+      if (draft.distance.trim()) formData.append("distance", draft.distance.trim());
+      if (draft.drivingTime.trim()) formData.append("drivingTime", draft.drivingTime.trim());
+      if (draft.walkingTime.trim()) formData.append("walkingTime", draft.walkingTime.trim());
+      if (draft.recommendedDeparture.trim()) formData.append("recommendedDeparture", draft.recommendedDeparture.trim());
+      if (draft.weather.trim()) formData.append("weather", draft.weather.trim());
+      if (draft.temperature.trim()) formData.append("temperature", draft.temperature.trim());
+      if (draft.photographyTime.trim()) formData.append("photographyTime", draft.photographyTime.trim());
+
+      if (draft.openingHours.trim()) formData.append("openingHours", draft.openingHours.trim());
+      if (draft.earlyMorningSlot.trim()) formData.append("earlyMorningSlot", draft.earlyMorningSlot.trim());
+      if (draft.midDaySlot.trim()) formData.append("midDaySlot", draft.midDaySlot.trim());
+      if (draft.lateAfternoonSlot.trim()) formData.append("lateAfternoonSlot", draft.lateAfternoonSlot.trim());
+      if (draft.visitNote.trim()) formData.append("visitNote", draft.visitNote.trim());
+
+      if (draft.contactAddress.trim()) formData.append("contactAddress", draft.contactAddress.trim());
+      if (draft.contactAdminPhone.trim()) formData.append("contactAdminPhone", draft.contactAdminPhone.trim());
+      if (draft.contactEmergencyPhone.trim()) formData.append("contactEmergencyPhone", draft.contactEmergencyPhone.trim());
+      if (draft.contactWebsite.trim()) formData.append("contactWebsite", draft.contactWebsite.trim());
+      if (draft.contactEmail.trim()) formData.append("contactEmail", draft.contactEmail.trim());
+
       if (draft.travelTips.trim()) formData.append("travelTips", draft.travelTips.trim());
+      if (draft.dressCode.trim()) formData.append("dressCode", draft.dressCode.trim());
+      if (draft.photographyRules.trim()) formData.append("photographyRules", draft.photographyRules.trim());
+      if (draft.accessibility.trim()) formData.append("accessibility", draft.accessibility.trim());
+
+      if (draft.dosText.trim()) {
+        const dosArray = draft.dosText.split("\n").map(s => s.trim()).filter(Boolean);
+        formData.append("dosJson", JSON.stringify(dosArray));
+      }
+      if (draft.dontsText.trim()) {
+        const dontsArray = draft.dontsText.split("\n").map(s => s.trim()).filter(Boolean);
+        formData.append("dontsJson", JSON.stringify(dontsArray));
+      }
+
+      if (draft.timelineJson.trim()) formData.append("timelineJson", draft.timelineJson.trim());
+
       if (draft.seoTitle.trim()) formData.append("seoTitle", draft.seoTitle.trim());
       if (draft.metaDescription.trim()) formData.append("metaDescription", draft.metaDescription.trim());
       formData.append("slug", draft.slug.trim() || slugify(draft.name));
@@ -232,9 +339,9 @@ const AddNewPlace = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto flex flex-col pt-4 min-h-[calc(100vh-100px)]">
-      <div className="mb-10">
-        <div className="text-[13px] text-gray-500 mb-4 flex items-center gap-1">
+    <div className="w-full max-w-7xl mx-auto flex flex-col px-3 sm:px-4 lg:px-0 pt-4 min-h-[calc(100vh-100px)]">
+      <div className="mb-6 sm:mb-8 lg:mb-10">
+        <div className="text-[12px] sm:text-[13px] text-gray-500 mb-3 sm:mb-4 flex flex-wrap items-center gap-1">
           <span>Home</span>
           <span>&gt;</span>
           <span>Historical places</span>
@@ -243,19 +350,19 @@ const AddNewPlace = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-[32px] font-bold font-serif text-gray-900 mb-1 tracking-tight">
+          <div className="min-w-0">
+            <h1 className="text-[24px] sm:text-[28px] lg:text-[32px] font-bold font-serif text-gray-900 mb-1 tracking-tight break-words">
               Add New Place
             </h1>
-            <p className="text-gray-500 text-[14px]">
+            <p className="text-gray-500 text-[13px] sm:text-[14px]">
               Create a new heritage site listing.
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleSaveDraft}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-md border border-gray-900 text-gray-900 bg-white hover:bg-gray-50 font-bold text-[14px] transition-colors"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-md border border-gray-900 text-gray-900 bg-white hover:bg-gray-50 font-bold text-[14px] transition-colors whitespace-nowrap"
             >
               Save Draft
               <MdOutlineFileDownload size={18} />
@@ -264,7 +371,7 @@ const AddNewPlace = () => {
               type="button"
               onClick={handlePublish}
               disabled={submitting}
-              className="px-8 py-2.5 rounded-md bg-[#1E604B] text-white font-bold text-[14px] hover:bg-[#144b3a] transition-colors shadow-sm disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full sm:w-auto px-8 py-2.5 rounded-md bg-[#1E604B] text-white font-bold text-[14px] hover:bg-[#144b3a] transition-colors shadow-sm disabled:cursor-not-allowed disabled:opacity-70 whitespace-nowrap"
             >
               Publish
             </button>
@@ -272,7 +379,7 @@ const AddNewPlace = () => {
         </div>
         {(statusMessage || statusError) && (
           <div
-            className={`mt-4 rounded-lg border px-4 py-3 text-[14px] ${
+            className={`mt-4 rounded-lg border px-4 py-3 text-[14px] break-words ${
               statusError
                 ? "border-red-200 bg-red-50 text-red-700"
                 : "border-green-200 bg-green-50 text-green-700"
@@ -283,8 +390,8 @@ const AddNewPlace = () => {
         )}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 flex-1 items-start pb-8">
-        <div className="shrink-0 w-full lg:w-[260px] sticky top-4">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 flex-1 items-start pb-8">
+        <div className="shrink-0 w-full lg:w-[260px] lg:sticky lg:top-4">
           <AddNewPlaceSidebar currentStep={currentStep} />
         </div>
 
@@ -337,7 +444,38 @@ const AddNewPlace = () => {
                 nearbyHotels: draft.nearbyHotels,
                 nearbyHospitals: draft.nearbyHospitals,
                 nearbyRestaurant: draft.nearbyRestaurant,
+                nearbyFuel: draft.nearbyFuel,
+                nearbyWashrooms: draft.nearbyWashrooms,
+                nearbyBusStops: draft.nearbyBusStops,
+                nearbyParking: draft.nearbyParking,
+                nearbyRailway: draft.nearbyRailway,
+                emergencyPolice: draft.emergencyPolice,
+                emergencyAmbulance: draft.emergencyAmbulance,
+                crowd: draft.crowd,
+                distance: draft.distance,
+                drivingTime: draft.drivingTime,
+                walkingTime: draft.walkingTime,
+                recommendedDeparture: draft.recommendedDeparture,
+                weather: draft.weather,
+                temperature: draft.temperature,
+                photographyTime: draft.photographyTime,
+                openingHours: draft.openingHours,
+                earlyMorningSlot: draft.earlyMorningSlot,
+                midDaySlot: draft.midDaySlot,
+                lateAfternoonSlot: draft.lateAfternoonSlot,
+                visitNote: draft.visitNote,
+                contactAddress: draft.contactAddress,
+                contactAdminPhone: draft.contactAdminPhone,
+                contactEmergencyPhone: draft.contactEmergencyPhone,
+                contactWebsite: draft.contactWebsite,
+                contactEmail: draft.contactEmail,
                 travelTips: draft.travelTips,
+                dressCode: draft.dressCode,
+                photographyRules: draft.photographyRules,
+                accessibility: draft.accessibility,
+                dosText: draft.dosText,
+                dontsText: draft.dontsText,
+                timelineJson: draft.timelineJson,
               }}
               onChange={updateDraftField}
               onNext={handleNext}

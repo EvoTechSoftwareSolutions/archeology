@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import type { Category, CategoryFormData } from "../../types/category.types";
+import { useSearchContext } from "../../contexts/SearchContext";
 import { useCategories } from "../../hooks/useCategories";
 import CategoryTable from "../../components/admin/categories/CategoryTable";
 import CategoryModal from "../../components/admin/categories/CategoryModal";
@@ -10,7 +11,7 @@ const EMPTY_FORM: CategoryFormData = { name: "", description: "" };
 const Categories = () => {
   const { categories, loading, reload, create, update, remove } = useCategories();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, setSearchTerm } = useSearchContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState<CategoryFormData>(EMPTY_FORM);
@@ -79,20 +80,22 @@ const Categories = () => {
   );
 
   return (
-    <div className="w-full font-['Inter'] relative">
+    <div className="w-full font-['Inter'] relative px-3 sm:px-4 lg:px-0">
       {/* Header */}
-      <div className="flex justify-between items-start mb-8 relative z-10">
-        <div>
-          <div className="text-sm text-gray-500 mb-2">Home &gt; Categories</div>
-          <h1 className="text-4xl font-bold font-serif text-[#2a2a2a] mb-2 tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 sm:mb-8 relative z-10">
+        <div className="min-w-0">
+          <div className="text-[12px] sm:text-sm text-gray-500 mb-2">Home &gt; Categories</div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-[#2a2a2a] mb-2 tracking-tight break-words">
             Categories
           </h1>
-          <p className="text-gray-500 text-sm">Manage category classifications for historical places.</p>
+          <p className="text-gray-500 text-[13px] sm:text-sm">
+            Manage category classifications for historical places.
+          </p>
         </div>
 
         <button
           onClick={() => handleOpenModal()}
-          className="bg-[#1E4538] hover:bg-[#15342a] text-white px-5 py-2.5 rounded-full flex items-center gap-2 text-sm font-medium transition-colors shadow-sm"
+          className="w-full sm:w-auto shrink-0 bg-[#1E4538] hover:bg-[#15342a] text-white px-5 py-2.5 rounded-full flex items-center justify-center gap-2 text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
         >
           <FiPlus size={18} />
           Add Category
@@ -100,8 +103,8 @@ const Categories = () => {
       </div>
 
       {/* Search & Filter */}
-      <div className="bg-white rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mb-8 flex items-center gap-4 relative z-10 border border-gray-100/50">
-        <div className="relative flex-1 max-w-md">
+      <div className="bg-white rounded-2xl p-3 sm:p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)] mb-6 sm:mb-8 flex items-center gap-4 relative z-10 border border-gray-100/50">
+        <div className="relative flex-1 w-full min-w-0 sm:max-w-md">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <FiSearch className="text-gray-400" />
           </div>
@@ -110,14 +113,14 @@ const Categories = () => {
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border-none rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 transition-all text-sm outline-none"
+            className="w-full min-w-0 pl-10 pr-4 py-2.5 bg-gray-50/50 border-none rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 transition-all text-sm outline-none"
           />
         </div>
       </div>
 
       {/* List error (delete failures) */}
       {listError && (
-        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm text-red-700">
+        <div className="mb-6 rounded-2xl border border-red-100 bg-red-50 px-4 sm:px-5 py-4 text-sm text-red-700 break-words">
           {listError}
         </div>
       )}
