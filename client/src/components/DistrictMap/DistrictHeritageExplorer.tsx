@@ -33,12 +33,11 @@ const DistrictHeritageExplorer = () => {
   };
 
   return (
-    <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center gap-6 px-4 py-10 lg:flex-row lg:items-center lg:gap-4">
-      {/* Map column — full width until lg, then shrinks to make room
-          for the detail panel once a district is selected */}
+    <div className="relative mx-auto flex w-full max-w-7xl flex-row items-center justify-center gap-4 px-4 py-10 lg:gap-4">
+      {/* Map column — always side-by-side, shrinks when district selected */}
       <div
-        className={`flex w-full flex-shrink-0 justify-center transition-all duration-500 ease-out ${
-          selectedDistrict ? "lg:w-3/5" : "lg:w-full"
+        className={`flex flex-shrink-0 justify-center transition-all duration-500 ease-out ${
+          selectedDistrict ? "w-[55%] sm:w-[55%] lg:w-3/5" : "w-full"
         }`}
       >
         <SriLankaProvinceMap
@@ -58,10 +57,9 @@ const DistrictHeritageExplorer = () => {
         />
       </div>
 
-      {/* Detail panel — only takes up layout space once something is
-          selected, so it never reserves empty space on mobile */}
+      {/* Detail panel — always appears to the right side */}
       {selectedDistrict && (
-        <div className="w-full lg:w-2/5">
+        <div className="w-[45%] sm:w-[45%] lg:w-2/5">
           <DistrictDetailPanel district={selectedDistrict} onClose={closeDetail} />
         </div>
       )}
