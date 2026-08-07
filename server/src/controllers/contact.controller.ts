@@ -1,233 +1,129 @@
-import type { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
-import nodemailer from "nodemailer";
+import type { Request, Response, NextFunction } from "express";
+import { contactService } from "../services/contact.service.js";
 
-const prisma = new PrismaClient();
-
-const messageSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-<<<<<<< HEAD
-=======
-  phone: z.string().optional(),
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
-  subject: z.string().optional(),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
-<<<<<<< HEAD
-const sendNotificationEmail = async (name: string, email: string, message: string) => {
-=======
-const sendNotificationEmail = async (name: string, email: string, phone: string | undefined, message: string) => {
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
-  const host = process.env.SMTP_HOST;
-  if (!host) {
-    console.warn("SMTP is not configured. Contact notification email was skipped.");
-    return;
-  }
-
-  const transporter = nodemailer.createTransport({
-    host,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-      user: process.env.SMTP_USER || "",
-      pass: process.env.SMTP_PASS || "",
-    },
-  });
-
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER || "contact@heritagesrilanka.com";
-
-  // Auto-reply to user
-  await transporter.sendMail({
-    from,
-    to: email,
-    subject: "Thank you for contacting Heritage Sri Lanka",
-    text: `Hello ${name},\n\nWe have received your message and will get back to you shortly.\n\nYour message:\n${message}`,
-  }).catch(err => console.error("Auto-reply failed:", err));
-
-  // Notification to Admin
-  const adminEmail = process.env.CONTACT_TO_EMAIL || process.env.SMTP_USER;
-  if (adminEmail) {
-    await transporter.sendMail({
-      from,
-      to: adminEmail,
-      subject: `New Contact Form Submission from ${name}`,
-      text: `You have received a new message from the contact form.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    }).catch(err => console.error("Admin notification failed:", err));
-  }
-};
-
-export const persistContactMessageAndSendNotification = async ({
-  createMessage,
-  sendNotification,
-}: {
-  createMessage: () => Promise<any>;
-  sendNotification: () => Promise<void>;
-}) => {
-  const newMessage = await createMessage();
-  await sendNotification();
-  return newMessage;
-};
-
-export const createMessage = async (req: Request, res: Response) => {
+export const createMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const parsedData = messageSchema.parse(req.body);
+    const result = await contactService.createMessage(req.body);
 
-    const newMessage = await persistContactMessageAndSendNotification({
-      createMessage: async () => prisma.contactMessage.create({
-        data: {
-          name: parsedData.name,
-          email: parsedData.email,
-<<<<<<< HEAD
-=======
-          phone: parsedData.phone,
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
-          subject: parsedData.subject || "No Subject",
-          message: parsedData.message,
-        },
-      }),
-      sendNotification: async () => {
-        try {
-          await sendNotificationEmail(parsedData.name, parsedData.email, parsedData.message);
-        } catch (error) {
-          console.error("Contact email delivery failed", error);
-        }
-      },
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Message sent successfully",
-      data: newMessage,
-    });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ success: false, message: error.issues[0].message });
-      return;
-    }
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-export const getMessages = async (req: Request, res: Response) => {
-  try {
-    const messages = await prisma.contactMessage.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    res.status(200).json({ success: true, data: messages });
+    res.status(201).json(result);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    next(error);
   }
 };
 
-export const getStats = async (req: Request, res: Response) => {
+export const getMessages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const total = await prisma.contactMessage.count();
-    const unread = await prisma.contactMessage.count({ where: { status: "unread" } });
-    const read = await prisma.contactMessage.count({ where: { status: "read" } });
-    const resolved = await prisma.contactMessage.count({ where: { status: "archived" } });
+    const messages = await contactService.getMessages();
 
-    res.status(200).json({
+    res.json({
       success: true,
-      data: { total, unread, read, resolved },
+      data: messages,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    next(error);
   }
 };
 
-export const updateMessageStatus = async (req: Request, res: Response) => {
+export const getStats = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id } = req.params;
+    const stats = await contactService.getStats();
+
+    res.json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMessageStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
     const { status } = req.body;
 
-    const updated = await prisma.contactMessage.update({
-      where: { id: Number(id) },
-      data: { status },
-    });
+    const updated = await contactService.updateMessageStatus(id, status);
 
-    res.status(200).json({ success: true, data: updated });
+    res.json({
+      success: true,
+      data: updated,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    next(error);
   }
 };
 
-export const deleteMessage = async (req: Request, res: Response) => {
+export const deleteMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id } = req.params;
-    await prisma.contactMessage.delete({
-      where: { id: Number(id) },
-    });
-    res.status(200).json({ success: true, message: "Deleted successfully" });
+    const id = Number(req.params.id);
+
+    const result = await contactService.deleteMessage(id);
+
+    res.json(result);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    next(error);
   }
 };
 
-export const replyMessage = async (req: Request, res: Response) => {
+export const replyMessage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
+
     const { replyText } = req.body;
 
-    if (!replyText || replyText.trim() === "") {
-       res.status(400).json({ success: false, message: "Reply text is required" });
-       return;
-    }
+    const result = await contactService.replyMessage(id, replyText);
 
-    const message = await prisma.contactMessage.findUnique({
-      where: { id: Number(id) },
+    res.json({
+      success: true,
+      data: result,
     });
-
-    if (!message) {
-       res.status(404).json({ success: false, message: "Message not found" });
-       return;
-    }
-
-    const host = process.env.SMTP_HOST;
-    if (!host) {
-       res.status(500).json({ success: false, message: "SMTP is not configured on the server." });
-       return;
-    }
-
-    const transporter = nodemailer.createTransport({
-      host,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: {
-        user: process.env.SMTP_USER || "",
-        pass: process.env.SMTP_PASS || "",
-      },
-    });
-
-    const from = process.env.SMTP_FROM || process.env.SMTP_USER || "contact@heritagesrilanka.com";
-
-    await transporter.sendMail({
-      from,
-      to: message.email,
-      subject: `Re: ${message.subject || "Your Contact Message"}`,
-      text: `Hello ${message.name},\n\nAdmin has replied to your message:\n\n${replyText}\n\n--\nOriginal Message:\n${message.message}`,
-    });
-
-    // Mark as resolved/archived after replying
-    const updated = await prisma.contactMessage.update({
-      where: { id: Number(id) },
-      data: { status: "archived" },
-    });
-
-    res.status(200).json({ success: true, message: "Reply sent successfully", data: updated });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error while sending reply" });
+    next(error);
   }
-<<<<<<< HEAD
 };
-=======
+export const markContactAsRead = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    const message = await contactService.markAsRead(id);
+
+    return res.status(200).json({
+      success: true,
+
+      message: "Message marked as read",
+
+      data: message,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
@@ -19,8 +19,6 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "@types/multer": "^2.2.0",
-    "@types/nodemailer": "^8.0.1",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

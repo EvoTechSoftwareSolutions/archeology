@@ -18,7 +18,6 @@ export const districtRepository = {
             },
             include:{
                 historicalPlaces:true,
-                province: true,
             }
             
         });

@@ -8,7 +8,8 @@ import {
   deleteDistrict,
 } from "../controllers/district.controller.js";
 
-
+import { authenticate } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/role.middleware.js";
 import { validate } from "../middleware/validate.middleware.js";
 
 import {
@@ -31,7 +32,8 @@ router.get("/:id", getDistrictById);
 // Create district
 router.post(
   "/",
-
+  authenticate,
+  authorize("ADMIN", "SUPERADMIN"),
   validate(createDistrictSchema),
   createDistrict,
 );
@@ -39,12 +41,18 @@ router.post(
 // Update district
 router.put(
   "/:id",
-
+  authenticate,
+  authorize("ADMIN", "SUPERADMIN"),
   validate(updateDistrictSchema),
   updateDistrict,
 );
 
 // Delete district
-router.delete("/:id", deleteDistrict);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("ADMIN", "SUPERADMIN"),
+  deleteDistrict,
+);
 
 export default router;

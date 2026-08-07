@@ -9,8 +9,4 @@ export const createContactMessageSchema = z.object({
 
 export const updateContactMessageSchema = z.object({
   status: z.enum(["unread", "read", "archived"]),
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

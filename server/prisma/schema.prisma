@@ -7,16 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Province {
   id          Int      @id @default(autoincrement())
-  name        String   @unique
+  name        String  @unique
   regionCode  String
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  districts        District[]
+  districts   District[]
   historicalPlaces HistoricalPlace[]
 }
 
@@ -30,7 +31,8 @@ model District {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  province         Province        @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+  province    Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+
   historicalPlaces HistoricalPlace[]
 }
 
@@ -46,6 +48,9 @@ model Category {
 // Extended HistoricalPlace model, adding the fields your Add New Place
 // form now collects: gallery images, nearby facilities, travel tips, and
 // SEO fields. Everything from your original model is preserved.
+//
+// Your District/Province models, SiteMonograph, and AuditLog are
+// untouched — only shown here as relation targets for context.
 // -----------------------------------------------------------------------
 
 model HistoricalPlace {
@@ -55,6 +60,8 @@ model HistoricalPlace {
   category    String
   description String?
   image       String? // hero image
+
+  
 
   century     String
   statusFlag  String
@@ -69,13 +76,46 @@ model HistoricalPlace {
   districtId  Int?
   district    District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
 
-  // --- Nearby facilities & travel tips ----------------------------------
+  // --- NEW: facilities & travel --------------------------------------
   nearbyHotels     String?
   nearbyHospitals  String?
   nearbyRestaurant String?
   travelTips       String?
 
-  // --- SEO fields -------------------------------------------------------
+  // --- NEW: Dynamic Place Details -------------------------------------
+  timelineJson          String?   @db.Text
+  crowd                 String?
+  distance              String?
+  drivingTime           String?
+  walkingTime           String?
+  recommendedDeparture  String?
+  weather               String?
+  temperature           String?
+  photographyTime       String?
+  nearbyFuel            String?
+  nearbyWashrooms       String?
+  nearbyBusStops        String?
+  nearbyParking         String?
+  nearbyRailway         String?
+  emergencyPolice       String?
+  emergencyAmbulance     String?
+  openingHours          String?
+  earlyMorningSlot      String?
+  midDaySlot            String?
+  lateAfternoonSlot     String?
+  visitNote             String?   @db.Text
+  contactAddress        String?
+  contactAdminPhone     String?
+  contactEmergencyPhone String?
+  contactWebsite        String?
+  contactEmail          String?
+  dressCode             String?   @db.Text
+  photographyRules      String?   @db.Text
+  accessibility         String?   @db.Text
+  dosJson               String?   @db.Text
+  dontsJson             String?   @db.Text
+
+  // --- NEW: SEO --------------------------------------------------------
   seoTitle        String?
   metaDescription String?
   slug            String? @unique
@@ -97,6 +137,7 @@ model PlaceGalleryImage {
   historicalPlace   HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
 }
 
+
 model NewsletterSubscriber {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -106,51 +147,54 @@ model NewsletterSubscriber {
 }
 
 model ContactMessage {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String?  // Optional phone number
-  subject   String?
-  message   String   @db.Text
-  status    String   @default("unread")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?  // Added optional phone number field
+  subject     String?
+  message     String   @db.Text
+  status      String   @default("unread")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model SiteMonograph {
-  id                Int      @id @default(autoincrement())
+  id                  Int      @id @default(autoincrement())
 
-  name              String
+  name                String
 
-  historicalPlaceId Int
+  historicalPlaceId   Int
 
-  contentBody       String
 
-  inscriptionIndex  String
+  contentBody         String
 
-  lastUpdated       DateTime
+  inscriptionIndex    String
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  lastUpdated         DateTime
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   // Relations
-  historicalPlace   HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
-  verifiedById      Int?
-  verifiedBy        User?           @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
+  historicalPlace HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
+  verifiedById        Int?
+  verifiedBy          User?           @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
 }
 
 model AuditLog {
-  id            Int      @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
 
-  targetPlaceId Int
 
-  actionType    String
+  targetPlaceId   Int
 
-  timestamp     DateTime @default(now())
+  actionType      String
 
-  createdAt     DateTime @default(now())
+  timestamp       DateTime @default(now())
+
+  createdAt       DateTime @default(now())
 
   // Relations
+
   historicalPlace HistoricalPlace @relation(fields: [targetPlaceId], references: [id], onDelete: Cascade)
   userId          Int?
   user            User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -169,9 +213,10 @@ model User {
   createdAt  DateTime @default(now())
 
   // Relations
-  auditLogs     AuditLog[]
-  verifiedSites SiteMonograph[]
+  auditLogs       AuditLog[]
+  verifiedSites   SiteMonograph[]
 }
+
 
 enum UserRole {
   USER
@@ -180,14 +225,14 @@ enum UserRole {
 }
 
 model Review {
-  id           Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   reviewerName String
   reviewerRole String?
-  image        String?
-  rating       Int      @default(5)
-  reviewText   String   @db.Text
-  isActive     Boolean  @default(true)
+  image       String?
+  rating      Int      @default(5)
+  reviewText  String   @db.Text
+  isActive    Boolean  @default(true)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

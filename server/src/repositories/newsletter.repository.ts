@@ -48,8 +48,4 @@ export class NewsletterRepository {
       where: { status: "active" },
     });
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c

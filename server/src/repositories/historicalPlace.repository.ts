@@ -3,54 +3,90 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const historicalPlaceRepository = {
-<<<<<<< HEAD
-  getAll() {
+  getAll(params?: {
+    search?: string;
+    districtId?: number;
+    provinceId?: number;
+    category?: string;
+    statusFlag?: string;
+    page?: number;
+    pageSize?: number;
+  }) {
     return prisma.historicalPlace.findMany({
+      where: {
+        ...(params?.districtId && {
+          districtId: params.districtId,
+        }),
+
+        ...(params?.statusFlag && {
+          statusFlag: params.statusFlag,
+        }),
+
+        ...(params?.search && {
+          OR: [
+            {
+              name: {
+                contains: params.search,
+              },
+            },
+            {
+              century: {
+                contains: params.search,
+              },
+            },
+            {
+              statusFlag: {
+                contains: params.search,
+              },
+            },
+            {
+              district: {
+                name: {
+                  contains: params.search,
+                },
+              },
+            },
+          ],
+        }),
+      },
+
       include: {
-        district: {
-          include: {
-            province: true,
-          },
-        },
+        province: true,
+        district: true,
+        galleryImages: true,
       },
     });
   },
-=======
-getAll() {
-  return prisma.historicalPlace.findMany({
+
+getById(id:number){
+ return prisma.historicalPlace.findUnique({
+  where:{id},
+
+  include:{
+    province:true,
+    district:true,
+    galleryImages:true,
+    siteMonograph:true
+  }
+ })
+},
+
+getBySlugOrName(slugOrName: string) {
+  return prisma.historicalPlace.findFirst({
+    where: {
+      OR: [
+        { slug: slugOrName },
+        { name: { equals: slugOrName } },
+      ],
+    },
     include: {
-
       province: true,
-
       district: true,
-
       galleryImages: true,
-
+      siteMonograph: true,
     },
   });
 },
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
-
-  getById(id: number) {
-    return prisma.historicalPlace.findUnique({
-      where: {
-        id,
-      },
-      include: {
-<<<<<<< HEAD
-        district: {
-          include: {
-            province: true,
-          },
-        },
-=======
-        district: true,
-        galleryImages: true,
-        siteMonograph: true,
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
-      },
-    });
-  },
 
   getByName(name: string) {
     return prisma.historicalPlace.findFirst({
@@ -66,82 +102,155 @@ getAll() {
         districtId,
       },
       include: {
-<<<<<<< HEAD
-        district: {
-          include: {
-            province: true,
-          },
-        },
-      },
-    });
-  },
-
-  getByDistrictName(districtName: string) {
-    return prisma.historicalPlace.findMany({
-      where: {
-        district: {
-          name: districtName,
-        },
-      },
-      include: {
-        district: {
-          include: {
-            province: true,
-          },
-        },
-=======
         district: true,
         galleryImages: true,
->>>>>>> 9931c83eb22fc150fecacb27a2b7bd6cd8599a5c
       },
     });
   },
 
-create(data: any) {
-  return prisma.historicalPlace.create({
-    data: {
-      name: data.name,
-      category: data.category,
-      description: data.description,
-      image: data.image,
-      century: data.century,
-      statusFlag: data.statusFlag,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      anchorXPct: data.anchorXPct,
-      anchorYPct: data.anchorYPct,
-      provinceId: data.provinceId,
-      districtId: data.districtId,
+  create(data: any) {
+    return prisma.historicalPlace.create({
+      data: {
+        name: data.name,
+        category: data.category,
+        description: data.description,
+        image: data.image,
+        century: data.century,
+        statusFlag: data.statusFlag,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        anchorXPct: data.anchorXPct,
+        anchorYPct: data.anchorYPct,
+        provinceId: data.provinceId,
+        districtId: data.districtId,
 
-      nearbyHotels: data.nearbyHotels,
-      nearbyHospitals: data.nearbyHospitals,
-      nearbyRestaurant: data.nearbyRestaurant,
-      travelTips: data.travelTips,
+        nearbyHotels: data.nearbyHotels,
+        nearbyHospitals: data.nearbyHospitals,
+        nearbyRestaurant: data.nearbyRestaurant,
+        travelTips: data.travelTips,
 
-      seoTitle: data.seoTitle,
-      metaDescription: data.metaDescription,
-      slug: data.slug,
-      focusKeywords: data.focusKeywords,
+        timelineJson: data.timelineJson,
+        crowd: data.crowd,
+        distance: data.distance,
+        drivingTime: data.drivingTime,
+        walkingTime: data.walkingTime,
+        recommendedDeparture: data.recommendedDeparture,
+        weather: data.weather,
+        temperature: data.temperature,
+        photographyTime: data.photographyTime,
+        nearbyFuel: data.nearbyFuel,
+        nearbyWashrooms: data.nearbyWashrooms,
+        nearbyBusStops: data.nearbyBusStops,
+        nearbyParking: data.nearbyParking,
+        nearbyRailway: data.nearbyRailway,
+        emergencyPolice: data.emergencyPolice,
+        emergencyAmbulance: data.emergencyAmbulance,
+        openingHours: data.openingHours,
+        earlyMorningSlot: data.earlyMorningSlot,
+        midDaySlot: data.midDaySlot,
+        lateAfternoonSlot: data.lateAfternoonSlot,
+        visitNote: data.visitNote,
+        contactAddress: data.contactAddress,
+        contactAdminPhone: data.contactAdminPhone,
+        contactEmergencyPhone: data.contactEmergencyPhone,
+        contactWebsite: data.contactWebsite,
+        contactEmail: data.contactEmail,
+        dressCode: data.dressCode,
+        photographyRules: data.photographyRules,
+        accessibility: data.accessibility,
+        dosJson: data.dosJson,
+        dontsJson: data.dontsJson,
 
-      galleryImages: {
-        create: data.galleryImages,
+        seoTitle: data.seoTitle,
+        metaDescription: data.metaDescription,
+        slug: data.slug,
+        focusKeywords: data.focusKeywords,
+
+        galleryImages: {
+          create: data.galleryImages,
+        },
       },
-    },
 
-    include: {
-      district: true,
-      galleryImages: true,
-    },
-  });
-},
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+      },
+    });
+  },
 
   update(id: number, data: any) {
     return prisma.historicalPlace.update({
       where: {
         id,
       },
-      data,
+
+      data: {
+        name: data.name,
+        category: data.category,
+        description: data.description,
+        century: data.century,
+        statusFlag: data.statusFlag,
+
+        latitude: data.latitude,
+        longitude: data.longitude,
+
+        anchorXPct: data.anchorXPct,
+        anchorYPct: data.anchorYPct,
+
+        provinceId: data.provinceId,
+        districtId: data.districtId,
+
+        nearbyHotels: data.nearbyHotels,
+        nearbyHospitals: data.nearbyHospitals,
+        nearbyRestaurant: data.nearbyRestaurant,
+        travelTips: data.travelTips,
+
+        timelineJson: data.timelineJson,
+        crowd: data.crowd,
+        distance: data.distance,
+        drivingTime: data.drivingTime,
+        walkingTime: data.walkingTime,
+        recommendedDeparture: data.recommendedDeparture,
+        weather: data.weather,
+        temperature: data.temperature,
+        photographyTime: data.photographyTime,
+        nearbyFuel: data.nearbyFuel,
+        nearbyWashrooms: data.nearbyWashrooms,
+        nearbyBusStops: data.nearbyBusStops,
+        nearbyParking: data.nearbyParking,
+        nearbyRailway: data.nearbyRailway,
+        emergencyPolice: data.emergencyPolice,
+        emergencyAmbulance: data.emergencyAmbulance,
+        openingHours: data.openingHours,
+        earlyMorningSlot: data.earlyMorningSlot,
+        midDaySlot: data.midDaySlot,
+        lateAfternoonSlot: data.lateAfternoonSlot,
+        visitNote: data.visitNote,
+        contactAddress: data.contactAddress,
+        contactAdminPhone: data.contactAdminPhone,
+        contactEmergencyPhone: data.contactEmergencyPhone,
+        contactWebsite: data.contactWebsite,
+        contactEmail: data.contactEmail,
+        dressCode: data.dressCode,
+        photographyRules: data.photographyRules,
+        accessibility: data.accessibility,
+        dosJson: data.dosJson,
+        dontsJson: data.dontsJson,
+
+        seoTitle: data.seoTitle,
+        metaDescription: data.metaDescription,
+        slug: data.slug,
+        focusKeywords: data.focusKeywords,
+
+        ...(data.image && {
+          image: data.image,
+        }),
+      },
+
       include: {
+        province: true,
+        district: true,
         galleryImages: true,
       },
     });
