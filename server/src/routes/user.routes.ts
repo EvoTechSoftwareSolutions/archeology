@@ -13,7 +13,7 @@ const router = Router();
 router.use(authenticate);
 
 // Admin only
-router.use(authorize("ADMIN"));
+router.use(authorize("ADMIN", "SUPERADMIN"));
 
 // User management
 router.get("/", getAllUsers);

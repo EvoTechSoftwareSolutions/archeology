@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import useNotificationsSocket from "../../../hooks/useNotificationsSocket";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser, FiX } from "react-icons/fi";
 import { authService } from "../../../services/auth.service";
@@ -27,17 +28,21 @@ const getInitials = (name?: string) => {
 const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsState, setNotificationsState] = useState<Array<{title:string; subtitle?:string; time?:string; id?:any}>>([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(getStoredUser);
   const [loggingOut, setLoggingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const notifications = [
-    { title: "New place added", subtitle: "Anuradhapura Archaeological Site", time: "2m ago" },
-    { title: "User request approved", subtitle: "Kasun Perera", time: "15m ago" },
-    { title: "New image uploaded", subtitle: "Trincomalee Fort", time: "1h ago" },
-  ];
+  const notifications = notificationsState;
+
+  // Setup socket for real-time notifications
+  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+  useNotificationsSocket(token, (n: any) => {
+    const item = { title: n.title || "Notification", subtitle: n.subtitle || "", time: "Just now", id: n.id };
+    setNotificationsState((prev) => [item, ...prev]);
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -13,7 +13,7 @@ const router = Router();
 router.post("/subscribe", validate(subscribeNewsletterSchema), newsletterController.subscribe);
 router.get("/stats", newsletterController.getStats);
 
-router.use(authenticate, authorize("ADMIN"));
+router.use(authenticate, authorize("ADMIN", "SUPERADMIN"));
 
 router.get(
   "/subscribers",
