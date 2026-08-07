@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useNotificationsSocket from "../../../hooks/useNotificationsSocket";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser, FiX } from "react-icons/fi";
@@ -39,12 +39,14 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
 
   const notifications = notificationsState;
 
+  const handleNotification = useCallback((n: any) => {
+    const item = { title: n?.title || "Notification", subtitle: n?.subtitle || "", time: "Just now", id: n?.id };
+    setNotificationsState((prev) => [item, ...prev]);
+  }, []);
+
   // Setup socket for real-time notifications
   const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
-  useNotificationsSocket(token, (n: any) => {
-    const item = { title: n.title || "Notification", subtitle: n.subtitle || "", time: "Just now", id: n.id };
-    setNotificationsState((prev) => [item, ...prev]);
-  });
+  useNotificationsSocket(token, handleNotification);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
