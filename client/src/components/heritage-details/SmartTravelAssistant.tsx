@@ -16,6 +16,8 @@ interface SmartTravelAssistantProps {
   photographyTime: string;
   essentials: EssentialItem[];
   travelTips?: string | null;
+  emergencyPolice?: string | null;
+  emergencyAmbulance?: string | null;
 }
 
 const SmartTravelAssistant = ({
@@ -27,6 +29,8 @@ const SmartTravelAssistant = ({
   photographyTime,
   essentials,
   travelTips,
+  emergencyPolice,
+  emergencyAmbulance,
 }: SmartTravelAssistantProps) => {
   return (
     <div className="relative z-20">
@@ -103,8 +107,8 @@ const SmartTravelAssistant = ({
 
         <EmergencyContactsCard
           contacts={[
-            { label: 'Police Emergency', value: '119' },
-            { label: 'Ambulance / Suwaseriya', value: '1990' },
+            { label: 'Police Emergency', value: emergencyPolice || '119' },
+            { label: 'Ambulance / Suwaseriya', value: emergencyAmbulance || '1990' },
           ]}
         />
       </div>

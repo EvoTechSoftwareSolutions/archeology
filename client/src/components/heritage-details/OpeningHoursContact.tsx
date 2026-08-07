@@ -12,6 +12,9 @@ interface OpeningHoursContactProps {
   visitNote: string;
   rituals?: RitualEntry[];
   contactDetails: ContactDetail[];
+  earlyMorningSlot?: string | null;
+  midDaySlot?: string | null;
+  lateAfternoonSlot?: string | null;
 }
 
 const DEFAULT_RITUALS: RitualEntry[] = [
@@ -24,9 +27,24 @@ const OpeningHoursContact = ({
   headingLabel,
   openingHours,
   visitNote,
-  rituals = DEFAULT_RITUALS,
+  rituals,
   contactDetails,
+  earlyMorningSlot,
+  midDaySlot,
+  lateAfternoonSlot,
 }: OpeningHoursContactProps) => {
+  // Build rituals from dynamic slots if provided, otherwise use passed rituals or defaults
+  const resolvedRituals: RitualEntry[] = (() => {
+    if (earlyMorningSlot || midDaySlot || lateAfternoonSlot) {
+      const result: RitualEntry[] = [];
+      if (earlyMorningSlot) result.push({ title: 'Early Morning', timeWindow: earlyMorningSlot });
+      if (midDaySlot) result.push({ title: 'Mid-Day', timeWindow: midDaySlot });
+      if (lateAfternoonSlot) result.push({ title: 'Late Afternoon', timeWindow: lateAfternoonSlot });
+      return result;
+    }
+    return rituals ?? DEFAULT_RITUALS;
+  })();
+
   return (
     <section className="max-w-[1200px] mx-auto px-6 md:px-10 pb-[80px] relative mt-16">
       <div className="absolute inset-0 flex justify-center items-center pointer-events-none z-0 overflow-hidden">
@@ -55,7 +73,7 @@ const OpeningHoursContact = ({
           </p>
 
           <div className="relative pl-8 border-l-[3px] border-[#E2DED5] space-y-8 mb-10 ml-8">
-            {rituals.map((ritual, idx) => (
+            {resolvedRituals.map((ritual, idx) => (
               <div key={idx} className="relative">
                 <div
                   className={`absolute -left-[41px] top-1.5 w-[18px] h-[18px] rounded-full border-[4px] border-[#F8F6F1] ${

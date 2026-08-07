@@ -31,7 +31,38 @@ interface PlaceDraft {
   nearbyHotels: string;
   nearbyHospitals: string;
   nearbyRestaurant: string;
+  nearbyFuel: string;
+  nearbyWashrooms: string;
+  nearbyBusStops: string;
+  nearbyParking: string;
+  nearbyRailway: string;
+  emergencyPolice: string;
+  emergencyAmbulance: string;
+  crowd: string;
+  distance: string;
+  drivingTime: string;
+  walkingTime: string;
+  recommendedDeparture: string;
+  weather: string;
+  temperature: string;
+  photographyTime: string;
+  openingHours: string;
+  earlyMorningSlot: string;
+  midDaySlot: string;
+  lateAfternoonSlot: string;
+  visitNote: string;
+  contactAddress: string;
+  contactAdminPhone: string;
+  contactEmergencyPhone: string;
+  contactWebsite: string;
+  contactEmail: string;
   travelTips: string;
+  dressCode: string;
+  photographyRules: string;
+  accessibility: string;
+  dosText: string;
+  dontsText: string;
+  timelineJson: string;
   seoTitle: string;
   metaDescription: string;
   slug: string;
@@ -58,7 +89,38 @@ const initialDraft: PlaceDraft = {
   nearbyHotels: "",
   nearbyHospitals: "",
   nearbyRestaurant: "",
+  nearbyFuel: "",
+  nearbyWashrooms: "",
+  nearbyBusStops: "",
+  nearbyParking: "",
+  nearbyRailway: "",
+  emergencyPolice: "",
+  emergencyAmbulance: "",
+  crowd: "",
+  distance: "",
+  drivingTime: "",
+  walkingTime: "",
+  recommendedDeparture: "",
+  weather: "",
+  temperature: "",
+  photographyTime: "",
+  openingHours: "",
+  earlyMorningSlot: "",
+  midDaySlot: "",
+  lateAfternoonSlot: "",
+  visitNote: "",
+  contactAddress: "",
+  contactAdminPhone: "",
+  contactEmergencyPhone: "",
+  contactWebsite: "",
+  contactEmail: "",
   travelTips: "",
+  dressCode: "",
+  photographyRules: "",
+  accessibility: "",
+  dosText: "",
+  dontsText: "",
+  timelineJson: "",
   seoTitle: "",
   metaDescription: "",
   slug: "",
@@ -100,16 +162,34 @@ useEffect(() => {
       const shortDescription = descriptionParts[0] || "";
       const historicalStory = descriptionParts.slice(1).join("\n\n") || "";
 
-      // 1. FIX: Map gallery images by extracting the `.url` property from objects
       const gallery: (File | string | null)[] = [null, null, null, null, null, null];
       if (Array.isArray(data.galleryImages)) {
         data.galleryImages.forEach((imgObj: { url?: string } | string, idx: number) => {
           if (idx < 6) {
-            // Handle both object structure { id, url } and standalone string fallback
             const url = typeof imgObj === "object" && imgObj !== null ? imgObj.url : imgObj;
             gallery[idx] = url || null;
           }
         });
+      }
+
+      let dosText = "";
+      if (data.dosJson) {
+        try {
+          const parsed = JSON.parse(data.dosJson);
+          if (Array.isArray(parsed)) dosText = parsed.join("\n");
+        } catch {
+          dosText = data.dosJson;
+        }
+      }
+
+      let dontsText = "";
+      if (data.dontsJson) {
+        try {
+          const parsed = JSON.parse(data.dontsJson);
+          if (Array.isArray(parsed)) dontsText = parsed.join("\n");
+        } catch {
+          dontsText = data.dontsJson;
+        }
       }
 
       setDraft({
@@ -126,13 +206,43 @@ useEffect(() => {
         anchorYPct: rawAnchorY,
         shortDescription,
         historicalStory,
-        // 2. FIX: Backend sends key "image", not "imageUrl"
         heroImage: data.image || data.imageUrl || null, 
         galleryImages: gallery,
         nearbyHotels: data.nearbyHotels || "",
         nearbyHospitals: data.nearbyHospitals || "",
         nearbyRestaurant: data.nearbyRestaurant || "",
+        nearbyFuel: data.nearbyFuel || "",
+        nearbyWashrooms: data.nearbyWashrooms || "",
+        nearbyBusStops: data.nearbyBusStops || "",
+        nearbyParking: data.nearbyParking || "",
+        nearbyRailway: data.nearbyRailway || "",
+        emergencyPolice: data.emergencyPolice || "",
+        emergencyAmbulance: data.emergencyAmbulance || "",
+        crowd: data.crowd || "",
+        distance: data.distance || "",
+        drivingTime: data.drivingTime || "",
+        walkingTime: data.walkingTime || "",
+        recommendedDeparture: data.recommendedDeparture || "",
+        weather: data.weather || "",
+        temperature: data.temperature || "",
+        photographyTime: data.photographyTime || "",
+        openingHours: data.openingHours || "",
+        earlyMorningSlot: data.earlyMorningSlot || "",
+        midDaySlot: data.midDaySlot || "",
+        lateAfternoonSlot: data.lateAfternoonSlot || "",
+        visitNote: data.visitNote || "",
+        contactAddress: data.contactAddress || "",
+        contactAdminPhone: data.contactAdminPhone || "",
+        contactEmergencyPhone: data.contactEmergencyPhone || "",
+        contactWebsite: data.contactWebsite || "",
+        contactEmail: data.contactEmail || "",
         travelTips: data.travelTips || "",
+        dressCode: data.dressCode || "",
+        photographyRules: data.photographyRules || "",
+        accessibility: data.accessibility || "",
+        dosText,
+        dontsText,
+        timelineJson: data.timelineJson || "",
         seoTitle: data.seoTitle || "",
         metaDescription: data.metaDescription || "",
         slug: data.slug || "",
@@ -148,8 +258,6 @@ useEffect(() => {
 
   fetchPlace();
 }, [id]);
-
-
 
   const handleNext = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
   const handleBack = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -230,7 +338,6 @@ useEffect(() => {
       formData.append("latitude", String(draft.latitude));
       formData.append("longitude", String(draft.longitude));
 
-      // Scale percentage to 0-100 range expected by API
       if (draft.anchorXPct) {
         formData.append("anchorXPct", String(Number(draft.anchorXPct) * 100));
       }
@@ -241,14 +348,55 @@ useEffect(() => {
       formData.append("provinceId", String(draft.provinceId));
       formData.append("districtId", String(draft.districtId));
 
-      if (draft.nearbyHotels.trim())
-        formData.append("nearbyHotels", draft.nearbyHotels.trim());
-      if (draft.nearbyHospitals.trim())
-        formData.append("nearbyHospitals", draft.nearbyHospitals.trim());
-      if (draft.nearbyRestaurant.trim())
-        formData.append("nearbyRestaurant", draft.nearbyRestaurant.trim());
-      if (draft.travelTips.trim())
-        formData.append("travelTips", draft.travelTips.trim());
+      if (draft.nearbyHotels.trim()) formData.append("nearbyHotels", draft.nearbyHotels.trim());
+      if (draft.nearbyHospitals.trim()) formData.append("nearbyHospitals", draft.nearbyHospitals.trim());
+      if (draft.nearbyRestaurant.trim()) formData.append("nearbyRestaurant", draft.nearbyRestaurant.trim());
+      if (draft.nearbyFuel.trim()) formData.append("nearbyFuel", draft.nearbyFuel.trim());
+      if (draft.nearbyWashrooms.trim()) formData.append("nearbyWashrooms", draft.nearbyWashrooms.trim());
+      if (draft.nearbyBusStops.trim()) formData.append("nearbyBusStops", draft.nearbyBusStops.trim());
+      if (draft.nearbyParking.trim()) formData.append("nearbyParking", draft.nearbyParking.trim());
+      if (draft.nearbyRailway.trim()) formData.append("nearbyRailway", draft.nearbyRailway.trim());
+
+      if (draft.emergencyPolice.trim()) formData.append("emergencyPolice", draft.emergencyPolice.trim());
+      if (draft.emergencyAmbulance.trim()) formData.append("emergencyAmbulance", draft.emergencyAmbulance.trim());
+
+      if (draft.crowd.trim()) formData.append("crowd", draft.crowd.trim());
+      if (draft.distance.trim()) formData.append("distance", draft.distance.trim());
+      if (draft.drivingTime.trim()) formData.append("drivingTime", draft.drivingTime.trim());
+      if (draft.walkingTime.trim()) formData.append("walkingTime", draft.walkingTime.trim());
+      if (draft.recommendedDeparture.trim()) formData.append("recommendedDeparture", draft.recommendedDeparture.trim());
+      if (draft.weather.trim()) formData.append("weather", draft.weather.trim());
+      if (draft.temperature.trim()) formData.append("temperature", draft.temperature.trim());
+      if (draft.photographyTime.trim()) formData.append("photographyTime", draft.photographyTime.trim());
+
+      if (draft.openingHours.trim()) formData.append("openingHours", draft.openingHours.trim());
+      if (draft.earlyMorningSlot.trim()) formData.append("earlyMorningSlot", draft.earlyMorningSlot.trim());
+      if (draft.midDaySlot.trim()) formData.append("midDaySlot", draft.midDaySlot.trim());
+      if (draft.lateAfternoonSlot.trim()) formData.append("lateAfternoonSlot", draft.lateAfternoonSlot.trim());
+      if (draft.visitNote.trim()) formData.append("visitNote", draft.visitNote.trim());
+
+      if (draft.contactAddress.trim()) formData.append("contactAddress", draft.contactAddress.trim());
+      if (draft.contactAdminPhone.trim()) formData.append("contactAdminPhone", draft.contactAdminPhone.trim());
+      if (draft.contactEmergencyPhone.trim()) formData.append("contactEmergencyPhone", draft.contactEmergencyPhone.trim());
+      if (draft.contactWebsite.trim()) formData.append("contactWebsite", draft.contactWebsite.trim());
+      if (draft.contactEmail.trim()) formData.append("contactEmail", draft.contactEmail.trim());
+
+      if (draft.travelTips.trim()) formData.append("travelTips", draft.travelTips.trim());
+      if (draft.dressCode.trim()) formData.append("dressCode", draft.dressCode.trim());
+      if (draft.photographyRules.trim()) formData.append("photographyRules", draft.photographyRules.trim());
+      if (draft.accessibility.trim()) formData.append("accessibility", draft.accessibility.trim());
+
+      if (draft.dosText.trim()) {
+        const dosArray = draft.dosText.split("\n").map(s => s.trim()).filter(Boolean);
+        formData.append("dosJson", JSON.stringify(dosArray));
+      }
+      if (draft.dontsText.trim()) {
+        const dontsArray = draft.dontsText.split("\n").map(s => s.trim()).filter(Boolean);
+        formData.append("dontsJson", JSON.stringify(dontsArray));
+      }
+
+      if (draft.timelineJson.trim()) formData.append("timelineJson", draft.timelineJson.trim());
+
       if (draft.seoTitle.trim())
         formData.append("seoTitle", draft.seoTitle.trim());
       if (draft.metaDescription.trim())
@@ -257,14 +405,12 @@ useEffect(() => {
       if (draft.focusKeywords.trim())
         formData.append("focusKeywords", draft.focusKeywords.trim());
 
-      // Hero image logic: Upload File or retain existing URL string
       if (draft.heroImage instanceof File) {
         formData.append("image", draft.heroImage);
       } else if (typeof draft.heroImage === "string") {
         formData.append("existingHeroImage", draft.heroImage);
       }
 
-      // Gallery image logic: Append new Files & retain existing image URLs
       const existingGalleryUrls: string[] = [];
       draft.galleryImages.forEach((img) => {
         if (img instanceof File) {
@@ -413,7 +559,38 @@ useEffect(() => {
                 nearbyHotels: draft.nearbyHotels,
                 nearbyHospitals: draft.nearbyHospitals,
                 nearbyRestaurant: draft.nearbyRestaurant,
+                nearbyFuel: draft.nearbyFuel,
+                nearbyWashrooms: draft.nearbyWashrooms,
+                nearbyBusStops: draft.nearbyBusStops,
+                nearbyParking: draft.nearbyParking,
+                nearbyRailway: draft.nearbyRailway,
+                emergencyPolice: draft.emergencyPolice,
+                emergencyAmbulance: draft.emergencyAmbulance,
+                crowd: draft.crowd,
+                distance: draft.distance,
+                drivingTime: draft.drivingTime,
+                walkingTime: draft.walkingTime,
+                recommendedDeparture: draft.recommendedDeparture,
+                weather: draft.weather,
+                temperature: draft.temperature,
+                photographyTime: draft.photographyTime,
+                openingHours: draft.openingHours,
+                earlyMorningSlot: draft.earlyMorningSlot,
+                midDaySlot: draft.midDaySlot,
+                lateAfternoonSlot: draft.lateAfternoonSlot,
+                visitNote: draft.visitNote,
+                contactAddress: draft.contactAddress,
+                contactAdminPhone: draft.contactAdminPhone,
+                contactEmergencyPhone: draft.contactEmergencyPhone,
+                contactWebsite: draft.contactWebsite,
+                contactEmail: draft.contactEmail,
                 travelTips: draft.travelTips,
+                dressCode: draft.dressCode,
+                photographyRules: draft.photographyRules,
+                accessibility: draft.accessibility,
+                dosText: draft.dosText,
+                dontsText: draft.dontsText,
+                timelineJson: draft.timelineJson,
               }}
               onChange={updateDraftField}
               onNext={handleNext}

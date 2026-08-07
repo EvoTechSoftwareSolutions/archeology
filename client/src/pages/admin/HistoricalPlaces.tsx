@@ -9,9 +9,11 @@ import {
   FiTrash2,
   FiEye,
   FiX,
+  FiExternalLink,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import sigiriya from "../../assets/Admin/LoginImage.png";
+import { resolveImageUrl } from "../../utils/imageUtils";
 import { districts as staticDistricts } from "../../data/districts";
 import useHistoricalPlacesList from "../../hooks/useHistoricalPlacesList";
 import { useSearchContext } from "../../contexts/SearchContext";
@@ -289,7 +291,7 @@ const HistoricalPlaces = () => {
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-200 shadow-sm">
                         <img
-                          src={place.image || sigiriya}
+                          src={resolveImageUrl(place.image, sigiriya)}
                           alt={place.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -327,10 +329,19 @@ const HistoricalPlaces = () => {
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
+                      <Link
+                        to={`/places/${place.id}`}
+                        target="_blank"
+                        className="p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition"
+                        title="View Public Details Page"
+                      >
+                        <FiExternalLink size={12} />
+                      </Link>
+
                       <button
                         onClick={() => handleView(place)}
                         className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition"
-                        title="View"
+                        title="Quick View Modal"
                       >
                         <FiEye size={12} />
                       </button>
@@ -429,7 +440,7 @@ const HistoricalPlaces = () => {
           >
             <div className="relative h-48 overflow-hidden">
               <img
-                src={viewingPlace.image || sigiriya}
+                src={resolveImageUrl(viewingPlace.image, sigiriya)}
                 alt={viewingPlace.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -450,7 +461,7 @@ const HistoricalPlaces = () => {
               <p className="text-gray-400 text-sm mb-6">
                 {getDistrictName(viewingPlace)}
               </p>
-              <div className="grid grid-cols-2 gap-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-y-4 text-sm mb-6">
                 <div>
                   <span className="text-gray-400 font-medium">District</span>
                   <p className="text-gray-800 font-semibold mt-0.5">
@@ -485,6 +496,14 @@ const HistoricalPlaces = () => {
                   </p>
                 </div>
               </div>
+
+              <Link
+                to={`/places/${viewingPlace.id}`}
+                target="_blank"
+                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-[#275949] text-white font-bold text-sm rounded-xl hover:bg-[#1E4538] transition-colors"
+              >
+                Open View Details Page <FiExternalLink size={14} />
+              </Link>
             </div>
           </div>
         </div>

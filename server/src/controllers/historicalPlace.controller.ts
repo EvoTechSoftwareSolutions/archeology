@@ -55,20 +55,47 @@ export const createHistoricalPlace = async (
 
       // Facilities
       nearbyHotels: req.body.nearbyHotels || null,
-
       nearbyHospitals: req.body.nearbyHospitals || null,
-
       nearbyRestaurant: req.body.nearbyRestaurant || null,
-
       travelTips: req.body.travelTips || null,
+
+      // Dynamic Place Details
+      timelineJson: req.body.timelineJson || null,
+      crowd: req.body.crowd || null,
+      distance: req.body.distance || null,
+      drivingTime: req.body.drivingTime || null,
+      walkingTime: req.body.walkingTime || null,
+      recommendedDeparture: req.body.recommendedDeparture || null,
+      weather: req.body.weather || null,
+      temperature: req.body.temperature || null,
+      photographyTime: req.body.photographyTime || null,
+      nearbyFuel: req.body.nearbyFuel || null,
+      nearbyWashrooms: req.body.nearbyWashrooms || null,
+      nearbyBusStops: req.body.nearbyBusStops || null,
+      nearbyParking: req.body.nearbyParking || null,
+      nearbyRailway: req.body.nearbyRailway || null,
+      emergencyPolice: req.body.emergencyPolice || null,
+      emergencyAmbulance: req.body.emergencyAmbulance || null,
+      openingHours: req.body.openingHours || null,
+      earlyMorningSlot: req.body.earlyMorningSlot || null,
+      midDaySlot: req.body.midDaySlot || null,
+      lateAfternoonSlot: req.body.lateAfternoonSlot || null,
+      visitNote: req.body.visitNote || null,
+      contactAddress: req.body.contactAddress || null,
+      contactAdminPhone: req.body.contactAdminPhone || null,
+      contactEmergencyPhone: req.body.contactEmergencyPhone || null,
+      contactWebsite: req.body.contactWebsite || null,
+      contactEmail: req.body.contactEmail || null,
+      dressCode: req.body.dressCode || null,
+      photographyRules: req.body.photographyRules || null,
+      accessibility: req.body.accessibility || null,
+      dosJson: req.body.dosJson || null,
+      dontsJson: req.body.dontsJson || null,
 
       // SEO
       seoTitle: req.body.seoTitle || null,
-
       metaDescription: req.body.metaDescription || null,
-
       slug: req.body.slug || null,
-
       focusKeywords: req.body.focusKeywords || null,
     };
 
@@ -90,9 +117,7 @@ export const createHistoricalPlace = async (
 
     return res.status(201).json({
       success: true,
-
       message: "Historical place created successfully",
-
       data: place,
     });
   } catch (error) {
@@ -119,9 +144,7 @@ export const getHistoricalPlaces = async (
 
     return res.status(200).json({
       success: true,
-
       count: places.length,
-
       data: places,
     });
   } catch (error) {
@@ -136,13 +159,11 @@ export const getHistoricalPlaceById = async (
   next: NextFunction,
 ) => {
   try {
-    const id = Number(req.params.id);
-
-    const place = await historicalPlaceService.getPlaceById(id);
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const place = await historicalPlaceService.getPlaceById(idParam);
 
     return res.status(200).json({
       success: true,
-
       data: place,
     });
   } catch (error) {
@@ -184,6 +205,39 @@ export const updateHistoricalPlace = async (
       nearbyHospitals: req.body.nearbyHospitals || null,
       nearbyRestaurant: req.body.nearbyRestaurant || null,
       travelTips: req.body.travelTips || null,
+
+      // Dynamic Place Details
+      timelineJson: req.body.timelineJson || null,
+      crowd: req.body.crowd || null,
+      distance: req.body.distance || null,
+      drivingTime: req.body.drivingTime || null,
+      walkingTime: req.body.walkingTime || null,
+      recommendedDeparture: req.body.recommendedDeparture || null,
+      weather: req.body.weather || null,
+      temperature: req.body.temperature || null,
+      photographyTime: req.body.photographyTime || null,
+      nearbyFuel: req.body.nearbyFuel || null,
+      nearbyWashrooms: req.body.nearbyWashrooms || null,
+      nearbyBusStops: req.body.nearbyBusStops || null,
+      nearbyParking: req.body.nearbyParking || null,
+      nearbyRailway: req.body.nearbyRailway || null,
+      emergencyPolice: req.body.emergencyPolice || null,
+      emergencyAmbulance: req.body.emergencyAmbulance || null,
+      openingHours: req.body.openingHours || null,
+      earlyMorningSlot: req.body.earlyMorningSlot || null,
+      midDaySlot: req.body.midDaySlot || null,
+      lateAfternoonSlot: req.body.lateAfternoonSlot || null,
+      visitNote: req.body.visitNote || null,
+      contactAddress: req.body.contactAddress || null,
+      contactAdminPhone: req.body.contactAdminPhone || null,
+      contactEmergencyPhone: req.body.contactEmergencyPhone || null,
+      contactWebsite: req.body.contactWebsite || null,
+      contactEmail: req.body.contactEmail || null,
+      dressCode: req.body.dressCode || null,
+      photographyRules: req.body.photographyRules || null,
+      accessibility: req.body.accessibility || null,
+      dosJson: req.body.dosJson || null,
+      dontsJson: req.body.dontsJson || null,
 
       seoTitle: req.body.seoTitle || null,
       metaDescription: req.body.metaDescription || null,

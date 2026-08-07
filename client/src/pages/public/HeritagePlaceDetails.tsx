@@ -34,9 +34,9 @@ import type {
 
 const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const { id } = useParams<{ id: string }>();
-  const placeId = Number(id);
+  const identifier = id ? (isNaN(Number(id)) ? id : Number(id)) : 0;
 
-  const { place, loading, error } = useHistoricalPlace(placeId);
+  const { place, loading, error } = useHistoricalPlace(identifier);
   const { reviewCards, reviewError } = useReviews();
 
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
@@ -152,10 +152,19 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         `${resolvedPlace.latitude},${resolvedPlace.longitude}`,
       )}&output=embed`;
 
+  const distanceStr = resolvedPlace.distance || props.distance || '170 KM';
+  const drivingTimeStr = resolvedPlace.drivingTime || props.drivingTime || '4 HR 10 MIN';
+  const walkingTimeStr = resolvedPlace.walkingTime || props.walkingTime || '35 HR';
+  const crowdStr = resolvedPlace.crowd || props.crowd || 'Moderate Crowd';
+  const weatherStr = resolvedPlace.weather || props.weather || 'SUNNY';
+  const tempStr = resolvedPlace.temperature || props.temperature || '28°C';
+  const bestTimeStr = resolvedPlace.recommendedDeparture || props.bestTime || '6:30 AM';
+  const photoTimeStr = resolvedPlace.photographyTime || props.photographyTime || '5:30 PM';
+
   const routeInfo =
     routeMode === 'driving'
-      ? { distance: props.distance || '170 KM', time: props.drivingTime || '4 HR 10 MIN' }
-      : { distance: props.distance || '170 KM', time: props.walkingTime || '35 HR' };
+      ? { distance: distanceStr, time: drivingTimeStr }
+      : { distance: distanceStr, time: walkingTimeStr };
 
   const storyLines: string[] = props.story?.length
     ? props.story
@@ -166,19 +175,32 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         'Visitors can explore well-preserved archaeological remains, structural ruins, and surrounding sanctuaries that highlight ancient engineering mastery.',
       ];
 
-  const timelineItems = (props.timeline?.length
-    ? props.timeline
-    : [
-        {
-          year: resolvedPlace.century || '5th Century',
-          title: 'ANCIENT FOUNDATION',
-          text: `${resolvedPlace.name} was established during the historic periods.`,
-        },
-        { year: '1687', title: 'PRESERVED BY KINGDOMS', text: 'Royal patrons contributed to the site expansion and ongoing rituals.' },
-        { year: '1982', title: 'UNESCO INSCRIPTION', text: 'Sri Lanka’s heritage sites were recognized for their global value.' },
-        { year: '1998', title: 'RESTORATION', text: 'Careful archaeological efforts helped preserve key architectural structures.' },
-        { year: 'TODAY', title: 'CULTURAL LANDMARK', text: 'Maintained as an active sanctuary and preserved heritage monument.' },
-      ]) as { year: string; title: string; text: string }[];
+  let timelineItems: { year: string; title: string; text: string }[] = [];
+  if (resolvedPlace.timelineJson) {
+    try {
+      const parsed = JSON.parse(resolvedPlace.timelineJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        timelineItems = parsed;
+      }
+    } catch (e) {
+      console.error('Failed to parse timelineJson', e);
+    }
+  }
+  if (timelineItems.length === 0) {
+    timelineItems = props.timeline?.length
+      ? props.timeline
+      : [
+          {
+            year: resolvedPlace.century || '5th Century',
+            title: 'ANCIENT FOUNDATION',
+            text: `${resolvedPlace.name} was established during the historic periods.`,
+          },
+          { year: '1687', title: 'PRESERVED BY KINGDOMS', text: 'Royal patrons contributed to the site expansion and ongoing rituals.' },
+          { year: '1982', title: 'UNESCO INSCRIPTION', text: 'Sri Lanka’s heritage sites were recognized for their global value.' },
+          { year: '1998', title: 'RESTORATION', text: 'Careful archaeological efforts helped preserve key architectural structures.' },
+          { year: 'TODAY', title: 'CULTURAL LANDMARK', text: 'Maintained as an active sanctuary and preserved heritage monument.' },
+        ];
+  }
 
   // District & province come back as SIBLING objects on the place, not nested.
   const districtName = resolvedPlace.district?.name || 'Central Province';
@@ -187,11 +209,11 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const contactDetails: ContactDetail[] = props.contactDetails?.length
     ? props.contactDetails
     : [
-        { label: 'Address', value: `${resolvedPlace.name}, ${districtName}, ${provinceName}, Sri Lanka` },
-        { label: 'Administration Division', value: '+94 11 269 2840 (for prior appointments)' },
-        { label: 'Emergency Contact', value: '+94 70 156 4347' },
-        { label: 'Official Website', value: 'www.heritage.gov.lk' },
-        { label: 'Inquiries Email', value: 'info@heritage.gov.lk' },
+        { label: 'Address', value: resolvedPlace.contactAddress || `${resolvedPlace.name}, ${districtName}, ${provinceName}, Sri Lanka` },
+        { label: 'Administration Division', value: resolvedPlace.contactAdminPhone || '+94 11 269 2840 (for prior appointments)' },
+        { label: 'Emergency Contact', value: resolvedPlace.contactEmergencyPhone || '+94 70 156 4347' },
+        { label: 'Official Website', value: resolvedPlace.contactWebsite || 'www.heritage.gov.lk' },
+        { label: 'Inquiries Email', value: resolvedPlace.contactEmail || 'info@heritage.gov.lk' },
       ];
 
   const nearbyPlaces = props.nearbyPlaces?.length
@@ -204,12 +226,17 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
         { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
       ];
 
-  // Essentials built ONLY from fields the API actually returns for this place.
+  // Essentials built dynamically from fields returned for this place.
   const essentials: EssentialItem[] = (() => {
     const items: EssentialItem[] = [];
     if (resolvedPlace.nearbyRestaurant) items.push({ icon: FiCoffee, title: 'Restaurants', subtitle: resolvedPlace.nearbyRestaurant });
     if (resolvedPlace.nearbyHotels) items.push({ icon: FiHome, title: 'Hotels', subtitle: resolvedPlace.nearbyHotels });
+    if (resolvedPlace.nearbyFuel) items.push({ icon: FiDroplet, title: 'Fuel Stations', subtitle: resolvedPlace.nearbyFuel });
     if (resolvedPlace.nearbyHospitals) items.push({ icon: FiPlus, title: 'Hospitals', subtitle: resolvedPlace.nearbyHospitals });
+    if (resolvedPlace.nearbyWashrooms) items.push({ icon: FiWind, title: 'Washrooms', subtitle: resolvedPlace.nearbyWashrooms });
+    if (resolvedPlace.nearbyBusStops) items.push({ icon: FiTruck, title: 'Bus Stops', subtitle: resolvedPlace.nearbyBusStops });
+    if (resolvedPlace.nearbyParking) items.push({ icon: FiMapPin, title: 'Parking', subtitle: resolvedPlace.nearbyParking });
+    if (resolvedPlace.nearbyRailway) items.push({ icon: FiMap, title: 'Railway', subtitle: resolvedPlace.nearbyRailway });
 
     return items.length > 0
       ? items
@@ -224,6 +251,39 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
           { icon: FiMap, title: 'Railway', subtitle: 'Main Railway Station' },
         ];
   })();
+
+  const dressCodeStr = resolvedPlace.dressCode || "Visitors are requested clothing should cover shoulders, arms, and knees when visiting sacred zones.";
+  const photographyRulesStr = resolvedPlace.photographyRules || "Photography allowed except inside designated inner sanctums or during sacred rituals.";
+  const accessibilityStr = resolvedPlace.accessibility || "Ground-level monument grounds and walkways offer accessible routes.";
+
+  let dosList: string[] = [];
+  if (resolvedPlace.dosJson) {
+    try {
+      const parsed = JSON.parse(resolvedPlace.dosJson);
+      if (Array.isArray(parsed)) dosList = parsed;
+    } catch (e) {}
+  }
+  if (dosList.length === 0) {
+    dosList = props.dos || [
+      'Attend early morning hours for quiet surroundings',
+      'Visit nearby site museums to understand history',
+      'Shoes must be removed at designated counters before entry',
+    ];
+  }
+
+  let dontsList: string[] = [];
+  if (resolvedPlace.dontsJson) {
+    try {
+      const parsed = JSON.parse(resolvedPlace.dontsJson);
+      if (Array.isArray(parsed)) dontsList = parsed;
+    } catch (e) {}
+  }
+  if (dontsList.length === 0) {
+    dontsList = props.donts || [
+      'Do not wear shorts or sleeveless tops inside sacred grounds',
+      'Do not pose with backs turned directly towards sacred statues',
+    ];
+  }
 
   return (
     <div className="bg-[#F8F6F1] min-h-screen">
@@ -248,25 +308,30 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
 
           {/* Right Column - Smart Travel Assistant */}
           <SmartTravelAssistant
-            crowd={props.crowd || 'Moderate Crowd'}
+            crowd={crowdStr}
             routeInfo={routeInfo}
-            bestTime={props.bestTime || '6:30 AM'}
-            weather={props.weather || 'SUNNY'}
-            temperature={props.temperature || '28°C'}
-            photographyTime={props.photographyTime || '5:30 PM'}
+            bestTime={bestTimeStr}
+            weather={weatherStr}
+            temperature={tempStr}
+            photographyTime={photoTimeStr}
             essentials={essentials}
-            travelTips={resolvedPlace.travelTips}
+            travelTips={resolvedPlace.travelTips || undefined}
+            emergencyPolice={resolvedPlace.emergencyPolice || undefined}
+            emergencyAmbulance={resolvedPlace.emergencyAmbulance || undefined}
           />
         </div>
       </section>
 
       <OpeningHoursContact
         headingLabel={props.title || resolvedPlace.name}
-        openingHours={props.openingHours || 'Open Daily from 6.00AM to 6.00PM'}
+        openingHours={resolvedPlace.openingHours || props.openingHours || 'Open Daily from 6.00AM to 6.00PM'}
         visitNote={
-          props.visitNote || 'Special guided historical tours and light show displays are held during peak holiday seasons.'
+          resolvedPlace.visitNote || props.visitNote || 'Special guided historical tours and light show displays are held during peak holiday seasons.'
         }
         contactDetails={contactDetails}
+        earlyMorningSlot={resolvedPlace.earlyMorningSlot || undefined}
+        midDaySlot={resolvedPlace.midDaySlot || undefined}
+        lateAfternoonSlot={resolvedPlace.lateAfternoonSlot || undefined}
       />
 
       <PlanYourRoute
@@ -279,22 +344,11 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       />
 
       <TravelTipsEtiquette
-        dressCode="Visitors are requested clothing should cover shoulders, arms, and knees when visiting sacred zones."
-        photographyRules="Photography allowed except inside designated inner sanctums or during sacred rituals."
-        accessibility="Ground-level monument grounds and walkways offer accessible routes."
-        dos={
-          props.dos || [
-            'Attend early morning hours for quiet surroundings',
-            'Visit nearby site museums to understand history',
-            'Shoes must be removed at designated counters before entry',
-          ]
-        }
-        donts={
-          props.donts || [
-            'Do not wear shorts or sleeveless tops inside sacred grounds',
-            'Do not pose with backs turned directly towards sacred statues',
-          ]
-        }
+        dressCode={dressCodeStr}
+        photographyRules={photographyRulesStr}
+        accessibility={accessibilityStr}
+        dos={dosList}
+        donts={dontsList}
       />
 
       <VisitorsReviews reviews={reviewCards} reviewError={reviewError} />

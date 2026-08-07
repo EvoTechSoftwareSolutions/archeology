@@ -82,6 +82,39 @@ model HistoricalPlace {
   nearbyRestaurant String?
   travelTips       String?
 
+  // --- NEW: Dynamic Place Details -------------------------------------
+  timelineJson          String?   @db.Text
+  crowd                 String?
+  distance              String?
+  drivingTime           String?
+  walkingTime           String?
+  recommendedDeparture  String?
+  weather               String?
+  temperature           String?
+  photographyTime       String?
+  nearbyFuel            String?
+  nearbyWashrooms       String?
+  nearbyBusStops        String?
+  nearbyParking         String?
+  nearbyRailway         String?
+  emergencyPolice       String?
+  emergencyAmbulance     String?
+  openingHours          String?
+  earlyMorningSlot      String?
+  midDaySlot            String?
+  lateAfternoonSlot     String?
+  visitNote             String?   @db.Text
+  contactAddress        String?
+  contactAdminPhone     String?
+  contactEmergencyPhone String?
+  contactWebsite        String?
+  contactEmail          String?
+  dressCode             String?   @db.Text
+  photographyRules      String?   @db.Text
+  accessibility         String?   @db.Text
+  dosJson               String?   @db.Text
+  dontsJson             String?   @db.Text
+
   // --- NEW: SEO --------------------------------------------------------
   seoTitle        String?
   metaDescription String?

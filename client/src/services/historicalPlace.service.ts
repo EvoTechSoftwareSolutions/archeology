@@ -49,7 +49,7 @@ export async function getHistoricalPlaces(
   };
 }
 
-export async function getHistoricalPlaceById(id: number) {
+export async function getHistoricalPlaceById(id: number | string) {
   const response = await api.get(`${BASE}/${id}`);
 
   return response.data.data ?? response.data;
@@ -91,7 +91,7 @@ export async function deleteHistoricalPlaces(ids: number[]) {
   await Promise.all(ids.map((id) => deleteHistoricalPlace(id)));
 }
 
-export async function getHistoricalPlace(id: number) {
+export async function getHistoricalPlace(id: number | string) {
   const response = await api.get(`/historicalPlace/${id}`);
 
   return response.data.data as HistoricalPlaceDetails;
