@@ -8,7 +8,6 @@ interface Props {
 }
 
 const DistrictDetailPanel = ({ district, onClose }: Props) => {
-  // Convert district.id to string to match hook parameter type
   const districtId = district?.id != null ? String(district.id) : null;
   const { places, isLoading, error } = useDistrictHeritage(districtId);
 
@@ -21,23 +20,23 @@ const DistrictDetailPanel = ({ district, onClose }: Props) => {
         lg:max-w-[400px]"
     >
       <div className="flex w-full items-center justify-between">
-        <h2 className="font-serif text-xl text-[#3B2F1E] sm:text-2xl">
+        <h2 className="font-serif text-base text-[#3B2F1E] sm:text-xl lg:text-2xl">
           {district.name} District
         </h2>
         <button
           onClick={onClose}
-          className="text-sm font-medium text-[#8A7550] hover:text-[#C1483F]"
+          className="text-xs font-medium text-[#8A7550] hover:text-[#C1483F] sm:text-sm"
         >
           ✕ Close
         </button>
       </div>
 
       {isLoading && (
-        <p className="text-sm text-[#8A7550]">Loading heritage places…</p>
+        <p className="text-xs text-[#8A7550] sm:text-sm">Loading heritage places…</p>
       )}
-      {error && <p className="text-sm text-[#C1483F]">{error}</p>}
+      {error && <p className="text-xs text-[#C1483F] sm:text-sm">{error}</p>}
       {!isLoading && !error && places.length === 0 && (
-        <p className="text-sm text-[#8A7550]">
+        <p className="text-xs text-[#8A7550] sm:text-sm">
           No heritage places added for this district yet.
         </p>
       )}
