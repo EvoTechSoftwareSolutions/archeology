@@ -23,10 +23,6 @@ export const historicalPlaceService = {
     return historicalPlaceRepository.getAll(params);
   },
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b5ce798b64be24d9c83e857493f72fd9c5136252
   async getPlaceById(idOrSlug: number | string) {
     let place = null;
     const numericId = Number(idOrSlug);
