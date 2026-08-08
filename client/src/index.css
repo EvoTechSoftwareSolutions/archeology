@@ -48,6 +48,11 @@ body {
   color: var(--color-text-dark);
   overflow-x: hidden;
 }
+
+body.lightbox-open #public-navbar {
+  display: none;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

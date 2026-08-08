@@ -14,8 +14,16 @@ export const historicalPlaceRepository = {
   }) {
     return prisma.historicalPlace.findMany({
       where: {
-        ...(params?.districtId && {
+        ...(params?.districtId !== undefined && {
           districtId: params.districtId,
+        }),
+
+        ...(params?.provinceId !== undefined && {
+          provinceId: params.provinceId,
+        }),
+
+        ...(params?.category && {
+          category: params.category,
         }),
 
         ...(params?.statusFlag && {
@@ -58,6 +66,7 @@ export const historicalPlaceRepository = {
     });
   },
 
+
 getById(id:number){
  return prisma.historicalPlace.findUnique({
   where:{id},
@@ -69,6 +78,23 @@ getById(id:number){
     siteMonograph:true
   }
  })
+},
+
+getBySlugOrName(slugOrName: string) {
+  return prisma.historicalPlace.findFirst({
+    where: {
+      OR: [
+        { slug: slugOrName },
+        { name: { equals: slugOrName } },
+      ],
+    },
+    include: {
+      province: true,
+      district: true,
+      galleryImages: true,
+      siteMonograph: true,
+    },
+  });
 },
 
   getByName(name: string) {
@@ -112,6 +138,38 @@ getById(id:number){
         nearbyRestaurant: data.nearbyRestaurant,
         travelTips: data.travelTips,
 
+        timelineJson: data.timelineJson,
+        crowd: data.crowd,
+        distance: data.distance,
+        drivingTime: data.drivingTime,
+        walkingTime: data.walkingTime,
+        recommendedDeparture: data.recommendedDeparture,
+        weather: data.weather,
+        temperature: data.temperature,
+        photographyTime: data.photographyTime,
+        nearbyFuel: data.nearbyFuel,
+        nearbyWashrooms: data.nearbyWashrooms,
+        nearbyBusStops: data.nearbyBusStops,
+        nearbyParking: data.nearbyParking,
+        nearbyRailway: data.nearbyRailway,
+        emergencyPolice: data.emergencyPolice,
+        emergencyAmbulance: data.emergencyAmbulance,
+        openingHours: data.openingHours,
+        earlyMorningSlot: data.earlyMorningSlot,
+        midDaySlot: data.midDaySlot,
+        lateAfternoonSlot: data.lateAfternoonSlot,
+        visitNote: data.visitNote,
+        contactAddress: data.contactAddress,
+        contactAdminPhone: data.contactAdminPhone,
+        contactEmergencyPhone: data.contactEmergencyPhone,
+        contactWebsite: data.contactWebsite,
+        contactEmail: data.contactEmail,
+        dressCode: data.dressCode,
+        photographyRules: data.photographyRules,
+        accessibility: data.accessibility,
+        dosJson: data.dosJson,
+        dontsJson: data.dontsJson,
+
         seoTitle: data.seoTitle,
         metaDescription: data.metaDescription,
         slug: data.slug,
@@ -123,6 +181,7 @@ getById(id:number){
       },
 
       include: {
+        province: true,
         district: true,
         galleryImages: true,
       },
@@ -156,6 +215,38 @@ getById(id:number){
         nearbyRestaurant: data.nearbyRestaurant,
         travelTips: data.travelTips,
 
+        timelineJson: data.timelineJson,
+        crowd: data.crowd,
+        distance: data.distance,
+        drivingTime: data.drivingTime,
+        walkingTime: data.walkingTime,
+        recommendedDeparture: data.recommendedDeparture,
+        weather: data.weather,
+        temperature: data.temperature,
+        photographyTime: data.photographyTime,
+        nearbyFuel: data.nearbyFuel,
+        nearbyWashrooms: data.nearbyWashrooms,
+        nearbyBusStops: data.nearbyBusStops,
+        nearbyParking: data.nearbyParking,
+        nearbyRailway: data.nearbyRailway,
+        emergencyPolice: data.emergencyPolice,
+        emergencyAmbulance: data.emergencyAmbulance,
+        openingHours: data.openingHours,
+        earlyMorningSlot: data.earlyMorningSlot,
+        midDaySlot: data.midDaySlot,
+        lateAfternoonSlot: data.lateAfternoonSlot,
+        visitNote: data.visitNote,
+        contactAddress: data.contactAddress,
+        contactAdminPhone: data.contactAdminPhone,
+        contactEmergencyPhone: data.contactEmergencyPhone,
+        contactWebsite: data.contactWebsite,
+        contactEmail: data.contactEmail,
+        dressCode: data.dressCode,
+        photographyRules: data.photographyRules,
+        accessibility: data.accessibility,
+        dosJson: data.dosJson,
+        dontsJson: data.dontsJson,
+
         seoTitle: data.seoTitle,
         metaDescription: data.metaDescription,
         slug: data.slug,
@@ -167,6 +258,8 @@ getById(id:number){
       },
 
       include: {
+        province: true,
+        district: true,
         galleryImages: true,
       },
     });

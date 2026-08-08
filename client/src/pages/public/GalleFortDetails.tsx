@@ -10,6 +10,7 @@ import gf2 from '../../assets/GF2.png';
 import gf3 from '../../assets/GF3.jpg';
 import sigiriya from '../../assets/places-sigiriya.png';
 import galViharaya from '../../assets/galvihara.png';
+import polonnaruwa from '../../assets/Polonnaruwa.png';
 import templeTooth from '../../assets/places-daladamaligawa.png';
 import ruwanweliseya from '../../assets/Ruwansweliseya.png';
 import EmergencyContactsCard from '../../components/EmergencyContactsCard';
@@ -597,11 +598,12 @@ const GalleFortDetails = () => {
         <p className="text-[#C89B3C] text-[0.8rem] font-bold tracking-[2px] uppercase mb-2">OTHER HERITAGE PLACES</p>
         <h3 className="font-serif text-[2.5rem] font-bold text-[#1f2937] mb-10">Nearby Places</h3>
 
-        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-4 gap-4 text-left pb-4 md:pb-0 snap-x">
+        <div className="flex overflow-x-auto custom-scrollbar md:grid md:grid-cols-5 gap-4 text-left pb-4 md:pb-0 snap-x">
           {[
-            { img: sigiriya, title: 'Sigiriya Rock Fortress', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
+            { img: galleFort, title: 'Galle Fort', loc: 'Galle - Southern Province', route: '/galle-fort' },
             { img: templeTooth, title: 'Temple of the Tooth', loc: 'Kandy - Central Province', route: '/temple-of-the-tooth' },
-            { img: galViharaya, title: 'Gal Viharaya', loc: 'Polonnaruwa - North Central Province', route: '/gal-viharaya' },
+            { img: polonnaruwa, title: 'Polonnaruwa', loc: 'Polonnaruwa - North Central Province', route: '/all-places' },
+            { img: sigiriya, title: 'Sigiriya - The Lion Rock', loc: 'Matale - Central Province', route: '/sigiriya-rock-fortress' },
             { img: ruwanweliseya, title: 'Ruwanwelisaya', loc: 'Anuradhapura - North Central Province', route: '/ruwanwelisaya' },
           ].map((place, idx) => (
             <Link key={idx} to={place.route} className="bg-white rounded-[16px] overflow-hidden shadow-sm group border border-gray-100 flex flex-col shrink-0 w-[240px] sm:w-[280px] md:w-auto snap-start">

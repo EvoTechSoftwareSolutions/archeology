@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FiSearch,
   FiPlus,
@@ -7,6 +7,7 @@ import {
   FiToggleLeft,
   FiToggleRight,
 } from "react-icons/fi";
+import { useSearchContext } from "../../contexts/SearchContext";
 import { useUsers } from "../../hooks/useUsers";
 import type { User } from "../../types/user.types";
 
@@ -20,7 +21,7 @@ const roleColors: Record<string, string> = {
 const Users: React.FC = () => {
   const { users, loading, error, reload, createUser, updateUser, deleteUser } =
     useUsers();
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, setSearchTerm } = useSearchContext();
 
   // Add / Edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);

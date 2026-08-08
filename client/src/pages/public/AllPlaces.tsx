@@ -1,7 +1,8 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMapPin, FiSearch, FiFilter } from 'react-icons/fi';
 import sigiriya from '../../assets/places-sigiriya.png';
+import { resolveImageUrl } from '../../utils/imageUtils';
 
 interface HeritagePlaceCard {
   id: number;
@@ -40,7 +41,7 @@ const AllPlaces = () => {
           location: `${place.district?.name ?? 'Unknown District'}, ${place.district?.province?.name ?? 'Sri Lanka'}`,
           category: place.category ?? 'Heritage',
           desc: place.description ?? 'Explore this heritage site in Sri Lanka.',
-          image: place.image || sigiriya,
+          image: resolveImageUrl(place.image, sigiriya),
           route: `/places/${place.id}`,
         }));
 

@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import useNotificationsSocket from "../../../hooks/useNotificationsSocket";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser, FiX } from "react-icons/fi";
 import { authService } from "../../../services/auth.service";
+import { useSearchContext } from "../../../contexts/SearchContext";
 import type { LoginUser } from "../../../types/auth.types";
 
 interface HeaderProps {
@@ -26,18 +28,25 @@ const getInitials = (name?: string) => {
 
 const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
+  const { searchTerm, setSearchTerm } = useSearchContext();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsState, setNotificationsState] = useState<Array<{title:string; subtitle?:string; time?:string; id?:any}>>([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(getStoredUser);
   const [loggingOut, setLoggingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const notifications = [
-    { title: "New place added", subtitle: "Anuradhapura Archaeological Site", time: "2m ago" },
-    { title: "User request approved", subtitle: "Kasun Perera", time: "15m ago" },
-    { title: "New image uploaded", subtitle: "Trincomalee Fort", time: "1h ago" },
-  ];
+  const notifications = notificationsState;
+
+  const handleNotification = useCallback((n: any) => {
+    const item = { title: n?.title || "Notification", subtitle: n?.subtitle || "", time: "Just now", id: n?.id };
+    setNotificationsState((prev) => [item, ...prev]);
+  }, []);
+
+  // Setup socket for real-time notifications
+  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+  useNotificationsSocket(token, handleNotification);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -111,6 +120,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             </div>
             <input
               type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search places, users..."
               className="w-full min-w-0 pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"
             />
@@ -236,6 +247,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             </div>
             <input
               type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               autoFocus
               placeholder="Search places, users..."
               className="w-full min-w-0 pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#275949]/50 focus:border-[#275949] text-sm text-gray-700 placeholder-gray-400 font-['Inter'] shadow-sm"

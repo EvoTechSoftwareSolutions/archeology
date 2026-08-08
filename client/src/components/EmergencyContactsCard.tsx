@@ -24,11 +24,11 @@ const EmergencyContactsCard = ({
         <div className="text-[#6b7280] text-[0.85rem]">Available 24/7</div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 overflow-x-auto pb-1 sm:flex-nowrap">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         {contacts.map((contact) => (
           <div
             key={`${contact.label}-${contact.value}`}
-            className="flex-shrink-0 rounded-full bg-[#F8F6F1] border border-[#E2DED5] px-3 py-1.5 text-[0.72rem] font-semibold text-[#1f2937] shadow-sm whitespace-nowrap"
+            className="rounded-full bg-[#F8F6F1] border border-[#E2DED5] px-2 py-1 text-[0.68rem] font-semibold text-[#1f2937] shadow-sm"
           >
             {contact.label}
             <span className="ml-1 font-bold text-[#1f2937]">{contact.value}</span>

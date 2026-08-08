@@ -92,6 +92,38 @@ export interface ApiHistoricalPlace {
   nearbyRestaurant?:string;
   travelTips?:string;
 
+  timelineJson?:string;
+  crowd?:string;
+  distance?:string;
+  drivingTime?:string;
+  walkingTime?:string;
+  recommendedDeparture?:string;
+  weather?:string;
+  temperature?:string;
+  photographyTime?:string;
+  nearbyFuel?:string;
+  nearbyWashrooms?:string;
+  nearbyBusStops?:string;
+  nearbyParking?:string;
+  nearbyRailway?:string;
+  emergencyPolice?:string;
+  emergencyAmbulance?:string;
+  openingHours?:string;
+  earlyMorningSlot?:string;
+  midDaySlot?:string;
+  lateAfternoonSlot?:string;
+  visitNote?:string;
+  contactAddress?:string;
+  contactAdminPhone?:string;
+  contactEmergencyPhone?:string;
+  contactWebsite?:string;
+  contactEmail?:string;
+  dressCode?:string;
+  photographyRules?:string;
+  accessibility?:string;
+  dosJson?:string;
+  dontsJson?:string;
+
   seoTitle?:string;
   metaDescription?:string;
   slug?:string;
@@ -154,6 +186,38 @@ export interface HistoricalPlaceDetails {
   nearbyRestaurant?: string | null;
 
   travelTips?: string | null;
+
+  timelineJson?: string | null;
+  crowd?: string | null;
+  distance?: string | null;
+  drivingTime?: string | null;
+  walkingTime?: string | null;
+  recommendedDeparture?: string | null;
+  weather?: string | null;
+  temperature?: string | null;
+  photographyTime?: string | null;
+  nearbyFuel?: string | null;
+  nearbyWashrooms?: string | null;
+  nearbyBusStops?: string | null;
+  nearbyParking?: string | null;
+  nearbyRailway?: string | null;
+  emergencyPolice?: string | null;
+  emergencyAmbulance?: string | null;
+  openingHours?: string | null;
+  earlyMorningSlot?: string | null;
+  midDaySlot?: string | null;
+  lateAfternoonSlot?: string | null;
+  visitNote?: string | null;
+  contactAddress?: string | null;
+  contactAdminPhone?: string | null;
+  contactEmergencyPhone?: string | null;
+  contactWebsite?: string | null;
+  contactEmail?: string | null;
+  dressCode?: string | null;
+  photographyRules?: string | null;
+  accessibility?: string | null;
+  dosJson?: string | null;
+  dontsJson?: string | null;
 
   seoTitle?: string | null;
 

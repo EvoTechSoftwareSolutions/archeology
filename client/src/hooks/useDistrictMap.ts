@@ -27,6 +27,8 @@ export default function useDistrictMap() {
             return staticDistrict;
           }
 
+          const normalizeAnchor = (val: number) => (val > 1 ? val / 100 : val);
+
           return {
             ...staticDistrict,
             dbId: dbDistrict.id,
@@ -38,12 +40,13 @@ export default function useDistrictMap() {
                 description: place.description ?? "",
                 latitude: place.latitude,
                 longitude: place.longitude,
-                anchorXPct: place.anchorXPct / 100,
-                anchorYPct: place.anchorYPct / 100,
+                anchorXPct: normalizeAnchor(place.anchorXPct),
+                anchorYPct: normalizeAnchor(place.anchorYPct),
               }),
             ),
           };
         });
+
 
         setDistrictData(merged);
       } catch (error) {
