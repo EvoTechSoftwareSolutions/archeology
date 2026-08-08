@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useContactMessages } from "../../hooks/useContactMessages";
+import { contactService } from "../../services/contact.service";
 import {
   FiMail,
   FiPhone,
@@ -10,7 +10,6 @@ import {
 } from "react-icons/fi";
 
 const ContactUs = () => {
-  const { createMessage } = useContactMessages();
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +29,7 @@ const ContactUs = () => {
     setIsLoading(true);
 
     try {
-      await createMessage(form);
+      await contactService.createMessage(form);
 
       setSent(true);
 

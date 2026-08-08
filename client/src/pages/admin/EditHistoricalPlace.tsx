@@ -159,8 +159,14 @@ useEffect(() => {
       setLoading(true);
       const data = await getHistoricalPlaceById(numericId);
 
-      const rawAnchorX = data.anchorXPct ? String(Number(data.anchorXPct) / 100) : "";
-      const rawAnchorY = data.anchorYPct ? String(Number(data.anchorYPct) / 100) : "";
+      const normLoad = (v: any) => {
+        if (!v) return "";
+        const n = Number(v);
+        return String(n > 1 ? n / 100 : n);
+      };
+      const rawAnchorX = normLoad(data.anchorXPct);
+      const rawAnchorY = normLoad(data.anchorYPct);
+
 
       const descriptionParts = (data.description || "").split("\n\n");
       const shortDescription = descriptionParts[0] || "";
@@ -351,11 +357,12 @@ useEffect(() => {
       formData.append("longitude", String(draft.longitude));
 
       if (draft.anchorXPct) {
-        formData.append("anchorXPct", String(Number(draft.anchorXPct) * 100));
+        formData.append("anchorXPct", String(draft.anchorXPct));
       }
       if (draft.anchorYPct) {
-        formData.append("anchorYPct", String(Number(draft.anchorYPct) * 100));
+        formData.append("anchorYPct", String(draft.anchorYPct));
       }
+
 
       formData.append("provinceId", String(draft.provinceId));
       formData.append("districtId", String(draft.districtId));

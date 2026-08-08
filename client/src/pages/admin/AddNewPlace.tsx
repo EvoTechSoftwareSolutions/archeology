@@ -255,9 +255,9 @@ const AddNewPlace = () => {
       formData.append("latitude", String(draft.latitude));
       formData.append("longitude", String(draft.longitude));
 
-      // Scale coordinates back to percentage range (0-100) expected by backend
-      formData.append("anchorXPct", String(Number(draft.anchorXPct) * 100));
-      formData.append("anchorYPct", String(Number(draft.anchorYPct) * 100));
+      formData.append("anchorXPct", String(draft.anchorXPct));
+      formData.append("anchorYPct", String(draft.anchorYPct));
+
       formData.append("provinceId", String(draft.provinceId));
       formData.append("districtId", String(draft.districtId));
 

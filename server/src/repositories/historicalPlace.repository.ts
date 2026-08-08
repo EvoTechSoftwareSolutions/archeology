@@ -14,8 +14,16 @@ export const historicalPlaceRepository = {
   }) {
     return prisma.historicalPlace.findMany({
       where: {
-        ...(params?.districtId && {
+        ...(params?.districtId !== undefined && {
           districtId: params.districtId,
+        }),
+
+        ...(params?.provinceId !== undefined && {
+          provinceId: params.provinceId,
+        }),
+
+        ...(params?.category && {
+          category: params.category,
         }),
 
         ...(params?.statusFlag && {
@@ -57,6 +65,7 @@ export const historicalPlaceRepository = {
       },
     });
   },
+
 
 getById(id:number){
  return prisma.historicalPlace.findUnique({

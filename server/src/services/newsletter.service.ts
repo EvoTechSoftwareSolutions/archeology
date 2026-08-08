@@ -53,13 +53,32 @@ class NewsletterService {
       to: email,
       subject: "Welcome to Heritage Sri Lanka Newsletter",
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="color:#2a4a3a">Thank you for subscribing</h2>
-          <p>You are now subscribed to the Heritage Sri Lanka newsletter.</p>
-          <p>Expect updates about heritage stories, discoveries, and upcoming events.</p>
+        <div style="font-family: Arial, sans-serif; background:#f8f6f1; padding:30px; color:#203229;">
+          <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #eadfc4;">
+            <div style="background:#1c5f46; padding:28px 36px; color:#ffffff;">
+              <h1 style="margin:0; font-size:30px; font-family:Georgia, serif;">Heritage Sri Lanka</h1>
+              <p style="margin:6px 0 0; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#efe1bc;">Newsletter</p>
+            </div>
+            <div style="padding:34px 36px;">
+              <p style="font-size:20px; margin:0 0 12px; color:#2a4a3a;">Welcome to the Heritage Sri Lanka community!</p>
+              <p style="font-size:15px; line-height:1.7; color:#56513c;">
+                Thank you for subscribing to our newsletter. You are now part of a growing circle of travellers, learners, and heritage lovers discovering the stories, culture, and living legacy of Sri Lanka.
+              </p>
+              <div style="margin:28px 0; padding:24px; background:#fbfaf7; border-left:4px solid #c89b3c; border-radius:10px;">
+                <p style="margin:0 0 10px; font-size:15px; font-weight:bold; color:#1c5f46;">What you can expect</p>
+                <p style="margin:0; line-height:1.72; color:#56513c;">
+                  Heritage stories, destination highlights, conservation updates, cultural guides, travel inspiration, and upcoming events from across the island.
+                </p>
+              </div>
+              <p style="font-size:15px; color:#56513c; line-height:1.7;">
+                We look forward to sharing the island’s rich heritage with you.
+              </p>
+              <p style="margin-top:24px; color:#1c5f46; font-weight:bold;">Warm regards,<br />Heritage Sri Lanka Team</p>
+            </div>
+          </div>
         </div>
       `,
-      text: "Thank you for subscribing to the Heritage Sri Lanka newsletter.",
+      text: "Welcome to Heritage Sri Lanka Newsletter!\n\nThank you for subscribing. You are now part of a growing circle of travellers, learners, and heritage lovers discovering the stories, culture, and living legacy of Sri Lanka.\n\nWe look forward to sharing heritage stories, destination highlights, conservation updates, cultural guides, travel inspiration, and upcoming events from across the island.\n\nWarm regards,\nHeritage Sri Lanka Team",
     });
   }
 

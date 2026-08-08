@@ -10,6 +10,9 @@ type ContactMessageInput = {
   message: string;
 };
 
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+
 class ContactService {
   private readonly contactRepository: ContactRepository;
   private readonly transporter: nodemailer.Transporter | null;
@@ -82,6 +85,57 @@ class ContactService {
     });
   }
 
+  private async sendUserAcknowledgementEmail(message: ContactMessageInput) {
+    if (!this.transporter) {
+      console.warn(
+        "SMTP is not configured. Contact confirmation email was skipped.",
+      );
+      return;
+    }
+
+    const from =
+      process.env.SMTP_FROM ||
+      process.env.SMTP_USER ||
+      "contact@heritagesrilanka.com";
+
+    const safeName = escapeHtml(message.name);
+    const safeSubject = escapeHtml(message.subject);
+    const safeMessage = escapeHtml(message.message).replace(/\n/g, "<br>");
+
+    await this.transporter.sendMail({
+      from,
+      to: message.email,
+      subject: "Thank you for reaching out to Heritage Sri Lanka",
+      html: `
+        <div style="font-family: Arial, sans-serif; background:#f8f6f1; padding:30px; color:#203229;">
+          <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #eadfc4;">
+            <div style="background:#1c5f46; padding:28px 36px; color:#ffffff;">
+              <h1 style="margin:0; font-size:30px; font-family:Georgia, serif;">Heritage Sri Lanka</h1>
+              <p style="margin:6px 0 0; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#efe1bc;">Visitor Services</p>
+            </div>
+            <div style="padding:34px 36px;">
+              <p style="font-size:20px; margin:0 0 12px; color:#2a4a3a;">Dear ${safeName},</p>
+              <p style="font-size:15px; line-height:1.7; color:#56513c;">
+                Thank you for contacting Heritage Sri Lanka. We have received your message and our team will review it as soon as possible.
+              </p>
+              <div style="margin:28px 0; padding:20px; background:#fbfaf7; border-left:4px solid #c89b3c; border-radius:10px;">
+                <p style="margin:0 0 8px;"><strong>Subject:</strong> ${safeSubject}</p>
+                <p style="margin:0 0 8px;"><strong>Submitted email:</strong> ${escapeHtml(message.email)}</p>
+                <p style="margin:0;"><strong>Message summary:</strong></p>
+                <p style="margin:8px 0 0; color:#4c4538; line-height:1.7;">${safeMessage}</p>
+              </div>
+              <p style="font-size:15px; color:#56513c; line-height:1.7;">
+                If your enquiry requires a quicker response, please keep an eye on your inbox. A member of our team will follow up with you soon.
+              </p>
+              <p style="margin-top:24px; color:#1c5f46; font-weight:bold;">Warm regards,<br />Heritage Sri Lanka Team</p>
+            </div>
+          </div>
+        </div>
+      `,
+      text: `Dear ${message.name},\n\nThank you for contacting Heritage Sri Lanka. We have received your message and our team will review it as soon as possible.\n\nSubject: ${message.subject}\nSubmitted email: ${message.email}\n\nMessage:\n${message.message}\n\nWarm regards,\nHeritage Sri Lanka Team`,
+    });
+  }
+
   async createMessage(input: ContactMessageInput) {
     const message = await this.contactRepository.create({
       name: input.name.trim(),
@@ -93,6 +147,7 @@ class ContactService {
 
     try {
       await this.sendAdminEmail(input);
+      await this.sendUserAcknowledgementEmail(input);
     } catch (error) {
       console.error("Failed to send contact notification email", error);
     }

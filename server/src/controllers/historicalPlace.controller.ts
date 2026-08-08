@@ -142,14 +142,18 @@ export const getHistoricalPlaces = async (
   next: NextFunction,
 ) => {
   try {
+    const parseNum = (v: unknown) => {
+      if (v === undefined || v === null || v === "") return undefined;
+      const n = Number(v);
+      return isNaN(n) ? undefined : n;
+    };
+
     const places = await historicalPlaceService.getAllPlaces({
-      search: req.query.search as string,
-
-      districtId: req.query.districtId
-        ? Number(req.query.districtId)
-        : undefined,
-
-      statusFlag: req.query.statusFlag as string,
+      search: req.query.search ? String(req.query.search) : undefined,
+      districtId: parseNum(req.query.districtId),
+      provinceId: parseNum(req.query.provinceId),
+      category: req.query.category ? String(req.query.category) : undefined,
+      statusFlag: req.query.statusFlag ? String(req.query.statusFlag) : undefined,
     });
 
     return res.status(200).json({
@@ -161,6 +165,7 @@ export const getHistoricalPlaces = async (
     next(error);
   }
 };
+
 
 // GET HISTORICAL PLACE BY ID
 export const getHistoricalPlaceById = async (

@@ -117,10 +117,14 @@ const District3DView = ({ district, historicalPlaces }: Props) => {
         >
           {historicalPlaces.map((place, i) => {
             const id = place.id ?? i;
-            const px = x + place.anchorXPct * width;
-            const py = y + place.anchorYPct * height;
+            const norm = (v: number) => (v > 1 ? v / 100 : v);
+            const ax = norm(place.anchorXPct);
+            const ay = norm(place.anchorYPct);
+            const px = x + ax * width;
+            const py = y + ay * height;
             const leftPct = ((px - (x - PADDING)) / viewBoxW) * 100;
             const topPct = ((py - (y - PADDING)) / viewBoxH) * 100;
+
 
             return (
               <PlaceMarker
