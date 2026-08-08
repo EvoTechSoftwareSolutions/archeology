@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
+=======
+import { useState } from 'react';
+>>>>>>> b5ce798b64be24d9c83e857493f72fd9c5136252
 import useHistoricalPlace from '../../hooks/useHistoricalPlace';
 import { useParams, Link } from 'react-router-dom';
 import { FiArrowLeft, FiCoffee, FiHome, FiPlus, FiDroplet, FiWind, FiTruck, FiMapPin, FiMap } from 'react-icons/fi';
@@ -41,6 +45,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
 
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [activeCard, setActiveCard] = useState<Slide | null>(null);
+<<<<<<< HEAD
 
   useEffect(() => {
     if (activeCard) {
@@ -53,6 +58,8 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       document.body.classList.remove('lightbox-open');
     };
   }, [activeCard]);
+=======
+>>>>>>> b5ce798b64be24d9c83e857493f72fd9c5136252
 
   const fallbackPlace: HistoricalPlace = {
     id: 0,
