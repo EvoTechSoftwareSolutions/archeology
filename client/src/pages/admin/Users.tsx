@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FiSearch,
   FiPlus,
@@ -6,12 +6,15 @@ import {
   FiShield,
   FiToggleLeft,
   FiToggleRight,
+  FiLock,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { useSearchContext } from "../../contexts/SearchContext";
 import { useUsers } from "../../hooks/useUsers";
 import type { User } from "../../types/user.types";
 
 const roleColors: Record<string, string> = {
+  SUPERADMIN: "#7c3aed",
   ADMIN: "#1E4538",
   EDITOR: "#C9A84C",
   RESEARCHER: "#D97757",
@@ -22,6 +25,10 @@ const Users: React.FC = () => {
   const { users, loading, error, reload, createUser, updateUser, deleteUser } =
     useUsers();
   const { searchTerm, setSearchTerm } = useSearchContext();
+
+  const currentUser = JSON.parse(localStorage.getItem("adminUser") || "{}");
+  const isSuperAdmin = currentUser?.role === "SUPERADMIN";
+  const [permissionError, setPermissionError] = useState<string | null>(null);
 
   // Add / Edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +51,7 @@ const Users: React.FC = () => {
       .toUpperCase();
 
   const handleOpenModal = (user: User | null = null) => {
+    setPermissionError(null);
     if (user) {
       setEditingUser(user);
 
@@ -77,6 +85,11 @@ const Users: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (editingUser && !isSuperAdmin) {
+      setPermissionError("Only Super Admin can edit user roles or state.");
+      return;
+    }
+
     try {
       if (editingUser) {
         await updateUser(editingUser.id, {
@@ -95,21 +108,28 @@ const Users: React.FC = () => {
       }
 
       handleCloseModal();
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      console.error(err);
+      setPermissionError(err?.message || "Failed to save user");
     }
   };
 
-  //for delete a user not exactly delete but make the user inactive
+  // For updating status (only SUPERADMIN allowed)
   const handleToggleStatus = async (user: User) => {
+    if (!isSuperAdmin) {
+      setPermissionError("Only Super Admin is authorized to change user active state.");
+      return;
+    }
+    setPermissionError(null);
     try {
       await updateUser(user.id, {
         isActive: !user.isActive,
       });
 
       await reload();
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      console.error(err);
+      setPermissionError(err?.message || "Failed to update user status");
     }
   };
 
@@ -141,6 +161,23 @@ const Users: React.FC = () => {
           Add User
         </button>
       </div>
+
+      {/* Permission Warning Banner */}
+      {!isSuperAdmin && (
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 sm:px-5 py-3.5 text-sm text-amber-800 flex items-center gap-3">
+          <FiLock size={18} className="shrink-0 text-amber-600" />
+          <span>
+            You are logged in as <strong>{currentUser?.role || "ADMIN"}</strong>. Only <strong>SUPERADMIN</strong> users can change user active state or edit user roles.
+          </span>
+        </div>
+      )}
+
+      {permissionError && (
+        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 sm:px-5 py-3.5 text-sm text-red-700 flex items-center gap-3">
+          <FiAlertCircle size={18} className="shrink-0 text-red-500" />
+          <span>{permissionError}</span>
+        </div>
+      )}
 
       {/* Search */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100 mb-6 flex items-center gap-4">
@@ -254,18 +291,27 @@ const Users: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleOpenModal(user)}
-                          className="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-600 transition shrink-0"
-                          title="Edit User"
+                          disabled={!isSuperAdmin}
+                          className={`p-2 rounded-lg transition shrink-0 ${
+                            !isSuperAdmin
+                              ? "bg-gray-100 text-gray-300 cursor-not-allowed opacity-50"
+                              : "bg-amber-50 hover:bg-amber-100 text-amber-600 cursor-pointer"
+                          }`}
+                          title={!isSuperAdmin ? "Only Super Admin can edit users" : "Edit User"}
                         >
                           <FiEdit2 size={14} />
                         </button>
 
                         <button
                           onClick={() => handleToggleStatus(user)}
+                          disabled={!isSuperAdmin}
+                          title={!isSuperAdmin ? "Only Super Admin can change user status" : "Toggle User Status"}
                           className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap ${
-                            user.isActive
-                              ? "bg-green-50 text-green-600 hover:bg-green-100"
-                              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                            !isSuperAdmin
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
+                              : user.isActive
+                              ? "bg-green-50 text-green-600 hover:bg-green-100 cursor-pointer"
+                              : "bg-gray-100 text-gray-500 hover:bg-gray-200 cursor-pointer"
                           }`}
                         >
                           {user.isActive ? (
@@ -397,6 +443,7 @@ const Users: React.FC = () => {
                     Role
                   </label>
                   <select
+                    disabled={!isSuperAdmin}
                     value={formData.role}
                     onChange={(e) =>
                       setFormData({
@@ -404,12 +451,17 @@ const Users: React.FC = () => {
                         role: e.target.value as User["role"],
                       })
                     }
-                    className="w-full min-w-0 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 focus:border-[#1E4538] transition-all outline-none text-sm text-gray-800 appearance-none cursor-pointer"
+                    className="w-full min-w-0 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#1E4538]/20 focus:border-[#1E4538] transition-all outline-none text-sm text-gray-800 appearance-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <option value="ADMIN">Admin</option>
                     <option value="SUPERADMIN">Super Admin</option>
                     <option value="USER">User</option>
                   </select>
+                  {!isSuperAdmin && (
+                    <p className="mt-1 text-xs text-amber-600 flex items-center gap-1">
+                      <FiLock size={12} /> Only Super Admin can modify user roles.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-4 border-t border-gray-50">

@@ -24,6 +24,8 @@ interface PlaceDraft {
   historicalStory: string;
   heroImage: File | null;
   galleryImages: (File | null)[];
+  galleryTitles: string[];
+  galleryDescriptions: string[];
   nearbyHotels: string;
   nearbyHospitals: string;
   nearbyRestaurant: string;
@@ -84,6 +86,8 @@ const initialDraft: PlaceDraft = {
   historicalStory: "",
   heroImage: null,
   galleryImages: [null, null, null, null, null, null],
+  galleryTitles: ["", "", "", "", "", ""],
+  galleryDescriptions: ["", "", "", "", "", ""],
   nearbyHotels: "",
   nearbyHospitals: "",
   nearbyRestaurant: "",
@@ -315,9 +319,17 @@ const AddNewPlace = () => {
         formData.append("image", draft.heroImage);
       }
 
-      draft.galleryImages.forEach((file) => {
-        if (file) formData.append("galleryImages", file);
+      const galleryMeta: { title: string; description: string }[] = [];
+      draft.galleryImages.forEach((file, index) => {
+        if (file) {
+          formData.append("galleryImages", file);
+          galleryMeta.push({
+            title: draft.galleryTitles[index] || "",
+            description: draft.galleryDescriptions[index] || "",
+          });
+        }
       });
+      formData.append("galleryMetadataJson", JSON.stringify(galleryMeta));
 
       // Submit via centralized API client
       await createHistoricalPlace(formData);
@@ -422,6 +434,8 @@ const AddNewPlace = () => {
                 heroImage: draft.heroImage,
                 galleryImages: draft.galleryImages,
               }}
+              galleryTitles={draft.galleryTitles}
+              galleryDescriptions={draft.galleryDescriptions}
               onHeroImageChange={(file) => updateDraftField("heroImage", file)}
               onGalleryImageChange={(index, file) => {
                 setDraft((current) => {
@@ -432,6 +446,20 @@ const AddNewPlace = () => {
                     ...current,
                     galleryImages: nextGallery,
                   };
+                });
+              }}
+              onGalleryTitleChange={(index, value) => {
+                setDraft((current) => {
+                  const nextTitles = [...current.galleryTitles];
+                  nextTitles[index] = value;
+                  return { ...current, galleryTitles: nextTitles };
+                });
+              }}
+              onGalleryDescriptionChange={(index, value) => {
+                setDraft((current) => {
+                  const nextDescs = [...current.galleryDescriptions];
+                  nextDescs[index] = value;
+                  return { ...current, galleryDescriptions: nextDescs };
                 });
               }}
               onNext={handleNext}

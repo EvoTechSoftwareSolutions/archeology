@@ -8,16 +8,24 @@ import {
 
 interface MediaFormProps {
   value: MediaValues;
+  galleryTitles?: string[];
+  galleryDescriptions?: string[];
   onHeroImageChange: (value: File | null) => void;
   onGalleryImageChange: (index: number, value: File | null) => void;
+  onGalleryTitleChange?: (index: number, value: string) => void;
+  onGalleryDescriptionChange?: (index: number, value: string) => void;
   onBack: () => void;
   onNext: () => void;
 }
 
 const MediaForm = ({
   value,
+  galleryTitles = [],
+  galleryDescriptions = [],
   onHeroImageChange,
   onGalleryImageChange,
+  onGalleryTitleChange,
+  onGalleryDescriptionChange,
   onBack,
   onNext,
 }: MediaFormProps) => {
@@ -44,6 +52,8 @@ const MediaForm = ({
 
   const handleRemoveGalleryImage = (index: number) => {
     onGalleryImageChange(index, null);
+    onGalleryTitleChange?.(index, "");
+    onGalleryDescriptionChange?.(index, "");
   };
 
   const handleContinue = () => {
@@ -126,20 +136,20 @@ const MediaForm = ({
         {/* Gallery Uploads */}
         <FormField
           label="Gallery"
-          tooltipText="Upload at least one gallery image."
+          tooltipText="Upload at least one gallery image with title and description."
           required
           error={errors.galleryImages}
         >
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[1, 2, 3, 4, 5, 6].map((item, index) => {
               const galleryFile = value.galleryImages[index];
 
               return (
-                <div key={item} className="flex flex-col min-w-0">
+                <div key={item} className="flex flex-col min-w-0 bg-gray-50/50 p-3 rounded-lg border border-gray-200">
                   <button
                     type="button"
                     onClick={() => galleryInputRefs.current[index]?.click()}
-                    className={`w-full border border-dashed rounded-lg h-[130px] sm:h-[160px] lg:h-[200px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative ${
+                    className={`w-full border border-dashed rounded-lg h-[130px] sm:h-[150px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative ${
                       errors.galleryImages && !value.galleryImages.some(Boolean)
                         ? "border-red-500"
                         : "border-gray-300"
@@ -161,7 +171,7 @@ const MediaForm = ({
                       <>
                         <MdCloudUpload className="text-gray-400 mb-1 sm:mb-2" size={20} />
                         <span className="text-[11px] sm:text-[13px] text-gray-400 font-medium text-center px-2">
-                          Upload image
+                          Upload image {item}
                         </span>
                         <span className="hidden sm:block text-[10px] text-gray-400 mt-1 uppercase tracking-wide">
                           PNG, JPG up to 10MB
@@ -171,13 +181,35 @@ const MediaForm = ({
                   </button>
 
                   {galleryFile && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveGalleryImage(index)}
-                      className="mt-1 inline-flex items-center gap-1 text-[11px] sm:text-[12px] font-medium text-red-600 hover:text-red-700 self-start"
-                    >
-                      <MdClose size={14} /> Remove
-                    </button>
+                    <div className="mt-2.5 space-y-2 w-full">
+                      <div>
+                        <label className="text-[11px] font-semibold text-gray-700 block mb-0.5">Image Name / Title</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Vadahitina Maligawa (Inner Chamber)"
+                          value={galleryTitles[index] || ""}
+                          onChange={(e) => onGalleryTitleChange?.(index, e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1E604B] bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-gray-700 block mb-0.5">Image Description</label>
+                        <textarea
+                          placeholder="Describe what is shown in this image..."
+                          value={galleryDescriptions[index] || ""}
+                          onChange={(e) => onGalleryDescriptionChange?.(index, e.target.value)}
+                          rows={2}
+                          className="w-full text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1E604B] bg-white resize-none"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveGalleryImage(index)}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-red-600 hover:text-red-700 pt-1"
+                      >
+                        <MdClose size={14} /> Remove image
+                      </button>
+                    </div>
                   )}
                 </div>
               );

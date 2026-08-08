@@ -28,6 +28,8 @@ interface PlaceDraft {
   historicalStory: string;
   heroImage: File | string | null;
   galleryImages: (File | string | null)[];
+  galleryTitles: string[];
+  galleryDescriptions: string[];
   nearbyHotels: string;
   nearbyHospitals: string;
   nearbyRestaurant: string;
@@ -86,6 +88,8 @@ const initialDraft: PlaceDraft = {
   historicalStory: "",
   heroImage: null,
   galleryImages: [null, null, null, null, null, null],
+  galleryTitles: ["", "", "", "", "", ""],
+  galleryDescriptions: ["", "", "", "", "", ""],
   nearbyHotels: "",
   nearbyHospitals: "",
   nearbyRestaurant: "",
@@ -163,11 +167,17 @@ useEffect(() => {
       const historicalStory = descriptionParts.slice(1).join("\n\n") || "";
 
       const gallery: (File | string | null)[] = [null, null, null, null, null, null];
+      const galleryTitlesArr: string[] = ["", "", "", "", "", ""];
+      const galleryDescriptionsArr: string[] = ["", "", "", "", "", ""];
       if (Array.isArray(data.galleryImages)) {
-        data.galleryImages.forEach((imgObj: { url?: string } | string, idx: number) => {
+        data.galleryImages.forEach((imgObj: any, idx: number) => {
           if (idx < 6) {
             const url = typeof imgObj === "object" && imgObj !== null ? imgObj.url : imgObj;
             gallery[idx] = url || null;
+            if (typeof imgObj === "object" && imgObj !== null) {
+              galleryTitlesArr[idx] = imgObj.title || "";
+              galleryDescriptionsArr[idx] = imgObj.description || "";
+            }
           }
         });
       }
@@ -208,6 +218,8 @@ useEffect(() => {
         historicalStory,
         heroImage: data.image || data.imageUrl || null, 
         galleryImages: gallery,
+        galleryTitles: galleryTitlesArr,
+        galleryDescriptions: galleryDescriptionsArr,
         nearbyHotels: data.nearbyHotels || "",
         nearbyHospitals: data.nearbyHospitals || "",
         nearbyRestaurant: data.nearbyRestaurant || "",
@@ -412,17 +424,36 @@ useEffect(() => {
       }
 
       const existingGalleryUrls: string[] = [];
-      draft.galleryImages.forEach((img) => {
+      const existingGalleryMeta: { title: string; description: string }[] = [];
+      const newGalleryMeta: { title: string; description: string }[] = [];
+
+      draft.galleryImages.forEach((img, idx) => {
         if (img instanceof File) {
           formData.append("galleryImages", img);
+          newGalleryMeta.push({
+            title: draft.galleryTitles[idx] || "",
+            description: draft.galleryDescriptions[idx] || "",
+          });
         } else if (typeof img === "string" && img.trim()) {
           existingGalleryUrls.push(img);
+          existingGalleryMeta.push({
+            title: draft.galleryTitles[idx] || "",
+            description: draft.galleryDescriptions[idx] || "",
+          });
         }
       });
 
       formData.append(
         "existingGalleryImages",
         JSON.stringify(existingGalleryUrls),
+      );
+      formData.append(
+        "existingGalleryMetadataJson",
+        JSON.stringify(existingGalleryMeta),
+      );
+      formData.append(
+        "galleryMetadataJson",
+        JSON.stringify(newGalleryMeta),
       );
 
       await updateHistoricalPlace(numericId, formData);
@@ -535,6 +566,8 @@ useEffect(() => {
                 heroImage: draft.heroImage,
                 galleryImages: draft.galleryImages,
               }}
+              galleryTitles={draft.galleryTitles}
+              galleryDescriptions={draft.galleryDescriptions}
               onHeroImageChange={(file) => updateDraftField("heroImage", file)}
               onGalleryImageChange={(index, file) => {
                 setDraft((current) => {
@@ -544,6 +577,20 @@ useEffect(() => {
                     ...current,
                     galleryImages: nextGallery,
                   };
+                });
+              }}
+              onGalleryTitleChange={(index, value) => {
+                setDraft((current) => {
+                  const nextTitles = [...current.galleryTitles];
+                  nextTitles[index] = value;
+                  return { ...current, galleryTitles: nextTitles };
+                });
+              }}
+              onGalleryDescriptionChange={(index, value) => {
+                setDraft((current) => {
+                  const nextDescs = [...current.galleryDescriptions];
+                  nextDescs[index] = value;
+                  return { ...current, galleryDescriptions: nextDescs };
                 });
               }}
               onNext={handleNext}

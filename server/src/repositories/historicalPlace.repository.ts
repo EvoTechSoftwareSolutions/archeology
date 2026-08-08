@@ -179,7 +179,24 @@ getBySlugOrName(slugOrName: string) {
     });
   },
 
-  update(id: number, data: any) {
+  async update(id: number, data: any) {
+    if (data.galleryImages && Array.isArray(data.galleryImages)) {
+      await prisma.placeGalleryImage.deleteMany({
+        where: { historicalPlaceId: id },
+      });
+      if (data.galleryImages.length > 0) {
+        await prisma.placeGalleryImage.createMany({
+          data: data.galleryImages.map((img: any, idx: number) => ({
+            historicalPlaceId: id,
+            url: img.url,
+            title: img.title || null,
+            description: img.description || null,
+            position: img.position ?? idx + 1,
+          })),
+        });
+      }
+    }
+
     return prisma.historicalPlace.update({
       where: {
         id,

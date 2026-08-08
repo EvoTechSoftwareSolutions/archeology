@@ -132,6 +132,8 @@ model HistoricalPlace {
 model PlaceGalleryImage {
   id                Int             @id @default(autoincrement())
   url               String
+  title             String?
+  description       String?         @db.Text
   position          Int             @default(0)
   historicalPlaceId Int
   historicalPlace   HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)

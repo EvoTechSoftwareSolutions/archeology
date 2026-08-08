@@ -12,15 +12,11 @@ const router = Router();
 // Login required
 router.use(authenticate);
 
-// Admin only
-router.use(authorize("ADMIN", "SUPERADMIN"));
+// Read users (ADMIN and SUPERADMIN)
+router.get("/", authorize("ADMIN", "SUPERADMIN"), getAllUsers);
+router.get("/:id", authorize("ADMIN", "SUPERADMIN"), getUserById);
 
-// User management
-router.get("/", getAllUsers);
-
-router.get("/:id", getUserById);
-
-router.put("/:id", updateUser);
-
+// Change user state / Update user (SUPERADMIN ONLY)
+router.put("/:id", authorize("SUPERADMIN"), updateUser);
 
 export default router;

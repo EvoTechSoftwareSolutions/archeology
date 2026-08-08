@@ -9,12 +9,16 @@ interface EditMediaFormProps {
     heroImage: File | string | null;
     galleryImages: (File | string | null)[];
   };
+  galleryTitles?: string[];
+  galleryDescriptions?: string[];
 
   onHeroImageChange: (value: File | string | null) => void;
   onGalleryImageChange: (
     index: number,
     value: File | string | null
   ) => void;
+  onGalleryTitleChange?: (index: number, value: string) => void;
+  onGalleryDescriptionChange?: (index: number, value: string) => void;
 
   onBack: () => void;
   onNext: () => void;
@@ -80,8 +84,12 @@ const MediaPreview = ({
 
 const EditMediaForm = ({
   value,
+  galleryTitles = [],
+  galleryDescriptions = [],
   onHeroImageChange,
   onGalleryImageChange,
+  onGalleryTitleChange,
+  onGalleryDescriptionChange,
   onBack,
   onNext,
   onSave,
@@ -170,11 +178,11 @@ const EditMediaForm = ({
             {[1, 2, 3, 4, 5, 6].map((item, index) => {
               const galleryItem = value.galleryImages[index];
               return (
-                <div key={item} className="flex flex-col">
+                <div key={item} className="flex flex-col bg-gray-50/50 p-3 rounded-lg border border-gray-200">
                   <button
                     type="button"
                     onClick={() => galleryInputRefs.current[index]?.click()}
-                    className="border border-gray-300 border-dashed rounded-lg h-[200px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative group w-full"
+                    className="border border-gray-300 border-dashed rounded-lg h-[160px] flex flex-col items-center justify-center bg-white hover:bg-gray-50 transition-colors cursor-pointer overflow-hidden relative group w-full"
                   >
                     {galleryItem ? (
                       <>
@@ -201,13 +209,39 @@ const EditMediaForm = ({
                   </button>
 
                   {galleryItem && (
-                    <button
-                      type="button"
-                      onClick={() => onGalleryImageChange(index, null)}
-                      className="mt-1.5 inline-flex items-center gap-1 text-[12px] font-medium text-red-600 hover:text-red-700 self-start cursor-pointer"
-                    >
-                      <MdClose size={14} /> Remove image {item}
-                    </button>
+                    <div className="mt-2.5 space-y-2 w-full">
+                      <div>
+                        <label className="text-[11px] font-semibold text-gray-700 block mb-0.5">Image Name / Title</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Vadahitina Maligawa (Inner Chamber)"
+                          value={galleryTitles[index] || ""}
+                          onChange={(e) => onGalleryTitleChange?.(index, e.target.value)}
+                          className="w-full text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1E604B] bg-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-gray-700 block mb-0.5">Image Description</label>
+                        <textarea
+                          placeholder="Describe what is shown in this image..."
+                          value={galleryDescriptions[index] || ""}
+                          onChange={(e) => onGalleryDescriptionChange?.(index, e.target.value)}
+                          rows={2}
+                          className="w-full text-xs px-2.5 py-1.5 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1E604B] bg-white resize-none"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onGalleryImageChange(index, null);
+                          onGalleryTitleChange?.(index, "");
+                          onGalleryDescriptionChange?.(index, "");
+                        }}
+                        className="inline-flex items-center gap-1 text-[12px] font-medium text-red-600 hover:text-red-700 cursor-pointer pt-1"
+                      >
+                        <MdClose size={14} /> Remove image {item}
+                      </button>
+                    </div>
                   )}
                 </div>
               );

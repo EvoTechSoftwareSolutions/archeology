@@ -103,6 +103,7 @@ export interface Slide {
   image: string;
   title: string;
   subtitle?: string;
+  description?: string;
 }
 
 export interface TimelineEntry {

@@ -46,12 +46,22 @@ export const createHistoricalPlace = async (
         : null,
 
       // Gallery images
-      galleryImages: files?.galleryImages
-        ? files.galleryImages.map((file, index) => ({
-            url: `/uploads/${file.filename}`,
-            position: index + 1,
-          }))
-        : [],
+      galleryImages: (() => {
+        let galleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.galleryMetadataJson) {
+          try {
+            galleryMeta = JSON.parse(req.body.galleryMetadataJson);
+          } catch (e) {}
+        }
+        return files?.galleryImages
+          ? files.galleryImages.map((file, index) => ({
+              url: `/uploads/${file.filename}`,
+              title: galleryMeta[index]?.title || null,
+              description: galleryMeta[index]?.description || null,
+              position: index + 1,
+            }))
+          : [];
+      })(),
 
       // Facilities
       nearbyHotels: req.body.nearbyHotels || null,
@@ -247,6 +257,59 @@ export const updateHistoricalPlace = async (
       image: files?.image?.length
         ? `/uploads/${files.image[0].filename}`
         : undefined,
+
+      // Gallery images parsing for update
+      galleryImages: (() => {
+        let existingGallery: any[] = [];
+        if (req.body.existingGalleryImages) {
+          try {
+            const parsed = JSON.parse(req.body.existingGalleryImages);
+            if (Array.isArray(parsed)) {
+              existingGallery = parsed.map((item: any, idx: number) => {
+                if (typeof item === "string") {
+                  return { url: item, position: idx + 1 };
+                }
+                return {
+                  url: item.url,
+                  title: item.title || null,
+                  description: item.description || null,
+                  position: item.position ?? idx + 1,
+                };
+              });
+            }
+          } catch (e) {}
+        }
+
+        let existingGalleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.existingGalleryMetadataJson) {
+          try {
+            existingGalleryMeta = JSON.parse(req.body.existingGalleryMetadataJson);
+            existingGallery = existingGallery.map((item, idx) => ({
+              ...item,
+              title: existingGalleryMeta[idx]?.title ?? item.title ?? null,
+              description: existingGalleryMeta[idx]?.description ?? item.description ?? null,
+            }));
+          } catch (e) {}
+        }
+
+        let newGalleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.galleryMetadataJson) {
+          try {
+            newGalleryMeta = JSON.parse(req.body.galleryMetadataJson);
+          } catch (e) {}
+        }
+
+        const newGalleryImages = files?.galleryImages
+          ? files.galleryImages.map((file, index) => ({
+              url: `/uploads/${file.filename}`,
+              title: newGalleryMeta[index]?.title || null,
+              description: newGalleryMeta[index]?.description || null,
+              position: existingGallery.length + index + 1,
+            }))
+          : [];
+
+        return [...existingGallery, ...newGalleryImages];
+      })(),
     };
 
     console.log("UPDATE DATA:", updateData);

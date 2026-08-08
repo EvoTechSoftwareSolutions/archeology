@@ -99,15 +99,25 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       image: slide.image,
       title: slide.title || props.title || resolvedPlace.name,
       subtitle: slide.subtitle,
-    })) as Slide[]) || [
-      { id: 'highlight-main', image: resolvedHeroImage, title: resolvedPlace.name, subtitle: resolvedPlace.category },
-      ...resolvedGalleryImages.map((img, idx) => ({
-        id: `highlight-gallery-${img.id ?? idx}`,
-        image: img.url,
-        title: resolvedPlace.name,
-        subtitle: resolvedPlace.category,
-      })),
-    ];
+      description: slide.desc,
+    })) as Slide[]) ||
+    (resolvedGalleryImages.length > 0
+      ? resolvedGalleryImages.map((img, idx) => ({
+          id: `highlight-gallery-${img.id ?? idx}`,
+          image: img.url,
+          title: resolvedPlace.name,
+          subtitle: img.title || `${resolvedPlace.name} Image ${idx + 1}`,
+          description: img.description || resolvedPlace.description || undefined,
+        }))
+      : [
+          {
+            id: 'highlight-main',
+            image: resolvedHeroImage,
+            title: resolvedPlace.name,
+            subtitle: resolvedPlace.name,
+            description: resolvedPlace.description || undefined,
+          },
+        ]);
 
   const allSlides: Slide[] = highlightCards;
 
