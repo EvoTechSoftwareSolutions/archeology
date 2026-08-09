@@ -111,7 +111,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       image: slide.image,
       title: slide.title || props.title || resolvedPlace.name,
       subtitle: slide.subtitle,
-      description: slide.desc,
+      description: slide.description,
     })) as Slide[]) ||
     (resolvedGalleryImages.length > 0
       ? resolvedGalleryImages.map((img, idx) => ({
