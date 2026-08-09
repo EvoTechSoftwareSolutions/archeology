@@ -3,6 +3,14 @@ import type { Request, Response, NextFunction } from "express";
 import { historicalPlaceService } from "../services/historicalPlace.service.js";
 import { getIO } from "../socket.js";
 
+const generateSlug = (name: string): string =>
+  name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 // CREATE HISTORICAL PLACE
 export const createHistoricalPlace = async (
   req: Request,
@@ -105,7 +113,7 @@ export const createHistoricalPlace = async (
       // SEO
       seoTitle: req.body.seoTitle || null,
       metaDescription: req.body.metaDescription || null,
-      slug: req.body.slug || null,
+      slug: req.body.slug || generateSlug(req.body.name),
       focusKeywords: req.body.focusKeywords || null,
     };
 
