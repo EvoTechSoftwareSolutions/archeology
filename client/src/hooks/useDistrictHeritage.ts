@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getDistrictHeritagePlaces } from "../services/district.service";
 import type { HistoricalPlace } from "../types/district";
 
@@ -8,15 +8,7 @@ interface State {
   error: string | null;
 }
 
-/**
- * Fetches the historical places for whichever district is selected, via
- * GET /districts/:id — the backend scopes historicalPlaces to that one
- * district itself, so there's no risk of places from other districts
- * leaking in (which is what a query-param filter on the flat
- * /historicalPlace list was doing before this fix).
- */
 export default function useDistrictHeritage(districtId: string | null) {
-  const cache = useRef(new Map<string, HistoricalPlace[]>());
   const [state, setState] = useState<State>({
     places: [],
     isLoading: false,
@@ -26,12 +18,6 @@ export default function useDistrictHeritage(districtId: string | null) {
   useEffect(() => {
     if (!districtId) {
       setState({ places: [], isLoading: false, error: null });
-      return;
-    }
-
-    const cached = cache.current.get(districtId);
-    if (cached) {
-      setState({ places: cached, isLoading: false, error: null });
       return;
     }
 
@@ -47,7 +33,6 @@ export default function useDistrictHeritage(districtId: string | null) {
     getDistrictHeritagePlaces(numericId)
       .then((places) => {
         if (cancelled) return;
-        cache.current.set(districtId, places);
         setState({ places, isLoading: false, error: null });
       })
       .catch(() => {
