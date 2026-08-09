@@ -89,4 +89,4 @@ const DistrictHeritageExplorer = () => {
   );
 };
 
-export default DistrictHeritageExplorer;
+export default DistrictHeritageExplorer;

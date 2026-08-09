@@ -28,7 +28,7 @@ const AllPlaces = () => {
       setError(null);
 
       try {
-        const res = await fetch('http://localhost:5000/api/v1/historicalPlace');
+        const res = await fetch('http://localhost:5000/api/v1/historicalPlace/active');
         if (!res.ok) {
           throw new Error(`Failed to fetch heritage places: ${res.status}`);
         }

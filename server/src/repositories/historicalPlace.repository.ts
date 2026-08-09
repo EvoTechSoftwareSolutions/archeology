@@ -67,35 +67,100 @@ export const historicalPlaceRepository = {
   },
 
 
-getById(id:number){
- return prisma.historicalPlace.findUnique({
-  where:{id},
-
-  include:{
-    province:true,
-    district:true,
-    galleryImages:true,
-    siteMonograph:true
-  }
- })
-},
-
-getBySlugOrName(slugOrName: string) {
-  return prisma.historicalPlace.findFirst({
+  getActiveAll(params?: {
+  search?: string;
+  districtId?: number;
+  provinceId?: number;
+  category?: string;
+  statusFlag?: string;
+}) {
+  return prisma.historicalPlace.findMany({
     where: {
-      OR: [
-        { slug: slugOrName },
-        { name: { equals: slugOrName } },
-      ],
+      // Only active historical places
+      isActive: true,
+
+      ...(params?.districtId !== undefined && {
+        districtId: params.districtId,
+      }),
+
+      ...(params?.provinceId !== undefined && {
+        provinceId: params.provinceId,
+      }),
+
+      ...(params?.category && {
+        category: params.category,
+      }),
+
+      ...(params?.statusFlag && {
+        statusFlag: params.statusFlag,
+      }),
+
+      ...(params?.search && {
+        OR: [
+          {
+            name: {
+              contains: params.search,
+            },
+          },
+          {
+            century: {
+              contains: params.search,
+            },
+          },
+          {
+            statusFlag: {
+              contains: params.search,
+            },
+          },
+          {
+            district: {
+              name: {
+                contains: params.search,
+              },
+            },
+          },
+        ],
+      }),
     },
+
     include: {
       province: true,
       district: true,
       galleryImages: true,
-      siteMonograph: true,
+    },
+
+    orderBy: {
+      createdAt: "desc",
     },
   });
 },
+
+  getById(id: number) {
+    return prisma.historicalPlace.findUnique({
+      where: { id },
+
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+        siteMonograph: true,
+      },
+    });
+  },
+
+  getBySlugOrName(slugOrName: string) {
+    return prisma.historicalPlace.findFirst({
+      where: {
+        OR: [{ slug: slugOrName }, { name: { equals: slugOrName } }],
+      },
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+        siteMonograph: true,
+      },
+    });
+  },
 
   getByName(name: string) {
     return prisma.historicalPlace.findFirst({
@@ -281,6 +346,31 @@ getBySlugOrName(slugOrName: string) {
       },
     });
   },
+
+async toggleActive(id: number) {
+  const place = await prisma.historicalPlace.findUnique({
+    where: { id },
+  });
+
+  if (!place) {
+    return null;
+  }
+
+  const newIsActive = !place.isActive;
+
+  return prisma.historicalPlace.update({
+    where: { id },
+    data: {
+      isActive: newIsActive,
+      statusFlag: newIsActive ? "Published" : "Draft",
+    },
+    include: {
+      province: true,
+      district: true,
+      galleryImages: true,
+    },
+  });
+},
 
   delete(id: number) {
     return prisma.historicalPlace.delete({

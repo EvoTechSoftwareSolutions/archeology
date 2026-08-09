@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
-export default function useNotificationsSocket(token: string | null, onNotification: (n: any) => void) {
+export default function useNotificationsSocket(
+  token: string | null,
+  onNotification: (n: any) => void
+) {
   const socketRef = useRef<Socket | null>(null);
   const onNotificationRef = useRef(onNotification);
 
@@ -12,11 +15,18 @@ export default function useNotificationsSocket(token: string | null, onNotificat
   useEffect(() => {
     if (!token) return;
 
-    const url = import.meta.env.VITE_API_WS_URL || (import.meta.env.VITE_API_BASE_URL || "http://localhost:5000");
+    // Remove trailing /api or slash to prevent bad pathing
+    const rawUrl =
+      import.meta.env.VITE_API_WS_URL ||
+      import.meta.env.VITE_API_BASE_URL ||
+      "http://localhost:5000";
+    const url = rawUrl.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
     const socket = io(url, {
       auth: { token },
-      transports: ["websocket"],
+      transports: ["polling", "websocket"], // Allow polling fallback first
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     socketRef.current = socket;
@@ -32,7 +42,7 @@ export default function useNotificationsSocket(token: string | null, onNotificat
     socket.on("notification:new", handleNotification);
 
     socket.on("connect_error", (err) => {
-      console.error("Socket connect error", err);
+      console.error("Socket connect error:", err.message);
     });
 
     return () => {

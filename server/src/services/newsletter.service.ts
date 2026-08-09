@@ -193,6 +193,7 @@ class NewsletterService {
       active,
     };
   }
+  
   async unsubscribe(token: string) {
     const subscriber = await this.newsletterRepository.findByUnsubscribeToken(token);
 

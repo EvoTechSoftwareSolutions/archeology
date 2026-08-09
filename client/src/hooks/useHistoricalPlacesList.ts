@@ -3,6 +3,7 @@ import {
   deleteHistoricalPlace,
   deleteHistoricalPlaces,
   getHistoricalPlaces,
+  toggleHistoricalPlaceStatus,
 } from "../services/historicalPlace.service";
 import { exportToCsv } from "../utils/csvExport";
 import type { HistoricalPlaceRecord } from "../types/historicalPlace.types";
@@ -26,6 +27,7 @@ export default function useHistoricalPlacesList() {
   const [districtId, setDistrictId] = useState<number | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [statusFlag, setStatusFlag] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState<boolean | null>(null);
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -42,6 +44,7 @@ export default function useHistoricalPlacesList() {
       districtId: districtId ?? undefined,
       category: category ?? undefined,
       statusFlag: statusFlag ?? undefined,
+      isActive: isActive ?? undefined,
       page,
       pageSize: PAGE_SIZE,
     })
@@ -51,7 +54,7 @@ export default function useHistoricalPlacesList() {
       })
       .catch(() => setError("Couldn't load historical places."))
       .finally(() => setIsLoading(false));
-  }, [search, provinceId, districtId, category, statusFlag, page]);
+  }, [search, provinceId, districtId, category, statusFlag, page, isActive]);
 
   useEffect(() => {
     load();
@@ -61,22 +64,22 @@ export default function useHistoricalPlacesList() {
   // out-of-range page for the new filter set.
   useEffect(() => {
     setPage(1);
-  }, [search, provinceId, districtId, category, statusFlag]);
+  }, [search, provinceId, districtId, category, statusFlag, isActive]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(total / PAGE_SIZE)),
-    [total]
+    [total],
   );
 
   const toggleSelected = useCallback((id: number) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   }, []);
 
   const toggleSelectAll = useCallback(() => {
     setSelectedIds((prev) =>
-      prev.length === items.length ? [] : items.map((i) => i.id)
+      prev.length === items.length ? [] : items.map((i) => i.id),
     );
   }, [items]);
 
@@ -88,8 +91,26 @@ export default function useHistoricalPlacesList() {
       setSelectedIds((prev) => prev.filter((x) => x !== id));
       load();
     },
-    [load]
+    [load],
   );
+
+  const toggleActive = useCallback(
+  async (id: number) => {
+    try {
+      setError(null);
+
+      await toggleHistoricalPlaceStatus(id);
+
+      setNotice("Historical place status updated.");
+
+      load();
+    } catch (error) {
+      console.error("Failed to toggle historical place status:", error);
+      setError("Couldn't update historical place status.");
+    }
+  },
+  [load],
+);
 
   const removeSelected = useCallback(async () => {
     // Show your existing confirmation dialog before calling this.
@@ -104,33 +125,48 @@ export default function useHistoricalPlacesList() {
     exportToCsv(items, "historical-places.csv");
   }, [items]);
 
-  
-  return {
-    items,
-    total,
-    page,
-    totalPages,
-    setPage,
-    search,
-    setSearch,
-    provinceId,
-    setProvinceId,
-    districtId,
-    setDistrictId,
-    category,
-    setCategory,
-    statusFlag,
-    setStatusFlag,
-    selectedIds,
-    toggleSelected,
-    toggleSelectAll,
-    isLoading,
-    error,
-    notice,
-    dismissNotice: () => setNotice(null),
-    refresh: load,
-    remove,
-    removeSelected,
-    exportCsv,
-  };
+ return {
+  items,
+  total,
+  page,
+  totalPages,
+  setPage,
+
+  search,
+  setSearch,
+
+  provinceId,
+  setProvinceId,
+
+  districtId,
+  setDistrictId,
+
+  category,
+  setCategory,
+
+  statusFlag,
+  setStatusFlag,
+
+  isActive,
+  setIsActive,
+
+  selectedIds,
+  toggleSelected,
+  toggleSelectAll,
+
+  isLoading,
+  error,
+  notice,
+
+  dismissNotice: () => setNotice(null),
+
+  refresh: load,
+
+  remove,
+  removeSelected,
+
+  toggleActive,
+
+  exportCsv,
+};
 }

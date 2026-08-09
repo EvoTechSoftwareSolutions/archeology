@@ -3,8 +3,10 @@ import { Router } from "express";
 import {
   createHistoricalPlace,
   getHistoricalPlaces,
+  getActiveHistoricalPlaces,
   getHistoricalPlaceById,
   updateHistoricalPlace,
+  toggleHistoricalPlaceActive,
   deleteHistoricalPlace,
 } from "../controllers/historicalPlace.controller.js";
 
@@ -37,6 +39,7 @@ router.post(
 
 // GET ALL HISTORICAL PLACES
 router.get("/", getHistoricalPlaces);
+router.get("/active", getActiveHistoricalPlaces);
 
 // GET SINGLE HISTORICAL PLACE
 router.get("/:id", getHistoricalPlaceById);
@@ -58,6 +61,8 @@ router.put(
   updateHistoricalPlace,
 );
 
+// TOGGLE ACTIVE / INACTIVE STATUS
+router.put("/:id/toggle-status", toggleHistoricalPlaceActive);
 // DELETE HISTORICAL PLACE
 router.delete("/:id", deleteHistoricalPlace);
 

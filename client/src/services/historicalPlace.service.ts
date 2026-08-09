@@ -96,3 +96,11 @@ export async function getHistoricalPlace(id: number | string) {
 
   return response.data.data as HistoricalPlaceDetails;
 }
+
+export async function toggleHistoricalPlaceStatus(id: number) {
+  const response = await api.put(
+    `${BASE}/${id}/toggle-status`,
+  );
+
+  return response.data.data ?? response.data;
+}

@@ -12,7 +12,6 @@ export const historicalPlaceService = {
     return historicalPlaceRepository.create(data);
   },
 
-
   getAllPlaces(params?: {
     search?: string;
     districtId?: number;
@@ -22,6 +21,17 @@ export const historicalPlaceService = {
   }) {
     return historicalPlaceRepository.getAll(params);
   },
+
+
+  async getActivePlaces(params?: {
+  search?: string;
+  districtId?: number;
+  provinceId?: number;
+  category?: string;
+  statusFlag?: string;
+}) {
+  return historicalPlaceRepository.getActiveAll(params);
+},
 
   async getPlaceById(idOrSlug: number | string) {
     let place = null;
@@ -55,6 +65,22 @@ export const historicalPlaceService = {
 
     return historicalPlaceRepository.update(id, data);
   },
+
+async togglePlaceActive(id: number) {
+  const place = await historicalPlaceRepository.getById(id);
+
+  if (!place) {
+    throw new ApiError(404, "Historical place not found");
+  }
+
+  const updatedPlace = await historicalPlaceRepository.toggleActive(id);
+
+  if (!updatedPlace) {
+    throw new ApiError(404, "Historical place not found");
+  }
+
+  return updatedPlace;
+},
 
   async deletePlace(id: number) {
     const place = await historicalPlaceRepository.getById(id);

@@ -12,7 +12,7 @@ router.use(authenticate);
 router.use(authorize("ADMIN", "SUPERADMIN"));
 
 router.get("/summary", getNotificationSummary);
-router.patch("/contacts/mark-read", markContactsRead);
-router.patch("/newsletter/mark-seen", markSubscribersRead);
+router.put("/contacts/mark-read", markContactsRead);
+router.put("/newsletter/mark-seen", markSubscribersRead);
 
 export default router;

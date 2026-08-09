@@ -62,7 +62,8 @@ model HistoricalPlace {
 
   century    String
   statusFlag String
-
+  isActive Boolean @default(true)
+  
   latitude  Float
   longitude Float
 

@@ -10,10 +10,14 @@ export const newsletterApi = {
   },
 
   updateSubscriber(id: number, data: { status: string }) {
-    return api.patch(`/newsletter/subscribers/${id}`, data);
+    return api.put(`/newsletter/subscribers/${id}`, data);
   },
 
   deleteSubscriber(id: number) {
     return api.delete(`/newsletter/subscribers/${id}`);
+  },
+
+  unsubscribe(token: string) {
+    return api.get(`/newsletter/unsubscribe/${token}`);
   },
 };

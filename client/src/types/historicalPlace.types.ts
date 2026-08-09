@@ -12,6 +12,8 @@ export interface HistoricalPlaceListParams {
   page?: number;
 
   pageSize?: number;
+
+  isActive?: boolean;
 }
 
 export interface HistoricalPlaceRecord {
@@ -45,6 +47,7 @@ export interface HistoricalPlaceRecord {
 
   createdAt?: string;
   updatedAt?: string;
+  isActive: boolean;
 }
 
 //for API responses fetch

@@ -6,7 +6,6 @@ import {
   FiDownload,
   FiMoreHorizontal,
   FiEdit2,
-  FiTrash2,
   FiEye,
   FiX,
   FiExternalLink,
@@ -17,10 +16,6 @@ import { resolveImageUrl } from "../../utils/imageUtils";
 import { districts as staticDistricts } from "../../data/districts";
 import useHistoricalPlacesList from "../../hooks/useHistoricalPlacesList";
 import { useSearchContext } from "../../contexts/SearchContext";
-import {
-  createHistoricalPlace,
-  updateHistoricalPlace,
-} from "../../services/historicalPlace.service";
 import type { HistoricalPlaceRecord } from "../../types/historicalPlace.types";
 
 const HistoricalPlaces = () => {
@@ -35,14 +30,16 @@ const HistoricalPlaces = () => {
     setDistrictId,
     statusFlag,
     setStatusFlag,
+    isActive,
+    setIsActive,
     selectedIds,
     toggleSelected,
     toggleSelectAll,
     isLoading,
     error,
     refresh,
-    remove,
     removeSelected,
+    toggleActive,
     exportCsv,
   } = useHistoricalPlacesList();
 
@@ -82,10 +79,8 @@ const HistoricalPlaces = () => {
     return found ? found.name : "Unknown District";
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this place?")) {
-      await remove(id);
-    }
+  const handleToggleActive = async (id: number) => {
+    await toggleActive(id);
   };
 
   const handleBulkDelete = async () => {
@@ -156,7 +151,7 @@ const HistoricalPlaces = () => {
               onClick={handleBulkDelete}
               className="flex items-center gap-2 px-4 py-2 border border-red-300 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
             >
-              <FiTrash2 size={14} /> Delete ({selectedIds.length})
+              Delete ({selectedIds.length})
             </button>
           )}
           <button
@@ -210,6 +205,7 @@ const HistoricalPlaces = () => {
                 onChange={(e) =>
                   setDistrictId(e.target.value ? Number(e.target.value) : null)
                 }
+                className="w-full appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-[#275949] font-medium cursor-pointer"
               >
                 <option value="">All Districts</option>
 
@@ -219,24 +215,29 @@ const HistoricalPlaces = () => {
                   </option>
                 ))}
               </select>
+
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <FiChevronDown />
+              </div>
             </div>
 
-            <div className="relative w-full sm:w-36">
+            <div className="relative w-full sm:w-40">
               <select
-                value={statusFlag ?? "All Status"}
-                onChange={(e) =>
-                  setStatusFlag(
-                    e.target.value === "All Status" ? null : e.target.value,
-                  )
-                }
+                value={isActive === null ? "" : isActive ? "true" : "false"}
+                onChange={(e) => {
+                  if (e.target.value === "") {
+                    setIsActive(null);
+                  } else {
+                    setIsActive(e.target.value === "true");
+                  }
+                }}
                 className="w-full appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-[#275949] font-medium cursor-pointer"
               >
-                {statuses.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
+                <option value="">All Active Status</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
               </select>
+
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                 <FiChevronDown />
               </div>
@@ -266,6 +267,7 @@ const HistoricalPlaces = () => {
                 <th className="py-4 px-4 font-bold text-gray-900">Era</th>
                 <th className="py-4 px-4 font-bold text-gray-900">Status</th>
                 <th className="py-4 px-4 font-bold text-gray-900">Date</th>
+                <th className="py-4 px-4 font-bold text-gray-900">Active</th>
                 <th className="p-4 w-12"></th>
               </tr>
             </thead>
@@ -328,6 +330,28 @@ const HistoricalPlaces = () => {
                       : "N/A"}
                   </td>
                   <td className="py-4 px-4">
+                    {/* Active / Inactive toggle */}
+                    <button
+                      onClick={() => handleToggleActive(place.id)}
+                      role="switch"
+                      aria-checked={place.isActive}
+                      title={
+                        place.isActive
+                          ? "Active — click to deactivate"
+                          : "Inactive — click to activate"
+                      }
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        place.isActive ? "bg-[#275949]" : "bg-gray-300"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                          place.isActive ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </td>
+                  <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <Link
                         to={`/places/${place.id}`}
@@ -353,14 +377,6 @@ const HistoricalPlaces = () => {
                       >
                         <FiEdit2 size={12} />
                       </Link>
-
-                      <button
-                        onClick={() => handleDelete(place.id)}
-                        className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition"
-                        title="Delete"
-                      >
-                        <FiTrash2 size={12} />
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -369,7 +385,7 @@ const HistoricalPlaces = () => {
               {items.length === 0 && !isLoading && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className="text-center py-16 text-gray-400 text-sm"
                   >
                     No places found matching your filters.
