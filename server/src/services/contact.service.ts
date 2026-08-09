@@ -152,6 +152,21 @@ class ContactService {
       console.error("Failed to send contact notification email", error);
     }
 
+    try {
+      const { getIO } = await import("../socket.js");
+      const io = getIO();
+      io.to("role:ADMIN").emit("notification:new", {
+        id: `contact-${message.id}`,
+        type: "contact",
+        title: `New Contact Message`,
+        subtitle: `${input.name} (${input.subject})`,
+        time: "Just now",
+        link: "/admin/contact",
+      });
+    } catch (error) {
+      // socket io might not be initialized during testing
+    }
+
     return {
       success: true,
       message: "Your message has been sent successfully.",
@@ -234,20 +249,31 @@ class ContactService {
 
     await this.transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
-
       to: message.email,
-
       subject: `Re: ${message.subject || "Contact Message"}`,
-
-      text: `Hello ${message.name},
-
-Admin reply:
-
-${replyText}
-
-Original message:
-
-${message.message}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; background:#f8f6f1; padding:30px; color:#203229;">
+          <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #eadfc4;">
+            <div style="background:#1c5f46; padding:28px 36px; color:#ffffff;">
+              <h1 style="margin:0; font-size:30px; font-family:Georgia, serif;">Heritage Sri Lanka</h1>
+              <p style="margin:6px 0 0; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#efe1bc;">Support Response</p>
+            </div>
+            <div style="padding:34px 36px;">
+              <p style="font-size:20px; margin:0 0 12px; color:#2a4a3a;">Hello ${escapeHtml(message.name)},</p>
+              <div style="font-size:15px; line-height:1.7; color:#56513c; margin-bottom:24px;">
+                ${replyText.replace(/\n/g, "<br>")}
+              </div>
+              <div style="margin:28px 0 0; padding:20px; background:#fbfaf7; border-left:4px solid #c89b3c; border-radius:10px;">
+                <p style="margin:0 0 8px; font-size:13px; color:#8a8470; text-transform:uppercase; letter-spacing:1px;">Original Message</p>
+                <p style="margin:0 0 8px;"><strong>Subject:</strong> ${escapeHtml(message.subject || "Contact Message")}</p>
+                <p style="margin:8px 0 0; color:#4c4538; line-height:1.7; font-style:italic;">${escapeHtml(message.message).replace(/\n/g, "<br>")}</p>
+              </div>
+              <p style="margin-top:32px; color:#1c5f46; font-weight:bold;">Warm regards,<br />Heritage Sri Lanka Team</p>
+            </div>
+          </div>
+        </div>
+      `,
+      text: `Hello ${message.name},\n\n${replyText}\n\n--\nOriginal message:\nSubject: ${message.subject || "Contact Message"}\n\n${message.message}\n\nWarm regards,\nHeritage Sri Lanka Team`,
     });
 
     return this.contactRepository.update(id, {

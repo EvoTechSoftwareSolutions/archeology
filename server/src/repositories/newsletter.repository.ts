@@ -45,7 +45,32 @@ export class NewsletterRepository {
 
   countActive() {
     return prisma.newsletterSubscriber.count({
-      where: { status: "active" },
+      where: { status: "SUBSCRIBED" },
+    });
+  }
+
+  findByUnsubscribeToken(token: string) {
+    return prisma.newsletterSubscriber.findUnique({
+      where: { unsubscribeToken: token },
+    });
+  }
+
+  createCampaign(data: Prisma.NewsletterCampaignCreateInput) {
+    return prisma.newsletterCampaign.create({
+      data,
+    });
+  }
+
+  createEmailLog(data: Prisma.NewsletterEmailLogCreateInput) {
+    return prisma.newsletterEmailLog.create({
+      data,
+    });
+  }
+
+  updateCampaign(id: number, data: Prisma.NewsletterCampaignUpdateInput) {
+    return prisma.newsletterCampaign.update({
+      where: { id },
+      data,
     });
   }
 }

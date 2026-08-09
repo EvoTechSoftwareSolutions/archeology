@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import useNotificationsSocket from "../../../hooks/useNotificationsSocket";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiMenu, FiSearch, FiBell, FiChevronDown, FiLogOut, FiSettings, FiUser, FiX } from "react-icons/fi";
 import { authService } from "../../../services/auth.service";
 import { useSearchContext } from "../../../contexts/SearchContext";
+import { useNotificationSummary } from "../../../hooks/useNotificationSummary";
 import type { LoginUser } from "../../../types/auth.types";
 
 interface HeaderProps {
@@ -30,23 +30,13 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const { searchTerm, setSearchTerm } = useSearchContext();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationsState, setNotificationsState] = useState<Array<{title:string; subtitle?:string; time?:string; id?:any}>>([]);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(getStoredUser);
   const [loggingOut, setLoggingOut] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const notifications = notificationsState;
-
-  const handleNotification = useCallback((n: any) => {
-    const item = { title: n?.title || "Notification", subtitle: n?.subtitle || "", time: "Just now", id: n?.id };
-    setNotificationsState((prev) => [item, ...prev]);
-  }, []);
-
-  // Setup socket for real-time notifications
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
-  useNotificationsSocket(token, handleNotification);
+  const { notifications, totalUnread } = useNotificationSummary();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -153,27 +143,63 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
             aria-label="Notifications"
           >
             <FiBell size={20} />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            {totalUnread > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                {totalUnread > 99 ? "99+" : totalUnread}
+              </span>
+            )}
           </button>
 
           {showNotifications && (
             <div className="fixed sm:absolute left-1/2 sm:left-auto right-auto sm:right-0 -translate-x-1/2 sm:translate-x-0 top-[70px] sm:top-auto sm:mt-3 w-[90vw] sm:w-80 max-w-sm bg-white border border-gray-200 rounded-3xl shadow-xl overflow-hidden z-20">
-              <div className="px-5 py-4 bg-[#F3F7F5] border-b border-gray-100">
-                <h2 className="text-sm font-semibold text-gray-900">Notifications</h2>
-                <p className="text-xs text-gray-500">Latest updates for your account</p>
+              <div className="px-5 py-4 bg-[#F3F7F5] border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900">Notifications</h2>
+                  <p className="text-xs text-gray-500">Latest updates for your account</p>
+                </div>
+                {totalUnread > 0 && (
+                  <span className="bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {totalUnread} new
+                  </span>
+                )}
               </div>
               <div className="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto">
-                {notifications.map((item, index) => (
-                  <div key={index} className="px-5 py-4 hover:bg-gray-50 transition-colors">
-                    <p className="text-sm font-medium text-gray-900 break-words">{item.title}</p>
-                    <p className="text-sm text-gray-500 break-words">{item.subtitle}</p>
-                    <p className="text-xs text-gray-400 mt-1">{item.time}</p>
+                {notifications.length > 0 ? (
+                  notifications.map((item, index) => (
+                    <div
+                      key={item.id || index}
+                      onClick={() => {
+                        if (item.link) {
+                          navigate(item.link);
+                          setShowNotifications(false);
+                        }
+                      }}
+                      className="px-5 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium text-gray-900 break-words">{item.title}</p>
+                        {item.type && (
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                            item.type === 'contact' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'
+                          }`}>
+                            {item.type}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 break-words mt-0.5">{item.subtitle}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">
+                        {typeof item.time === 'string' && item.time !== 'Just now'
+                          ? new Date(item.time).toLocaleString()
+                          : item.time}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-5 py-8 text-center text-gray-400 text-xs">
+                    No new notifications
                   </div>
-                ))}
+                )}
               </div>
-              <button className="w-full px-5 py-3 text-sm font-medium text-[#275949] hover:bg-[#F3F7F5] transition-colors">
-                See all notifications
-              </button>
             </div>
           )}
         </div>
