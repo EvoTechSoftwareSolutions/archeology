@@ -3,18 +3,21 @@ import DistrictShape from "./DistrictShape";
 
 interface Props {
   province: Province;
-  isActive: boolean; // hovered OR pinned by a selection inside it
+  isActive: boolean;
+
   selectedDistrictId: string | number | null;
   hoveredDistrictId: string | number | null;
+
   onProvinceEnter: (id: string | number) => void;
   onProvinceLeave: () => void;
+
   onDistrictSelect: (id: string | number) => void;
   onDistrictHoverStart: (id: string | number) => void;
   onDistrictHoverEnd: () => void;
 }
 
-const SELECTED_DISTRICT_COLOR = "#C1483F"; // accent — the clicked district
-const SIBLING_DISTRICT_COLOR = "#D9CBB2"; // everyone else in this province
+const SELECTED_DISTRICT_COLOR = "#C1483F";
+const SIBLING_DISTRICT_COLOR = "#D9CBB2";
 
 const ProvinceShape = ({
   province,
@@ -27,69 +30,150 @@ const ProvinceShape = ({
   onDistrictHoverStart,
   onDistrictHoverEnd,
 }: Props) => {
-  const hasSelectionHere = province.districts?.some(
-    (d) => String(d.id) === String(selectedDistrictId),
-  );
+  const hasSelectionHere =
+    province.districts?.some(
+      (district) =>
+        String(district.id) ===
+        String(selectedDistrictId)
+    ) ?? false;
+
+  const showDistricts =
+    isActive || hasSelectionHere;
 
   return (
     <g
+      data-province-id={province.id}
+      data-province-name={province.name}
       className="cursor-pointer"
-      style={{
-        transformOrigin: `${province.labelX}px ${province.labelY}px`,
-        // card-hover pop: scales up while active, settles back when not
-        transform: isActive ? "scale(1.07) translateX(-5px) translatey(-5px)" : "scale(1)",
-        zIndex: isActive ? 999 : 1,
-        transition: "transform 300ms cubic-bezier(0.22, 1, 0.36, 1)",
-      }}
-      onMouseEnter={() => onProvinceEnter(province.id)}
+      onMouseEnter={() =>
+        onProvinceEnter(province.id)
+      }
       onMouseLeave={onProvinceLeave}
+      style={{
+        /**
+         * IMPORTANT
+         * SVG transform must use view-box coordinates.
+         */
+        transformBox: "view-box",
+
+        /**
+         * Scale from the province center.
+         */
+        transformOrigin: `${province.labelX}px ${province.labelY}px`,
+
+        /**
+         * Smooth hover scale.
+         */
+        transform: isActive
+          ? "scale(1.4)"
+          : "scale(1)",
+
+        /**
+         * Smooth enter + leave animation.
+         */
+        transition:
+          "transform 450ms cubic-bezier(0.16, 1, 0.3, 1)",
+
+        /**
+         * Helps browser optimize the transform.
+         */
+        willChange: "transform",
+
+        /**
+         * Keeps this SVG group isolated.
+         */
+        isolation: "isolate",
+      }}
     >
-      {/* Province background — color reacts to isActive, not raw hover,
-          so it stays lit while a district inside it is selected */}
+      {/* =========================================
+          PROVINCE BACKGROUND
+          ========================================= */}
+
       <path
         d={province.path}
+        fill={
+          isActive
+            ? "#B8A47E"
+            : "#C9B896"
+        }
         stroke="#ffffff"
         strokeWidth={1.5}
         vectorEffect="non-scaling-stroke"
-        fill={isActive ? "#B8A47E" : "#C9B896"}
-        style={{ transition: "fill 200ms ease-in-out" }}
+        style={{
+          transition:
+            "fill 250ms ease-in-out",
+        }}
       />
+
+      {/* =========================================
+          PROVINCE NAME
+          ========================================= */}
 
       {province.name && (
         <text
           x={province.labelX}
           y={province.labelY}
           textAnchor="middle"
-          className="pointer-events-none select-none fill-[#3B2F1E] text-[13px] font-serif"
+          className="
+            pointer-events-none
+            select-none
+            fill-[#3B2F1E]
+            text-[13px]
+            font-serif
+          "
         >
           {province.name}
         </text>
       )}
 
-      {/* Districts show while active OR while one of them is pinned
-          selected — covers "clicked, then mouse moved away" */}
+      {/* =========================================
+          DISTRICTS
+          ========================================= */}
+
       <g
         style={{
-          opacity: isActive || hasSelectionHere ? 1 : 0,
-          pointerEvents: isActive || hasSelectionHere ? "auto" : "none",
-          transition: "opacity 250ms ease-in-out",
+          opacity: showDistricts ? 1 : 0,
+
+          pointerEvents: showDistricts
+            ? "auto"
+            : "none",
+
+          transition:
+            "opacity 300ms ease-in-out",
         }}
       >
-        {province.districts?.map((district) => {
-          const isSelected = String(district.id) === String(selectedDistrictId);
-          return (
-            <DistrictShape
-              key={district.id}
-              district={district}
-              fillColor={isSelected ? SELECTED_DISTRICT_COLOR : SIBLING_DISTRICT_COLOR}
-              isSelected={isSelected}
-              isHovered={String(district.id) === String(hoveredDistrictId)}
-              onSelect={onDistrictSelect}
-              onHoverStart={onDistrictHoverStart}
-              onHoverEnd={onDistrictHoverEnd}
-            />
-          );
-        })}
+        {province.districts?.map(
+          (district) => {
+            const isSelected =
+              String(district.id) ===
+              String(selectedDistrictId);
+
+            const isHovered =
+              String(district.id) ===
+              String(hoveredDistrictId);
+
+            return (
+              <DistrictShape
+                key={district.id}
+                district={district}
+                fillColor={
+                  isSelected
+                    ? SELECTED_DISTRICT_COLOR
+                    : SIBLING_DISTRICT_COLOR
+                }
+                isSelected={isSelected}
+                isHovered={isHovered}
+                onSelect={onDistrictSelect}
+                onHoverStart={
+                  onDistrictHoverStart
+                }
+                onHoverEnd={
+                  onDistrictHoverEnd
+                }
+              />
+            );
+          }
+        )}
       </g>
     </g>
   );
