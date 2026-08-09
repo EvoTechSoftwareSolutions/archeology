@@ -125,7 +125,7 @@ export interface HeritagePlaceDetailsProps {
   storyLabel?: string;
   mapTitle?: string;
   mapQuery?: string;
-  slides?: { id: number; image: string; subtitle: string; desc?: string; title?: string }[];
+  slides?: Slide[];
   story?: string[];
   timeline?: TimelineEntry[];
   distance?: string;

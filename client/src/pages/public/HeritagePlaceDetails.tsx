@@ -34,9 +34,10 @@ import type {
 
 const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   const { id } = useParams<{ id: string }>();
-  const identifier = id ? (isNaN(Number(id)) ? id : Number(id)) : 0;
+  const hasRouteParam = typeof id !== 'undefined';
+  const identifier = id ? (isNaN(Number(id)) ? id : Number(id)) : undefined;
 
-  const { place, loading, error } = useHistoricalPlace(identifier);
+  const { place, loading, error } = useHistoricalPlace(identifier as any);
   const { reviewCards, reviewError } = useReviews();
 
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
@@ -78,7 +79,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
     );
   }
 
-  if (error || !place) {
+  if (hasRouteParam && (error || !place)) {
     return (
       <div className="min-h-screen bg-[#F8F6F1] flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-serif text-[#3B2F1E] mb-4">Place Not Found</h2>
@@ -96,7 +97,7 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
   }
 
   // `place` from the hook is treated as `HistoricalPlace`; fall back to defaults for any missing piece.
-  const resolvedPlace: HistoricalPlace = { ...fallbackPlace, ...place };
+  const resolvedPlace: HistoricalPlace = place ? { ...fallbackPlace, ...place } : { ...fallbackPlace };
 
   const resolvedHeroImage = resolveImageUrl(resolvedPlace.image, sigiriya);
   const resolvedGalleryImages = (resolvedPlace.galleryImages || [])

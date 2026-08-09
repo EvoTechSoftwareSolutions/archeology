@@ -10,7 +10,15 @@ export default function useHistoricalPlace(id: number | string) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!id || (typeof id === "number" && isNaN(id))) {
+    // If no id was supplied (pages that render from props), skip fetching and
+    // do not surface an error. Treat only explicit invalid numeric ids as errors.
+    if (id === undefined || id === null || (typeof id === 'string' && id.toString().trim() === '')) {
+      setLoading(false);
+      setError('');
+      return;
+    }
+
+    if (typeof id === "number" && isNaN(id)) {
       setLoading(false);
       setError("Invalid place ID");
       return;
