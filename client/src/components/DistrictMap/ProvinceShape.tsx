@@ -37,7 +37,8 @@ const ProvinceShape = ({
       style={{
         transformOrigin: `${province.labelX}px ${province.labelY}px`,
         // card-hover pop: scales up while active, settles back when not
-        transform: isActive ? "scale(1.05)" : "scale(1)",
+        transform: isActive ? "scale(1.07) translateX(-5px) translatey(-5px)" : "scale(1)",
+        zIndex: isActive ? 999 : 1,
         transition: "transform 300ms cubic-bezier(0.22, 1, 0.36, 1)",
       }}
       onMouseEnter={() => onProvinceEnter(province.id)}
