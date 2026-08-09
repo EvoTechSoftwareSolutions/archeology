@@ -6,5 +6,5 @@ export const subscribeNewsletterSchema = z.object({
 
 export const updateNewsletterSubscriberSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address").optional(),
-  status: z.enum(["active", "inactive"]).optional(),
+  status: z.enum(["SUBSCRIBED", "UNSUBSCRIBED"]).optional(),
 });
