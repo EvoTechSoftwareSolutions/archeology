@@ -12,6 +12,32 @@ class NewsletterController {
     }
   }
 
+  async unsubscribe(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token = req.params.token as string;
+      const result = await newsletterService.unsubscribe(token);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async sendCampaign(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await newsletterService.sendCampaign({
+        ...req.body,
+        createdById: req.user?.id, // Assumes auth middleware sets req.user
+      });
+      res.status(201).json({
+        success: true,
+        message: "Campaign sent successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getSubscribers(req: Request, res: Response, next: NextFunction) {
     try {
       const subscribers = await newsletterService.getSubscribers();

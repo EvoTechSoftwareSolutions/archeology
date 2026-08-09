@@ -133,6 +133,8 @@ export interface ApiHistoricalPlace {
 export interface GalleryImage {
   id?: number;
   url: string;
+  title?: string | null;
+  description?: string | null;
   position: number;
 }
 

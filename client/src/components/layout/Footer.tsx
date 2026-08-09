@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaFacebookF, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import api from "../../lib/axios";
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -13,24 +14,11 @@ const Footer: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/newsletter/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const payload = await response.json();
-
-      if (!response.ok) {
-        throw new Error(payload.message || "Unable to subscribe right now.");
-      }
-
-      setStatusMessage(payload.message || "You are subscribed!");
+      const response = await api.post("/newsletter/subscribe", { email });
+      setStatusMessage(response.data.message || "You are subscribed!");
       setEmail("");
-    } catch (error) {
-      setStatusMessage(error instanceof Error ? error.message : "Something went wrong.");
+    } catch (error: any) {
+      setStatusMessage(error.response?.data?.message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -163,7 +151,9 @@ const Footer: React.FC = () => {
             </form>
 
             {statusMessage && (
-              <p className="text-sm mt-3 text-[#2a4a3a]">{statusMessage}</p>
+              <p className={`text-sm mt-3 ${statusMessage.includes("subscribed") ? "text-[#2a4a3a]" : "text-red-600"}`}>
+                {statusMessage}
+              </p>
             )}
           </div>
         </div>

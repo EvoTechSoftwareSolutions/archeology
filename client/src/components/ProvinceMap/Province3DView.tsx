@@ -72,9 +72,13 @@ const Province3DView = ({ province }: Props) => {
         style={{ transform: tilt, transformStyle: "preserve-3d" }}
       >
         {(province.historicalPlaces ?? []).map((place) => {
-          const leftPct = ((place.anchorXPct * width + x - (x - PADDING)) / viewBoxW) * 100;
-          const topPct = ((place.anchorYPct * height + y - (y - PADDING)) / viewBoxH) * 100;
+          const norm = (v: number) => (v > 1 ? v / 100 : v);
+          const ax = norm(place.anchorXPct);
+          const ay = norm(place.anchorYPct);
+          const leftPct = ((ax * width + x - (x - PADDING)) / viewBoxW) * 100;
+          const topPct = ((ay * height + y - (y - PADDING)) / viewBoxH) * 100;
           const isOpen = openName === place.name;
+
 
           return (
             <>

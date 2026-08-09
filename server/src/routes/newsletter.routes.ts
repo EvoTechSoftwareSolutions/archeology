@@ -11,9 +11,12 @@ import { authorize } from "../middleware/role.middleware.js";
 const router = Router();
 
 router.post("/subscribe", validate(subscribeNewsletterSchema), newsletterController.subscribe);
+router.get("/unsubscribe/:token", newsletterController.unsubscribe);
 router.get("/stats", newsletterController.getStats);
 
 router.use(authenticate, authorize("ADMIN", "SUPERADMIN"));
+
+router.post("/campaigns/send", newsletterController.sendCampaign);
 
 router.get(
   "/subscribers",

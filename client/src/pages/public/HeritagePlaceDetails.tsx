@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useHistoricalPlace from '../../hooks/useHistoricalPlace';
 import { useParams, Link } from 'react-router-dom';
 import { FiArrowLeft, FiCoffee, FiHome, FiPlus, FiDroplet, FiWind, FiTruck, FiMapPin, FiMap } from 'react-icons/fi';
@@ -41,6 +41,17 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
 
   const [routeMode, setRouteMode] = useState<'driving' | 'walking'>('driving');
   const [activeCard, setActiveCard] = useState<Slide | null>(null);
+  useEffect(() => {
+    if (activeCard) {
+      document.body.classList.add('lightbox-open');
+    } else {
+      document.body.classList.remove('lightbox-open');
+    }
+
+    return () => {
+      document.body.classList.remove('lightbox-open');
+    };
+  }, [activeCard]);
 
   const fallbackPlace: HistoricalPlace = {
     id: 0,
@@ -99,15 +110,25 @@ const HeritagePlaceDetails = (props: HeritagePlaceDetailsProps) => {
       image: slide.image,
       title: slide.title || props.title || resolvedPlace.name,
       subtitle: slide.subtitle,
-    })) as Slide[]) || [
-      { id: 'highlight-main', image: resolvedHeroImage, title: resolvedPlace.name, subtitle: resolvedPlace.category },
-      ...resolvedGalleryImages.map((img, idx) => ({
-        id: `highlight-gallery-${img.id ?? idx}`,
-        image: img.url,
-        title: resolvedPlace.name,
-        subtitle: resolvedPlace.category,
-      })),
-    ];
+      description: slide.desc,
+    })) as Slide[]) ||
+    (resolvedGalleryImages.length > 0
+      ? resolvedGalleryImages.map((img, idx) => ({
+          id: `highlight-gallery-${img.id ?? idx}`,
+          image: img.url,
+          title: resolvedPlace.name,
+          subtitle: img.title || `${resolvedPlace.name} Image ${idx + 1}`,
+          description: img.description || resolvedPlace.description || undefined,
+        }))
+      : [
+          {
+            id: 'highlight-main',
+            image: resolvedHeroImage,
+            title: resolvedPlace.name,
+            subtitle: resolvedPlace.name,
+            description: resolvedPlace.description || undefined,
+          },
+        ]);
 
   const allSlides: Slide[] = highlightCards;
 

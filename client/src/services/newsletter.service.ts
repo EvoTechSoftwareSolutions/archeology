@@ -20,6 +20,15 @@ export const newsletterService = {
 
     },
 
+    async updateSubscriber(id: number, status: string){
+
+        const response =
+        await newsletterApi.updateSubscriber(id, { status });
+
+        return response.data;
+
+    },
+
     async deleteSubscriber(id:number){
 
         const response =

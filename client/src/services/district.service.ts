@@ -7,6 +7,8 @@ import type { HistoricalPlace } from "../types/district";
  * scoped server-side (no client-side filtering, no risk of getting places
  * from other districts back).
  */
+const normalizeAnchor = (val: number) => (val > 1 ? val / 100 : val);
+
 export async function getDistrictHeritagePlaces(districtId: number): Promise<HistoricalPlace[]> {
   const response = await districtApi.getById(districtId);
   const payload = response.data as DistrictHeritageApiResponse;
@@ -19,8 +21,8 @@ export async function getDistrictHeritagePlaces(districtId: number): Promise<His
     description: place.description,
     latitude: place.latitude,
     longitude: place.longitude,
-    // 0–100 in the DB -> 0–1 fraction for the marker math
-    anchorXPct: place.anchorXPct / 100,
-    anchorYPct: place.anchorYPct / 100,
+    anchorXPct: normalizeAnchor(place.anchorXPct),
+    anchorYPct: normalizeAnchor(place.anchorYPct),
   }));
 }
+

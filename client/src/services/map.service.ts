@@ -8,6 +8,8 @@ export async function getMapDistricts() {
   const payload = res.data?.data;
   const places = Array.isArray(payload) ? payload : payload?.items ?? [];
 
+  const normalizeAnchor = (val: number) => (val > 1 ? val / 100 : val);
+
   for (const district of districtShapes) {
     district.historicalPlaces = places
       .filter(
@@ -19,10 +21,11 @@ export async function getMapDistricts() {
         name: p.name,
         image: p.image,
         description: p.description,
-        anchorXPct: p.anchorXPct,
-        anchorYPct: p.anchorYPct,
+        anchorXPct: normalizeAnchor(p.anchorXPct),
+        anchorYPct: normalizeAnchor(p.anchorYPct),
       }));
   }
+
 
   return districtShapes;
 }

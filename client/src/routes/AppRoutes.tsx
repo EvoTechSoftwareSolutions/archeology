@@ -22,6 +22,7 @@ import PrivacyPolicy from "../pages/public/PrivacyPolicy";
 import TermsAndConditions from "../pages/public/TermsAndConditions";
 import FAQs from "../pages/public/FAQs";
 import HeritagePlaceDetails from "../pages/public/HeritagePlaceDetails";
+import { UnsubscribePage } from "../pages/public/UnsubscribePage";
 
 // Admin Pages
 import Dashboard from "../pages/admin/Dashboard";
@@ -38,6 +39,7 @@ import AdminSettings from "../pages/admin/AdminSettings";
 import Newsletter from "../pages/admin/Newsletter";
 import Contact from "../pages/admin/Contact";
 import Reviews from "../pages/admin/Reviews";
+import AdminNewsletterCampaign from "../pages/admin/AdminNewsletterCampaign";
 
 
 
@@ -61,6 +63,7 @@ const router = createBrowserRouter([
       { path: "terms-and-conditions",element: <TermsAndConditions /> },
       { path: "faqs",                element: <FAQs /> },
       { path: "places/:id",          element: <HeritagePlaceDetails /> },
+      { path: "unsubscribe",         element: <UnsubscribePage /> },
     ],
   },
   {
@@ -83,6 +86,7 @@ const router = createBrowserRouter([
           { path: "analytics", element: <Analytics /> },
           { path: "users", element: <Users /> },
           { path: "newsletter", element: <Newsletter /> },
+          { path: "newsletter/campaign", element: <AdminNewsletterCampaign /> },
           { path: "contact", element: <Contact /> },
           { path: "reviews", element: <Reviews /> },
           { path: "profile", element: <AdminProfile /> },

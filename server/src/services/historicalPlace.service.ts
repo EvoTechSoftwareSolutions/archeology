@@ -13,13 +13,15 @@ export const historicalPlaceService = {
   },
 
 
-getAllPlaces(params?: {
-  search?: string;
-  districtId?: number;
-  statusFlag?: string;
-}) {
-  return historicalPlaceRepository.getAll(params);
-},
+  getAllPlaces(params?: {
+    search?: string;
+    districtId?: number;
+    provinceId?: number;
+    category?: string;
+    statusFlag?: string;
+  }) {
+    return historicalPlaceRepository.getAll(params);
+  },
 
   async getPlaceById(idOrSlug: number | string) {
     let place = null;

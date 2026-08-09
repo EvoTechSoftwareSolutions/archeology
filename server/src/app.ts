@@ -19,6 +19,7 @@ import categoryRoutes from "./routes/category.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js"
 import analyticsRoutes from "./routes/analytics.routes.js"
+import notificationRoutes from "./routes/notification.routes.js"
 
 // Middleware
 import { errorHandler } from "./middleware/error.middleware.js";
@@ -94,6 +95,7 @@ app.use(`${API_VERSION}/categories`, categoryRoutes);
 app.use(`${API_VERSION}/reviews`, reviewRoutes);
 app.use(`${API_VERSION}/dashboard`, dashboardRoutes);
 app.use(`${API_VERSION}/analytics`, analyticsRoutes);
+app.use(`${API_VERSION}/notifications`, notificationRoutes);
 
 // ======================
 // Static Files

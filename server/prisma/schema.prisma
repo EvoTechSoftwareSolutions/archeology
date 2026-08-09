@@ -7,31 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Province {
-  id          Int      @id @default(autoincrement())
-  name        String  @unique
-  regionCode  String
+  id         Int    @id @default(autoincrement())
+  name       String @unique
+  regionCode String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  districts   District[]
+  districts        District[]
   historicalPlaces HistoricalPlace[]
 }
 
 model District {
-  id          Int      @id @default(autoincrement())
-  name        String
+  id   Int    @id @default(autoincrement())
+  name String
 
-  provinceId  Int
+  provinceId Int
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  province    Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+  province Province @relation(fields: [provinceId], references: [id], onDelete: Cascade)
 
   historicalPlaces HistoricalPlace[]
 }
@@ -54,27 +53,25 @@ model Category {
 // -----------------------------------------------------------------------
 
 model HistoricalPlace {
-  id          Int     @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   name        String
   category    String
   description String?
   image       String? // hero image
 
-  
+  century    String
+  statusFlag String
 
-  century     String
-  statusFlag  String
+  latitude  Float
+  longitude Float
 
-  latitude    Float
-  longitude   Float
-
-  anchorXPct  Float
-  anchorYPct  Float
-  provinceId   Int?
-  province     Province? @relation(fields: [provinceId], references: [id], onDelete: SetNull)
-  districtId  Int?
-  district    District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
+  anchorXPct Float
+  anchorYPct Float
+  provinceId Int?
+  province   Province? @relation(fields: [provinceId], references: [id], onDelete: SetNull)
+  districtId Int?
+  district   District? @relation(fields: [districtId], references: [id], onDelete: SetNull)
 
   // --- NEW: facilities & travel --------------------------------------
   nearbyHotels     String?
@@ -83,7 +80,7 @@ model HistoricalPlace {
   travelTips       String?
 
   // --- NEW: Dynamic Place Details -------------------------------------
-  timelineJson          String?   @db.Text
+  timelineJson          String? @db.Text
   crowd                 String?
   distance              String?
   drivingTime           String?
@@ -98,22 +95,22 @@ model HistoricalPlace {
   nearbyParking         String?
   nearbyRailway         String?
   emergencyPolice       String?
-  emergencyAmbulance     String?
+  emergencyAmbulance    String?
   openingHours          String?
   earlyMorningSlot      String?
   midDaySlot            String?
   lateAfternoonSlot     String?
-  visitNote             String?   @db.Text
+  visitNote             String? @db.Text
   contactAddress        String?
   contactAdminPhone     String?
   contactEmergencyPhone String?
   contactWebsite        String?
   contactEmail          String?
-  dressCode             String?   @db.Text
-  photographyRules      String?   @db.Text
-  accessibility         String?   @db.Text
-  dosJson               String?   @db.Text
-  dontsJson             String?   @db.Text
+  dressCode             String? @db.Text
+  photographyRules      String? @db.Text
+  accessibility         String? @db.Text
+  dosJson               String? @db.Text
+  dontsJson             String? @db.Text
 
   // --- NEW: SEO --------------------------------------------------------
   seoTitle        String?
@@ -132,66 +129,103 @@ model HistoricalPlace {
 model PlaceGalleryImage {
   id                Int             @id @default(autoincrement())
   url               String
+  title             String?
+  description       String?         @db.Text
   position          Int             @default(0)
   historicalPlaceId Int
   historicalPlace   HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
 }
 
-
 model NewsletterSubscriber {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  status           String    @default("SUBSCRIBED") // SUBSCRIBED or UNSUBSCRIBED
+  unsubscribeToken String?   @unique
+  unsubscribedAt   DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  emailLogs NewsletterEmailLog[]
+}
+
+model NewsletterCampaign {
+  id           Int       @id @default(autoincrement())
+  title        String
+  subject      String
+  content      String    @db.Text
+  category     String
+  status       String    @default("DRAFT") // DRAFT, SCHEDULED, SENDING, SENT, FAILED
+  image        String?
+  readMoreLink String?
+  scheduledAt  DateTime?
+  sentAt       DateTime?
+
+  createdById Int?
+  createdBy   User? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  emailLogs NewsletterEmailLog[]
+}
+
+model NewsletterEmailLog {
+  id           Int      @id @default(autoincrement())
+  campaignId   Int
+  subscriberId Int
+  email        String
+  status       String // SENT, FAILED
+  errorMessage String?  @db.Text
+  sentAt       DateTime @default(now())
+
+  campaign   NewsletterCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriber NewsletterSubscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+}
+
+model ContactMessage {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  status    String   @default("active")
+  name      String
+  email     String
+  phone     String? // Added optional phone number field
+  subject   String?
+  message   String   @db.Text
+  status    String   @default("unread")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ContactMessage {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String
-  phone       String?  // Added optional phone number field
-  subject     String?
-  message     String   @db.Text
-  status      String   @default("unread")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 model SiteMonograph {
-  id                  Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  name                String
+  name String
 
-  historicalPlaceId   Int
+  historicalPlaceId Int
 
+  contentBody String
 
-  contentBody         String
+  inscriptionIndex String
 
-  inscriptionIndex    String
+  lastUpdated DateTime
 
-  lastUpdated         DateTime
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   historicalPlace HistoricalPlace @relation(fields: [historicalPlaceId], references: [id], onDelete: Cascade)
-  verifiedById        Int?
-  verifiedBy          User?           @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
+  verifiedById    Int?
+  verifiedBy      User?           @relation(fields: [verifiedById], references: [id], onDelete: Restrict)
 }
 
 model AuditLog {
-  id              Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
+  targetPlaceId Int
 
-  targetPlaceId   Int
+  actionType String
 
-  actionType      String
+  timestamp DateTime @default(now())
 
-  timestamp       DateTime @default(now())
-
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
 
@@ -201,22 +235,22 @@ model AuditLog {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   name       String
-  email      String   @unique
+  email      String @unique
   password   String
   department String
 
-  role       UserRole @default(USER)
+  role UserRole @default(USER)
 
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
 
   // Relations
-  auditLogs       AuditLog[]
-  verifiedSites   SiteMonograph[]
+  auditLogs        AuditLog[]
+  verifiedSites    SiteMonograph[]
+  createdCampaigns NewsletterCampaign[]
 }
-
 
 enum UserRole {
   USER
@@ -225,14 +259,22 @@ enum UserRole {
 }
 
 model Review {
-  id          Int      @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   reviewerName String
   reviewerRole String?
-  image       String?
-  rating      Int      @default(5)
-  reviewText  String   @db.Text
-  isActive    Boolean  @default(true)
+  image        String?
+  rating       Int     @default(5)
+  reviewText   String  @db.Text
+  isActive     Boolean @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -2,7 +2,7 @@ import type { District } from "../types/district";
 
 export const districts: District[] = [
   {
-    id: "8",
+    id: "6",
     name: "Trincomalee",
     province: "Eastern",
     color: "#D36868",
@@ -14,7 +14,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "4",
+    id: "12",
     name: "Mullaitivu",
     province: "Northern",
     color: "#A57E43",
@@ -26,7 +26,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "1",
+    id: "9",
     name: "Jaffna",
     province: "Northern",
     color: "#A57E43",
@@ -38,7 +38,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "2",
+    id: "10",
     name: "Kilinochchi",
     province: "Northern",
     color: "#A57E43",
@@ -50,7 +50,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "3",
+    id: "11",
     name: "Mannar",
     province: "Northern",
     color: "#A57E43",
@@ -62,7 +62,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "12",
+    id: "15",
     name: "Puttalam",
     province: "North Western",
     color: "#BE68D3",
@@ -74,7 +74,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "21",
+    id: "24",
     name: "Gampaha",
     province: "Western",
     color: "#A4D368",
@@ -86,7 +86,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "20",
+    id: "23",
     name: "Colombo",
     province: "Western",
     color: "#A4D368",
@@ -98,7 +98,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "22",
+    id: "25",
     name: "Kalutara",
     province: "western",
     color: "#71D368",
@@ -110,7 +110,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "23",
+    id: "18",
     name: "Galle",
     province: "Southern",
     color: "#68D379",
@@ -122,7 +122,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "25",
+    id: "20",
     name: "Matara",
     province: "Southern",
     color: "#68D379",
@@ -134,7 +134,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "24",
+    id: "19",
     name: "Hambantota",
     province: "Southern",
     color: "#68D379",
@@ -146,7 +146,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "6",
+    id: "4",
     name: "Ampara",
     province: "Eastern",
     color: "#D36868",
@@ -158,7 +158,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "7",
+    id: "5",
     name: "Batticaloa",
     province: "Eastern",
     color: "#D36868",
@@ -170,7 +170,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "19",
+    id: "17",
     name: "Ratnapura",
     province: "Sabaragamuwa",
     color: "#6879D3",
@@ -182,7 +182,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "17",
+    id: "22",
     name: "Monaragala",
     province: "Uva",
     color: "#6893D3",
@@ -194,7 +194,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "18",
+    id: "16",
     name: "Kegalle",
     province: "Sabaragamuwa",
     color: "#6879D3",
@@ -206,7 +206,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "16",
+    id: "21",
     name: "Badulla",
     province: "Uva",
     color: "#6893D3",
@@ -218,7 +218,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "14",
+    id: "2",
     name: "Matale",
     province: "Central",
     color: "#D36882",
@@ -230,7 +230,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "10",
+    id: "8",
     name: "Polonnaruwa",
     province: "North Central",
     color: "#D368CF",
@@ -242,7 +242,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "11",
+    id: "14",
     name: "Kurunegala",
     province: "North Western",
     color: "#BE68D3",
@@ -254,7 +254,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "9",
+    id: "7",
     name: "Anuradhapura",
     province: "North Central",
     color: "#D368CF",
@@ -266,7 +266,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "15",
+    id: "3",
     name: "Nuwara Eliya",
     province: "Central",
     color: "#D36882",
@@ -278,7 +278,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "5",
+    id: "13",
     name: "Vavuniya",
     province: "Northern",
     color: "#A57E43",
@@ -290,7 +290,7 @@ export const districts: District[] = [
     historicalPlaces: []
   },
   {
-    id: "13",
+    id: "1",
     name: "Kandy",
     province: "Central",
     color: "#D36882",

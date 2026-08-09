@@ -4,7 +4,6 @@ import {
   FiGrid,
   FiPlusCircle,
   FiTag,
-  FiImage,
   FiUsers,
   FiLogOut,
   FiChevronLeft,
@@ -13,9 +12,10 @@ import {
   FiMessageSquare,
   FiStar
 } from "react-icons/fi";
-import { MdAccountBalance, MdBarChart } from "react-icons/md";
+import { MdAccountBalance } from "react-icons/md";
 import logo from "../../../assets/Admin/logo2.png";
 import { authService } from "../../../services/auth.service";
+import { useNotificationSummary } from "../../../hooks/useNotificationSummary";
 
 interface SideBarProps {
   isOpen: boolean;
@@ -27,6 +27,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { unreadContactsCount, newSubscribersCount, clearContactCount, clearNewsletterCount } = useNotificationSummary();
 
   const menuSections = [
     {
@@ -46,10 +47,9 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
     {
       title: "Administration",
       items: [
-        // { name: "Analytics", path: "/admin/analytics", icon: MdBarChart },
         { name: "Users", path: "/admin/users", icon: FiUsers },
-        { name: "Newsletter", path: "/admin/newsletter", icon: FiMail },
-        { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare },
+        { name: "Newsletter", path: "/admin/newsletter", icon: FiMail, badge: newSubscribersCount, onNavigate: clearNewsletterCount },
+        { name: "Contact Messages", path: "/admin/contact", icon: FiMessageSquare, badge: unreadContactsCount, onNavigate: clearContactCount },
         { name: "Visitor Reviews", path: "/admin/reviews", icon: FiStar },
         { name: "Logout", path: "/admin/login", icon: FiLogOut, action: "logout" as const },
       ]
@@ -115,14 +115,29 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
                 const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname === '/admin/');
                 const Icon = item.icon;
                 const isLogout = "action" in item && item.action === "logout";
+                const badgeCount = "badge" in item ? (item.badge as number) : 0;
 
                 const content = (
                   <>
-                    <Icon size={18} className={`shrink-0 ${isActive ? "text-white" : "text-white/60"}`} />
+                    <div className="relative shrink-0 flex items-center">
+                      <Icon size={18} className={`${isActive ? "text-white" : "text-white/60"}`} />
+                      {isCollapsed && badgeCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 bg-[#D97757] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                          {badgeCount > 99 ? "99+" : badgeCount}
+                        </span>
+                      )}
+                    </div>
                     {!isCollapsed && (
-                      <span className="whitespace-nowrap overflow-hidden transition-all duration-300">
-                        {isLogout && loggingOut ? "Logging out..." : item.name}
-                      </span>
+                      <div className="flex-1 flex items-center justify-between min-w-0 pr-2">
+                        <span className="whitespace-nowrap overflow-hidden truncate">
+                          {isLogout && loggingOut ? "Logging out..." : item.name}
+                        </span>
+                        {badgeCount > 0 && (
+                          <span className="bg-[#D97757] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                            {badgeCount > 99 ? "99+" : badgeCount}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </>
                 );
@@ -150,6 +165,7 @@ const SideBar = ({ isOpen, onClose }: SideBarProps) => {
                         to={item.path}
                         title={isCollapsed ? item.name : ""}
                         className={sharedClasses}
+                        onClick={"onNavigate" in item && item.onNavigate ? item.onNavigate : undefined}
                       >
                         {content}
                       </Link>

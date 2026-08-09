@@ -3,6 +3,14 @@ import type { Request, Response, NextFunction } from "express";
 import { historicalPlaceService } from "../services/historicalPlace.service.js";
 import { getIO } from "../socket.js";
 
+const generateSlug = (name: string): string =>
+  name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 // CREATE HISTORICAL PLACE
 export const createHistoricalPlace = async (
   req: Request,
@@ -46,12 +54,22 @@ export const createHistoricalPlace = async (
         : null,
 
       // Gallery images
-      galleryImages: files?.galleryImages
-        ? files.galleryImages.map((file, index) => ({
-            url: `/uploads/${file.filename}`,
-            position: index + 1,
-          }))
-        : [],
+      galleryImages: (() => {
+        let galleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.galleryMetadataJson) {
+          try {
+            galleryMeta = JSON.parse(req.body.galleryMetadataJson);
+          } catch (e) {}
+        }
+        return files?.galleryImages
+          ? files.galleryImages.map((file, index) => ({
+              url: `/uploads/${file.filename}`,
+              title: galleryMeta[index]?.title || null,
+              description: galleryMeta[index]?.description || null,
+              position: index + 1,
+            }))
+          : [];
+      })(),
 
       // Facilities
       nearbyHotels: req.body.nearbyHotels || null,
@@ -95,7 +113,7 @@ export const createHistoricalPlace = async (
       // SEO
       seoTitle: req.body.seoTitle || null,
       metaDescription: req.body.metaDescription || null,
-      slug: req.body.slug || null,
+      slug: req.body.slug || generateSlug(req.body.name),
       focusKeywords: req.body.focusKeywords || null,
     };
 
@@ -132,14 +150,18 @@ export const getHistoricalPlaces = async (
   next: NextFunction,
 ) => {
   try {
+    const parseNum = (v: unknown) => {
+      if (v === undefined || v === null || v === "") return undefined;
+      const n = Number(v);
+      return isNaN(n) ? undefined : n;
+    };
+
     const places = await historicalPlaceService.getAllPlaces({
-      search: req.query.search as string,
-
-      districtId: req.query.districtId
-        ? Number(req.query.districtId)
-        : undefined,
-
-      statusFlag: req.query.statusFlag as string,
+      search: req.query.search ? String(req.query.search) : undefined,
+      districtId: parseNum(req.query.districtId),
+      provinceId: parseNum(req.query.provinceId),
+      category: req.query.category ? String(req.query.category) : undefined,
+      statusFlag: req.query.statusFlag ? String(req.query.statusFlag) : undefined,
     });
 
     return res.status(200).json({
@@ -151,6 +173,7 @@ export const getHistoricalPlaces = async (
     next(error);
   }
 };
+
 
 // GET HISTORICAL PLACE BY ID
 export const getHistoricalPlaceById = async (
@@ -247,6 +270,59 @@ export const updateHistoricalPlace = async (
       image: files?.image?.length
         ? `/uploads/${files.image[0].filename}`
         : undefined,
+
+      // Gallery images parsing for update
+      galleryImages: (() => {
+        let existingGallery: any[] = [];
+        if (req.body.existingGalleryImages) {
+          try {
+            const parsed = JSON.parse(req.body.existingGalleryImages);
+            if (Array.isArray(parsed)) {
+              existingGallery = parsed.map((item: any, idx: number) => {
+                if (typeof item === "string") {
+                  return { url: item, position: idx + 1 };
+                }
+                return {
+                  url: item.url,
+                  title: item.title || null,
+                  description: item.description || null,
+                  position: item.position ?? idx + 1,
+                };
+              });
+            }
+          } catch (e) {}
+        }
+
+        let existingGalleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.existingGalleryMetadataJson) {
+          try {
+            existingGalleryMeta = JSON.parse(req.body.existingGalleryMetadataJson);
+            existingGallery = existingGallery.map((item, idx) => ({
+              ...item,
+              title: existingGalleryMeta[idx]?.title ?? item.title ?? null,
+              description: existingGalleryMeta[idx]?.description ?? item.description ?? null,
+            }));
+          } catch (e) {}
+        }
+
+        let newGalleryMeta: { title?: string; description?: string }[] = [];
+        if (req.body.galleryMetadataJson) {
+          try {
+            newGalleryMeta = JSON.parse(req.body.galleryMetadataJson);
+          } catch (e) {}
+        }
+
+        const newGalleryImages = files?.galleryImages
+          ? files.galleryImages.map((file, index) => ({
+              url: `/uploads/${file.filename}`,
+              title: newGalleryMeta[index]?.title || null,
+              description: newGalleryMeta[index]?.description || null,
+              position: existingGallery.length + index + 1,
+            }))
+          : [];
+
+        return [...existingGallery, ...newGalleryImages];
+      })(),
     };
 
     console.log("UPDATE DATA:", updateData);
