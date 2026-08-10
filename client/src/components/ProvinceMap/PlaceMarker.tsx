@@ -29,7 +29,7 @@ const PlaceMarker = forwardRef<HTMLButtonElement, Props>(
         >
           <FaMapMarkerAlt
             className={`drop-shadow transition-transform duration-300 group-hover:scale-125 ${
-              isOpen ? "scale-125 text-amber-500" : "text-red-600"
+              isOpen ? "scale-125 text-red-600" : "text-green-800"
             }`}
             style={{
               width: "clamp(18px, 4vw, 26px)",

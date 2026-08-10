@@ -243,6 +243,60 @@ export const getHistoricalPlaceById = async (
   }
 };
 
+
+export const getNearbyHistoricalPlaces = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const currentPlaceId = Number(req.params.id);
+    const districtId = Number(req.query.districtId);
+    const anchorXPct = Number(req.query.anchorXPct);
+    const anchorYPct = Number(req.query.anchorYPct);
+
+    // Validate historical place ID
+    if (!Number.isInteger(currentPlaceId) || currentPlaceId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid historical place ID",
+      });
+    }
+
+    // Validate district ID
+    if (!Number.isInteger(districtId) || districtId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid districtId is required",
+      });
+    }
+
+    // Validate anchor coordinates
+    if (!Number.isFinite(anchorXPct) || !Number.isFinite(anchorYPct)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid anchorXPct and anchorYPct are required",
+      });
+    }
+
+    const nearbyPlaces =
+      await historicalPlaceService.getNearbyPlaces(
+        currentPlaceId,
+        districtId,
+        anchorXPct,
+        anchorYPct,
+      );
+
+    return res.status(200).json({
+      success: true,
+      count: nearbyPlaces.length,
+      data: nearbyPlaces,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // UPDATE HISTORICAL PLACE
 export const updateHistoricalPlace = async (
   req: Request,

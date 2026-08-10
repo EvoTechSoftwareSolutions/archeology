@@ -4,34 +4,19 @@ import ProvinceShape from "./ProvinceShape";
 interface Props {
   provinces: Province[];
 
-  activeProvinceId:
-    | string
-    | number
-    | null;
+  activeProvinceId: string | number | null;
 
-  selectedDistrictId:
-    | string
-    | number
-    | null;
+  selectedDistrictId: string | number | null;
 
-  hoveredDistrictId:
-    | string
-    | number
-    | null;
+  hoveredDistrictId: string | number | null;
 
-  onProvinceHoverStart: (
-    id: string | number
-  ) => void;
+  onProvinceHoverStart: (id: string | number) => void;
 
   onProvinceHoverEnd: () => void;
 
-  onDistrictSelect: (
-    id: string | number
-  ) => void;
+  onDistrictSelect: (id: string | number) => void;
 
-  onDistrictHoverStart: (
-    id: string | number
-  ) => void;
+  onDistrictHoverStart: (id: string | number) => void;
 
   onDistrictHoverEnd: () => void;
 }
@@ -50,22 +35,16 @@ const SriLankaProvinceMap = ({
   /**
    * Find currently active / hovered province.
    */
-  const activeProvince =
-    provinces.find(
-      (province) =>
-        String(province.id) ===
-        String(activeProvinceId)
-    );
+  const activeProvince = provinces.find(
+    (province) => String(province.id) === String(activeProvinceId),
+  );
 
   /**
    * All provinces except active province.
    */
-  const inactiveProvinces =
-    provinces.filter(
-      (province) =>
-        String(province.id) !==
-        String(activeProvinceId)
-    );
+  const inactiveProvinces = provinces.filter(
+    (province) => String(province.id) !== String(activeProvinceId),
+  );
 
   return (
     <div
@@ -95,36 +74,20 @@ const SriLankaProvinceMap = ({
             ================================================= */}
 
         <g>
-          {inactiveProvinces.map(
-            (province) => (
-              <ProvinceShape
-                key={province.id}
-                province={province}
-                isActive={false}
-                selectedDistrictId={
-                  selectedDistrictId
-                }
-                hoveredDistrictId={
-                  hoveredDistrictId
-                }
-                onProvinceEnter={
-                  onProvinceHoverStart
-                }
-                onProvinceLeave={
-                  onProvinceHoverEnd
-                }
-                onDistrictSelect={
-                  onDistrictSelect
-                }
-                onDistrictHoverStart={
-                  onDistrictHoverStart
-                }
-                onDistrictHoverEnd={
-                  onDistrictHoverEnd
-                }
-              />
-            )
-          )}
+          {inactiveProvinces.map((province) => (
+            <ProvinceShape
+              key={province.id}
+              province={province}
+              isActive={false}
+              selectedDistrictId={selectedDistrictId}
+              hoveredDistrictId={hoveredDistrictId}
+              onProvinceEnter={onProvinceHoverStart}
+              onProvinceLeave={onProvinceHoverEnd}
+              onDistrictSelect={onDistrictSelect}
+              onDistrictHoverStart={onDistrictHoverStart}
+              onDistrictHoverEnd={onDistrictHoverEnd}
+            />
+          ))}
         </g>
 
         {/* =================================================
@@ -148,27 +111,13 @@ const SriLankaProvinceMap = ({
               key={`active-${activeProvince.id}`}
               province={activeProvince}
               isActive={true}
-              selectedDistrictId={
-                selectedDistrictId
-              }
-              hoveredDistrictId={
-                hoveredDistrictId
-              }
-              onProvinceEnter={
-                onProvinceHoverStart
-              }
-              onProvinceLeave={
-                onProvinceHoverEnd
-              }
-              onDistrictSelect={
-                onDistrictSelect
-              }
-              onDistrictHoverStart={
-                onDistrictHoverStart
-              }
-              onDistrictHoverEnd={
-                onDistrictHoverEnd
-              }
+              selectedDistrictId={selectedDistrictId}
+              hoveredDistrictId={hoveredDistrictId}
+              onProvinceEnter={onProvinceHoverStart}
+              onProvinceLeave={onProvinceHoverEnd}
+              onDistrictSelect={onDistrictSelect}
+              onDistrictHoverStart={onDistrictHoverStart}
+              onDistrictHoverEnd={onDistrictHoverEnd}
             />
           </g>
         )}

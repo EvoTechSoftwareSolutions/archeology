@@ -16,6 +16,12 @@ interface Props {
 const SELECTED_DISTRICT_COLOR = "#C1483F"; // accent — the clicked district
 const SIBLING_DISTRICT_COLOR = "#D9CBB2"; // everyone else in this province
 
+// Ease-out-circ: rounded, buttery deceleration with zero overshoot/bounce —
+// the smoothest-feeling curve for a scale-up/scale-down transition.
+const ZOOM_EASE = "cubic-bezier(0, 0.55, 0.45, 1)";
+const ZOOM_IN_DURATION_MS = 200;
+const ZOOM_OUT_DURATION_MS = 320;
+
 const ProvinceShape = ({
   province,
   isActive,
@@ -31,15 +37,21 @@ const ProvinceShape = ({
     (d) => String(d.id) === String(selectedDistrictId),
   );
 
+  const transformDuration = isActive ? ZOOM_IN_DURATION_MS : ZOOM_OUT_DURATION_MS;
+
   return (
     <g
       className="cursor-pointer"
       style={{
-        transformOrigin: `${province.labelX}px ${province.labelY}px`,
-        // card-hover pop: scales up while active, settles back when not
-        transform: isActive ? "scale(1.07) translateX(-5px) translatey(-5px)" : "scale(1)",
-        zIndex: isActive ? 999 : 1,
-        transition: "transform 300ms cubic-bezier(0.22, 1, 0.36, 1)",
+        transformBox: "fill-box",
+        transformOrigin: "center",
+        // Smooth scale-up + slight lift while active; eases back to resting
+        // scale a touch slower on the way out so it never feels jarring.
+        transform: isActive
+          ? "scale(1.08) translateX(-5px) translateY(-5px)"
+          : "scale(1) translateX(0) translateY(0)",
+        transition: `transform ${transformDuration}ms ${ZOOM_EASE}`,
+        willChange: "transform",
       }}
       onMouseEnter={() => onProvinceEnter(province.id)}
       onMouseLeave={onProvinceLeave}
@@ -52,7 +64,7 @@ const ProvinceShape = ({
         strokeWidth={1.5}
         vectorEffect="non-scaling-stroke"
         fill={isActive ? "#B8A47E" : "#C9B896"}
-        style={{ transition: "fill 200ms ease-in-out" }}
+        style={{ transition: `fill ${transformDuration}ms ease-in-out` }}
       />
 
       {province.name && (
@@ -72,7 +84,7 @@ const ProvinceShape = ({
         style={{
           opacity: isActive || hasSelectionHere ? 1 : 0,
           pointerEvents: isActive || hasSelectionHere ? "auto" : "none",
-          transition: "opacity 250ms ease-in-out",
+          transition: "opacity 200ms ease-in-out",
         }}
       >
         {province.districts?.map((district) => {
