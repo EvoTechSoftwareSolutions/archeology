@@ -125,7 +125,7 @@ const Categories = () => {
         </div>
       )}
 
-      {/* Categories */}
+      {/* Categoriess */}
       <CategoryTable
         categories={filteredCategories}
         loading={loading}
