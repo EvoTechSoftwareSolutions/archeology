@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 
 import { historicalPlaceService } from "../services/historicalPlace.service.js";
 import { getIO } from "../socket.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const generateSlug = (name: string): string =>
   name
@@ -161,7 +162,9 @@ export const getHistoricalPlaces = async (
       districtId: parseNum(req.query.districtId),
       provinceId: parseNum(req.query.provinceId),
       category: req.query.category ? String(req.query.category) : undefined,
-      statusFlag: req.query.statusFlag ? String(req.query.statusFlag) : undefined,
+      statusFlag: req.query.statusFlag
+        ? String(req.query.statusFlag)
+        : undefined,
     });
 
     return res.status(200).json({
@@ -174,6 +177,50 @@ export const getHistoricalPlaces = async (
   }
 };
 
+// GET ALL ACTIVE HISTORICAL PLACES
+export const getActiveHistoricalPlaces = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const parseNum = (v: unknown) => {
+      if (v === undefined || v === null || v === "") {
+        return undefined;
+      }
+
+      const n = Number(v);
+
+      return isNaN(n) ? undefined : n;
+    };
+
+    const places = await historicalPlaceService.getActivePlaces({
+      search: req.query.search
+        ? String(req.query.search)
+        : undefined,
+
+      districtId: parseNum(req.query.districtId),
+
+      provinceId: parseNum(req.query.provinceId),
+
+      category: req.query.category
+        ? String(req.query.category)
+        : undefined,
+
+      statusFlag: req.query.statusFlag
+        ? String(req.query.statusFlag)
+        : undefined,
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: places.length,
+      data: places,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // GET HISTORICAL PLACE BY ID
 export const getHistoricalPlaceById = async (
@@ -182,12 +229,68 @@ export const getHistoricalPlaceById = async (
   next: NextFunction,
 ) => {
   try {
-    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const idParam = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id;
     const place = await historicalPlaceService.getPlaceById(idParam);
 
     return res.status(200).json({
       success: true,
       data: place,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getNearbyHistoricalPlaces = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const currentPlaceId = Number(req.params.id);
+    const districtId = Number(req.query.districtId);
+    const anchorXPct = Number(req.query.anchorXPct);
+    const anchorYPct = Number(req.query.anchorYPct);
+
+    // Validate historical place ID
+    if (!Number.isInteger(currentPlaceId) || currentPlaceId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid historical place ID",
+      });
+    }
+
+    // Validate district ID
+    if (!Number.isInteger(districtId) || districtId <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid districtId is required",
+      });
+    }
+
+    // Validate anchor coordinates
+    if (!Number.isFinite(anchorXPct) || !Number.isFinite(anchorYPct)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid anchorXPct and anchorYPct are required",
+      });
+    }
+
+    const nearbyPlaces =
+      await historicalPlaceService.getNearbyPlaces(
+        currentPlaceId,
+        districtId,
+        anchorXPct,
+        anchorYPct,
+      );
+
+    return res.status(200).json({
+      success: true,
+      count: nearbyPlaces.length,
+      data: nearbyPlaces,
     });
   } catch (error) {
     next(error);
@@ -293,14 +396,20 @@ export const updateHistoricalPlace = async (
           } catch (e) {}
         }
 
-        let existingGalleryMeta: { title?: string; description?: string }[] = [];
+        let existingGalleryMeta: { title?: string; description?: string }[] =
+          [];
         if (req.body.existingGalleryMetadataJson) {
           try {
-            existingGalleryMeta = JSON.parse(req.body.existingGalleryMetadataJson);
+            existingGalleryMeta = JSON.parse(
+              req.body.existingGalleryMetadataJson,
+            );
             existingGallery = existingGallery.map((item, idx) => ({
               ...item,
               title: existingGalleryMeta[idx]?.title ?? item.title ?? null,
-              description: existingGalleryMeta[idx]?.description ?? item.description ?? null,
+              description:
+                existingGalleryMeta[idx]?.description ??
+                item.description ??
+                null,
             }));
           } catch (e) {}
         }
@@ -332,6 +441,36 @@ export const updateHistoricalPlace = async (
     return res.status(200).json({
       success: true,
       message: "Historical place updated successfully",
+      data: place,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// TOGGLE HISTORICAL PLACE ACTIVE STATUS
+export const toggleHistoricalPlaceActive = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid historical place ID",
+      });
+    }
+
+    const place = await historicalPlaceService.togglePlaceActive(id);
+
+    return res.status(200).json({
+      success: true,
+      message: place.isActive
+        ? "Historical place activated successfully"
+        : "Historical place deactivated successfully",
       data: place,
     });
   } catch (error) {

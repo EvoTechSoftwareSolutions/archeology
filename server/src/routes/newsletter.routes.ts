@@ -1,36 +1,40 @@
 import { Router } from "express";
 import { newsletterController } from "../controllers/newsletter.controller.js";
-import { validate } from "../middleware/validate.middleware.js";
-import {
-  subscribeNewsletterSchema,
-  updateNewsletterSubscriberSchema,
-} from "../validations/newsletter.validation.js";
+
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/role.middleware.js";
 
 const router = Router();
 
-router.post("/subscribe", validate(subscribeNewsletterSchema), newsletterController.subscribe);
+// ==========================================
+// Public Routes (No Authentication Required)
+// ==========================================
+
+// Public subscription endpoint
+router.post(
+  "/subscribe",
+  newsletterController.subscribe
+);
+
+// Public unsubscribe route (supports both GET link clicks and POST requests)
 router.get("/unsubscribe/:token", newsletterController.unsubscribe);
-router.get("/stats", newsletterController.getStats);
+router.post("/unsubscribe", newsletterController.unsubscribe);
+
+// Protected Routes (ADMIN / SUPERADMIN Only)
 
 router.use(authenticate, authorize("ADMIN", "SUPERADMIN"));
 
+router.get("/stats", newsletterController.getStats);
 router.post("/campaigns/send", newsletterController.sendCampaign);
 
-router.get(
-  "/subscribers",
-  newsletterController.getSubscribers,
-);
+router.get("/subscribers", newsletterController.getSubscribers);
 router.post(
   "/subscribers",
-  validate(subscribeNewsletterSchema),
-  newsletterController.subscribe,
+  newsletterController.subscribe
 );
-router.patch(
+router.put(
   "/subscribers/:id",
-  validate(updateNewsletterSubscriberSchema),
-  newsletterController.updateSubscriber,
+  newsletterController.updateSubscriber
 );
 router.delete("/subscribers/:id", newsletterController.deleteSubscriber);
 

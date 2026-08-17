@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import type { Category, CategoryFormData } from "../../types/category.types";
 import { useSearchContext } from "../../contexts/SearchContext";
@@ -125,7 +125,7 @@ const Categories = () => {
         </div>
       )}
 
-      {/* Categories */}
+      {/* Categoriess */}
       <CategoryTable
         categories={filteredCategories}
         loading={loading}

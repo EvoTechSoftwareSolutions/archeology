@@ -66,36 +66,152 @@ export const historicalPlaceRepository = {
     });
   },
 
+  getActiveAll(params?: {
+    search?: string;
+    districtId?: number;
+    provinceId?: number;
+    category?: string;
+    statusFlag?: string;
+  }) {
+    return prisma.historicalPlace.findMany({
+      where: {
+        // Only active historical places
+        isActive: true,
 
-getById(id:number){
- return prisma.historicalPlace.findUnique({
-  where:{id},
+        ...(params?.districtId !== undefined && {
+          districtId: params.districtId,
+        }),
 
-  include:{
-    province:true,
-    district:true,
-    galleryImages:true,
-    siteMonograph:true
-  }
- })
-},
+        ...(params?.provinceId !== undefined && {
+          provinceId: params.provinceId,
+        }),
 
-getBySlugOrName(slugOrName: string) {
-  return prisma.historicalPlace.findFirst({
+        ...(params?.category && {
+          category: params.category,
+        }),
+
+        ...(params?.statusFlag && {
+          statusFlag: params.statusFlag,
+        }),
+
+        ...(params?.search && {
+          OR: [
+            {
+              name: {
+                contains: params.search,
+              },
+            },
+            {
+              century: {
+                contains: params.search,
+              },
+            },
+            {
+              statusFlag: {
+                contains: params.search,
+              },
+            },
+            {
+              district: {
+                name: {
+                  contains: params.search,
+                },
+              },
+            },
+          ],
+        }),
+      },
+
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  },
+
+  getById(id: number) {
+    return prisma.historicalPlace.findUnique({
+      where: { id },
+
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+        siteMonograph: true,
+      },
+    });
+  },
+
+  // Get other active historical places
+  // from the same district as the current place.
+  //
+  // IMPORTANT:
+  // The actual anchorX/anchorY distance calculation
+  // is handled in the service layer.
+ getNearbyPlaces(districtId: number, currentPlaceId: number) {
+  return prisma.historicalPlace.findMany({
     where: {
-      OR: [
-        { slug: slugOrName },
-        { name: { equals: slugOrName } },
-      ],
+      districtId,
+
+      // Do not return the current historical place.
+      id: {
+        not: currentPlaceId,
+      },
+
+      // Only show published/active places
+      isActive: true,
     },
-    include: {
-      province: true,
-      district: true,
-      galleryImages: true,
-      siteMonograph: true,
+
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      districtId: true,
+      anchorXPct: true,
+      anchorYPct: true,
+
+      district: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+
+    orderBy: {
+      name: "asc",
     },
   });
 },
+
+  getBySlugOrName(slugOrName: string) {
+    return prisma.historicalPlace.findFirst({
+      where: {
+        OR: [
+          {
+            slug: slugOrName,
+          },
+          {
+            name: {
+              equals: slugOrName,
+            },
+          },
+        ],
+      },
+
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+        siteMonograph: true,
+      },
+    });
+  },
 
   getByName(name: string) {
     return prisma.historicalPlace.findFirst({
@@ -110,6 +226,7 @@ getBySlugOrName(slugOrName: string) {
       where: {
         districtId,
       },
+
       include: {
         district: true,
         galleryImages: true,
@@ -193,6 +310,7 @@ getBySlugOrName(slugOrName: string) {
       await prisma.placeGalleryImage.deleteMany({
         where: { historicalPlaceId: id },
       });
+
       if (data.galleryImages.length > 0) {
         await prisma.placeGalleryImage.createMany({
           data: data.galleryImages.map((img: any, idx: number) => ({
@@ -272,6 +390,33 @@ getBySlugOrName(slugOrName: string) {
         ...(data.image && {
           image: data.image,
         }),
+      },
+
+      include: {
+        province: true,
+        district: true,
+        galleryImages: true,
+      },
+    });
+  },
+
+  async toggleActive(id: number) {
+    const place = await prisma.historicalPlace.findUnique({
+      where: { id },
+    });
+
+    if (!place) {
+      return null;
+    }
+
+    const newIsActive = !place.isActive;
+
+    return prisma.historicalPlace.update({
+      where: { id },
+
+      data: {
+        isActive: newIsActive,
+        statusFlag: newIsActive ? "Published" : "Draft",
       },
 
       include: {

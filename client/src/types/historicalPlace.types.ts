@@ -1,3 +1,4 @@
+
 export interface HistoricalPlaceListParams {
   search?: string;
 
@@ -12,6 +13,8 @@ export interface HistoricalPlaceListParams {
   page?: number;
 
   pageSize?: number;
+
+  isActive?: boolean;
 }
 
 export interface HistoricalPlaceRecord {
@@ -45,114 +48,168 @@ export interface HistoricalPlaceRecord {
 
   createdAt?: string;
   updatedAt?: string;
+
+  isActive: boolean;
 }
 
-//for API responses fetch
+// For API responses
 export interface ApiHistoricalPlace {
-  id:number;
+  id: number;
 
-  name:string;
-  description:string;
+  name: string;
+
+  description: string;
 
   image?: string;
   imageUrl?: string;
 
-  century:string;
-  statusFlag:string;
+  century: string;
+  statusFlag: string;
 
-  latitude:number;
-  longitude:number;
+  latitude: number;
+  longitude: number;
 
-  anchorXPct:number;
-  anchorYPct:number;
+  anchorXPct: number;
+  anchorYPct: number;
 
-  provinceId:number;
-  districtId:number;
+  provinceId: number;
+  districtId: number;
 
-  province?:{
-    id:number;
-    name:string;
+  province?: {
+    id: number;
+    name: string;
   };
 
-  district:{
-    id:number;
-    name:string;
-    provinceId?:number;
+  district: {
+    id: number;
+    name: string;
+    provinceId?: number;
   };
 
-  category?:{
-    id:number;
-    name:string;
+  category?: {
+    id: number;
+    name: string;
   } | string;
 
-  galleryImages?:GalleryImage[];
+  galleryImages?: GalleryImage[];
 
-  nearbyHotels?:string;
-  nearbyHospitals?:string;
-  nearbyRestaurant?:string;
-  travelTips?:string;
+  nearbyHotels?: string;
+  nearbyHospitals?: string;
+  nearbyRestaurant?: string;
+  travelTips?: string;
 
-  timelineJson?:string;
-  crowd?:string;
-  distance?:string;
-  drivingTime?:string;
-  walkingTime?:string;
-  recommendedDeparture?:string;
-  weather?:string;
-  temperature?:string;
-  photographyTime?:string;
-  nearbyFuel?:string;
-  nearbyWashrooms?:string;
-  nearbyBusStops?:string;
-  nearbyParking?:string;
-  nearbyRailway?:string;
-  emergencyPolice?:string;
-  emergencyAmbulance?:string;
-  openingHours?:string;
-  earlyMorningSlot?:string;
-  midDaySlot?:string;
-  lateAfternoonSlot?:string;
-  visitNote?:string;
-  contactAddress?:string;
-  contactAdminPhone?:string;
-  contactEmergencyPhone?:string;
-  contactWebsite?:string;
-  contactEmail?:string;
-  dressCode?:string;
-  photographyRules?:string;
-  accessibility?:string;
-  dosJson?:string;
-  dontsJson?:string;
+  timelineJson?: string;
+  crowd?: string;
+  distance?: string;
+  drivingTime?: string;
+  walkingTime?: string;
+  recommendedDeparture?: string;
+  weather?: string;
+  temperature?: string;
+  photographyTime?: string;
+  nearbyFuel?: string;
+  nearbyWashrooms?: string;
+  nearbyBusStops?: string;
+  nearbyParking?: string;
+  nearbyRailway?: string;
+  emergencyPolice?: string;
+  emergencyAmbulance?: string;
+  openingHours?: string;
+  earlyMorningSlot?: string;
+  midDaySlot?: string;
+  lateAfternoonSlot?: string;
+  visitNote?: string;
+  contactAddress?: string;
+  contactAdminPhone?: string;
+  contactEmergencyPhone?: string;
+  contactWebsite?: string;
+  contactEmail?: string;
+  dressCode?: string;
+  photographyRules?: string;
+  accessibility?: string;
+  dosJson?: string;
+  dontsJson?: string;
 
-  seoTitle?:string;
-  metaDescription?:string;
-  slug?:string;
-  focusKeywords?:string;
+  seoTitle?: string;
+  metaDescription?: string;
+  slug?: string;
+  focusKeywords?: string;
 }
 
 export interface GalleryImage {
   id?: number;
+
   url: string;
+
   title?: string | null;
+
   description?: string | null;
+
   position: number;
 }
 
+/**
+ * Historical place returned by the
+ * nearby historical places endpoint.
+ *
+ * Example backend response:
+ *
+ * {
+ *   id: 4,
+ *   name: "Jetavanaramaya Stupa",
+ *   image: "/uploads/...",
+ *   districtId: 9,
+ *   anchorXPct: 0.593,
+ *   anchorYPct: 0.413,
+ *   distance: 0.182,
+ *   district: {
+ *     id: 9,
+ *     name: "Anuradhapura"
+ *   }
+ * }
+ */
+export interface NearbyHistoricalPlace {
+  id: number;
 
-export interface Paginated<T> {
-  items:T[];
-  total:number;
-  page:number;
-  pageSize:number;
+  name: string;
+
+  image: string | null;
+
+  districtId: number;
+
+  anchorXPct: number | null;
+
+  anchorYPct: number | null;
+
+  /**
+   * Calculated distance from the
+   * selected historical place.
+   */
+  distance: number;
+
+  district: {
+    id: number;
+    name: string;
+  };
+}
+
+/**
+ * Generic paginated response.
+ */
+export interface Paginated<T = HistoricalPlaceRecord> {
+  items: T[];
+
+  total: number;
+
+  page: number;
+
+  pageSize: number;
 }
 
 export type HistoricalPlaceInput = Omit<
   HistoricalPlaceRecord,
   "id" | "createdAt" | "updatedAt" | "district"
 >;
-
-
-
 
 export interface HistoricalPlaceDetails {
   id: number;
@@ -190,35 +247,65 @@ export interface HistoricalPlaceDetails {
   travelTips?: string | null;
 
   timelineJson?: string | null;
+
   crowd?: string | null;
+
   distance?: string | null;
+
   drivingTime?: string | null;
+
   walkingTime?: string | null;
+
   recommendedDeparture?: string | null;
+
   weather?: string | null;
+
   temperature?: string | null;
+
   photographyTime?: string | null;
+
   nearbyFuel?: string | null;
+
   nearbyWashrooms?: string | null;
+
   nearbyBusStops?: string | null;
+
   nearbyParking?: string | null;
+
   nearbyRailway?: string | null;
+
   emergencyPolice?: string | null;
+
   emergencyAmbulance?: string | null;
+
   openingHours?: string | null;
+
   earlyMorningSlot?: string | null;
+
   midDaySlot?: string | null;
+
   lateAfternoonSlot?: string | null;
+
   visitNote?: string | null;
+
   contactAddress?: string | null;
+
   contactAdminPhone?: string | null;
+
   contactEmergencyPhone?: string | null;
+
   contactWebsite?: string | null;
+
   contactEmail?: string | null;
+
   dressCode?: string | null;
+
   photographyRules?: string | null;
+
   accessibility?: string | null;
+
   dosJson?: string | null;
+
   dontsJson?: string | null;
 
   seoTitle?: string | null;
@@ -249,5 +336,4 @@ export interface HistoricalPlaceDetails {
 
   updatedAt: string;
 }
-
 

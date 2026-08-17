@@ -70,4 +70,4 @@ export async function getMapDistricts() {
   }
 
   return districtShapes;
-}
+}

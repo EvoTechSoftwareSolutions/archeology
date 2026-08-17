@@ -46,11 +46,6 @@ export const useFormValidation = (values: FormValues) => {
           if (value.trim().length < 20) return "Description must be at least 20 characters.";
           return "";
 
-        case "historicalStory":
-          if (!value.trim()) return "Historical story is required.";
-          if (value.trim().length < 50) return "Story must be at least 50 characters.";
-          return "";
-
         case "map":
           if (!currentValues.anchorXPct || !currentValues.anchorYPct) {
             return "Please select a location pin on the map.";
